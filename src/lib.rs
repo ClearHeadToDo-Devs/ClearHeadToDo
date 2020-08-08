@@ -1,7 +1,7 @@
 pub struct Task {
     name: String,
     completed: bool,
-    priority: u8,
+    priority: u8, //will be 1-5, 1 being highest
 }
 
 pub fn create_task(task_name: String) -> Task {
@@ -22,7 +22,13 @@ impl Task {
     }
 
     pub fn change_priority(&mut self, new_priority: u8) {
-        self.priority = new_priority;
+        if new_priority < 1 || new_priority > 5 {
+            println!("Invalid priority: enter a number between 1 and 5,\
+                     with 1 being highest priority");
+        }
+        else {
+            self.priority = new_priority;
+        }
     }
 }
 
@@ -57,6 +63,15 @@ mod tests {
         let mut TestTask = create_task(String::from("Test Task"));
         TestTask.change_priority(4);
         assert!(TestTask.priority == 4);
+        TestTask.change_priority(3);
+        assert!(TestTask.priority == 3);
+        TestTask.change_priority(2);
+        assert!(TestTask.priority == 2);
+        TestTask.change_priority(1);
+        assert!(TestTask.priority == 1);
+        TestTask.change_priority(6);
+        assert!(TestTask.priority == 1); //should NOT change when invalid val
+
     }
 
 }
