@@ -4,7 +4,7 @@ pub struct Task {
     priority: u8, //will be 1-5, 1 being highest
 }
 
-pub fn create_task(task_name: String) -> Task {
+pub fn create_task() -> Task {
     Task {
         name: String::from("Test Task"),
         completed: false,
@@ -38,39 +38,39 @@ mod tests {
     
     #[test]
     fn task_creation_test() {
-        let TestTask = create_task(String::from("Test Task"));
-        assert!(TestTask.name == "Test Task");
-        assert!(TestTask.completed == false);
-        assert!(TestTask.priority == 5);
+        let test_task = create_task();
+        assert!(test_task.name == "Test Task");
+        assert!(test_task.completed == false);
+        assert!(test_task.priority == 5);
     }
     
     #[test]
     fn task_rename_test() {
-        let mut TestTask = create_task(String::from("Original Name"));
-        TestTask.rename_task("Changed Name".to_string());
-        assert!(TestTask.name == "Changed Name");
+        let mut test_task = create_task();
+        test_task.rename_task("Changed Name".to_string());
+        assert!(test_task.name == "Changed Name");
     }
     
     #[test]
     fn task_completion_test() {
-        let mut TestTask = create_task(String::from("Test Task"));
-        TestTask.mark_complete();
-        assert!(TestTask.completed == true);
+        let mut test_task = create_task();
+        test_task.mark_complete();
+        assert!(test_task.completed == true);
     }
     
     #[test]
     fn task_reprioritize_test() {
-        let mut TestTask = create_task(String::from("Test Task"));
-        TestTask.change_priority(4);
-        assert!(TestTask.priority == 4);
-        TestTask.change_priority(3);
-        assert!(TestTask.priority == 3);
-        TestTask.change_priority(2);
-        assert!(TestTask.priority == 2);
-        TestTask.change_priority(1);
-        assert!(TestTask.priority == 1);
-        TestTask.change_priority(6);
-        assert!(TestTask.priority == 1); //should NOT change when invalid val
+        let mut test_task = create_task();
+        test_task.change_priority(4);
+        assert!(test_task.priority == 4);
+        test_task.change_priority(3);
+        assert!(test_task.priority == 3);
+        test_task.change_priority(2);
+        assert!(test_task.priority == 2);
+        test_task.change_priority(1);
+        assert!(test_task.priority == 1);
+        test_task.change_priority(6);
+        assert!(test_task.priority == 1); //should NOT change when invalid val
 
     }
 
