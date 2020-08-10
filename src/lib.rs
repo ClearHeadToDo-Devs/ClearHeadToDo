@@ -1,16 +1,23 @@
+pub struct TaskList(Vec<Task>);
+
 pub struct Task {
     name: String,
     completed: bool,
     priority: u8, //will be 1-5, 1 being highest
 }
 
-pub fn create_task(task_name: String) -> Task {
-    Task {
-        name: String::from("Test Task"),
-        completed: false,
-        priority: 5,
+impl TaskList{
+    pub fn create_task(&mut self) -> &Task {
+        let new_task = Task {
+            name: String::from("Test Task"),
+            completed: false,
+            priority: 5,
+        };
+        self.0.push(new_task);
+        return &self.0[self.0.len()-1];
     }
 }
+ 
 
 impl Task {
     pub fn rename_task(&mut self, new_task_name: String) {
@@ -36,12 +43,15 @@ impl Task {
 mod tests {
     use super::*;
     
+
     #[test]
     fn task_creation_test() {
-        let TestTask = create_task(String::from("Test Task"));
+        let TestTaskList = TaskList(vec![]); 
+        let TestTask = TestTaskList.create_task();
         assert!(TestTask.name == "Test Task");
         assert!(TestTask.completed == false);
         assert!(TestTask.priority == 5);
+        assert_eq!(TestTaskList.0.iter().find(TestTask).is_some(), true);
     }
     
     #[test]
