@@ -1,5 +1,8 @@
-pub struct TaskList(Vec<Task>);
+pub struct TaskList{
+tasks: Vec<Task>
+}
 
+#[derive(PartialEq)]
 pub struct Task {
     name: String,
     completed: bool,
@@ -7,14 +10,13 @@ pub struct Task {
 }
 
 impl TaskList{
-    pub fn create_task(&mut self) -> &Task {
+    pub fn create_task(&mut self){
         let new_task = Task {
             name: String::from("Test Task"),
             completed: false,
             priority: 5,
         };
-        self.0.push(new_task);
-        return &self.0[self.0.len()-1];
+        self.tasks.push(new_task);
     }
 }
  
@@ -46,41 +48,48 @@ mod tests {
 
     #[test]
     fn task_creation_test() {
-        let TestTaskList = TaskList(vec![]); 
-        let TestTask = TestTaskList.create_task();
-        assert!(TestTask.name == "Test Task");
-        assert!(TestTask.completed == false);
-        assert!(TestTask.priority == 5);
-        assert_eq!(TestTaskList.0.iter().find(TestTask).is_some(), true);
+        let mut test_task_list = TaskList{tasks: vec![]}; 
+        test_task_list.create_task();
+        let test_task = &test_task_list.tasks[0];
+        assert!(test_task.name == "Test Task");
+        assert!(test_task.completed == false);
+        assert!(test_task.priority == 5);
+        assert!(&test_task_list.tasks[0] == test_task);
     }
     
     #[test]
     fn task_rename_test() {
-        let mut TestTask = create_task(String::from("Original Name"));
-        TestTask.rename_task("Changed Name".to_string());
-        assert!(TestTask.name == "Changed Name");
+        let mut test_task_list = TaskList{tasks: vec![]}; 
+        test_task_list.create_task();         
+        let test_task = &mut test_task_list.tasks[0];
+        test_task.rename_task("Changed Name".to_string());
+        assert!(test_task.name == "Changed Name");
     }
     
     #[test]
     fn task_completion_test() {
-        let mut TestTask = create_task(String::from("Test Task"));
-        TestTask.mark_complete();
-        assert!(TestTask.completed == true);
+        let mut test_task_list = TaskList{tasks: vec![]}; 
+        test_task_list.create_task();
+        let test_task = &mut test_task_list.tasks[0];
+        test_task.mark_complete();
+        assert!(test_task.completed == true);
     }
     
     #[test]
     fn task_reprioritize_test() {
-        let mut TestTask = create_task(String::from("Test Task"));
-        TestTask.change_priority(4);
-        assert!(TestTask.priority == 4);
-        TestTask.change_priority(3);
-        assert!(TestTask.priority == 3);
-        TestTask.change_priority(2);
-        assert!(TestTask.priority == 2);
-        TestTask.change_priority(1);
-        assert!(TestTask.priority == 1);
-        TestTask.change_priority(6);
-        assert!(TestTask.priority == 1); //should NOT change when invalid val
+        let mut test_task_list = TaskList{tasks: vec![]}; 
+        test_task_list.create_task();
+        let test_task = &mut test_task_list.tasks[0];
+        test_task.change_priority(4);
+        assert!(test_task.priority == 4);
+        test_task.change_priority(3);
+        assert!(test_task.priority == 3);
+        test_task.change_priority(2);
+        assert!(test_task.priority == 2);
+        test_task.change_priority(1);
+        assert!(test_task.priority == 1);
+        test_task.change_priority(6);
+        assert!(test_task.priority == 1); //should NOT change when invalid val
 
     }
 
