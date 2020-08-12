@@ -18,6 +18,16 @@ impl TaskList{
         };
         self.tasks.push(new_task);
     }
+    pub fn print_task_list(self, mut writer: impl std::io::Write) -> 
+        std::result::Result<(), std::io::Error>{
+        for task in self.tasks{
+            writeln!(writer, "{name}, {priority}, {completed}",
+                     name = task.name,
+                     priority = task.priority,
+                     completed = task.completed)?; 
+        }
+        ok(())Î
+    }
 }
  
 
@@ -92,5 +102,13 @@ mod tests {
         assert!(test_task.priority == 1); //should NOT change when invalid val
 
     }
-
+    
+    #[test]
+    fn task_print_test(){
+        let mut test_task_list = TaskList{tasks: vec![]}; 
+        test_task_list.create_task();
+        let mut result = Vec::new();
+        test_task_list.print_task_list(&mut result).unwrap();
+        println!("{:?}", result);
+    }
 }
