@@ -24,7 +24,7 @@ impl TaskList{
             writeln!(writer, "{name}, {priority}, {completed}",
                      name = task.name,
                      priority = task.priority,
-                     completed = task.completed); 
+                     completed = task.completed)?; 
         }
         Ok(())
     }
@@ -109,6 +109,7 @@ mod tests {
         test_task_list.create_task();
         let mut result = Vec::new();
         test_task_list.print_task_list(&mut result).unwrap();
+        assert_eq!(&result[..], "Test Task, 5, false\n".as_bytes());
         println!("{:?}", result);
     }
 }
