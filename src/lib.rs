@@ -2,7 +2,7 @@ pub struct TaskList{
 tasks: Vec<Task>
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq)] #[derive(Debug)]
 pub struct Task {
     name: String,
     completed: bool,
@@ -18,6 +18,7 @@ impl TaskList{
         };
         self.tasks.push(new_task);
     }
+    
     pub fn print_task_list(self, mut writer: impl std::io::Write) -> std::result::Result<(), std::io::Error>
         {
         for task in self.tasks{
@@ -27,6 +28,16 @@ impl TaskList{
                      completed = task.completed)?; 
         }
         Ok(())
+    }
+    
+    pub fn select_task(self, task_name: String) -> Task{ 
+        for task in self.tasks{
+            if task.name == task_name{
+                task;
+            }
+            else{
+            }
+        }
     }
 }
  
@@ -112,4 +123,13 @@ mod tests {
         assert_eq!(&result[..], "Test Task, 5, false\n".as_bytes());
         println!("{:?}", result);
     }
+
+    #[test]
+    fn task_selection_test(){
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task();
+        let test_selection_task = test_task_list.tasks[0];
+        assert_eq!(test_task_list.select_task(String::from("Test Task")), test_selection_task);
+    }
 }
+
