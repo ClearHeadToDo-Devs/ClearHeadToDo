@@ -30,14 +30,12 @@ impl TaskList{
         Ok(())
     }
     
-    pub fn select_task(self, task_name: String) -> Task{ 
-        for task in self.tasks{
-            if task.name == task_name{
-                task;
-            }
-            else{
-            }
+    pub fn select_task(&mut self, index: usize) -> &Task 
+    {
+        if index < self.tasks.len(){
+            return &self.tasks[index];
         }
+        else{panic!("can't do that index number!")};
     }
 }
  
@@ -128,8 +126,11 @@ mod tests {
     fn task_selection_test(){
         let mut test_task_list = TaskList{tasks: vec![]};
         test_task_list.create_task();
-        let test_selection_task = test_task_list.tasks[0];
-        assert_eq!(test_task_list.select_task(String::from("Test Task")), test_selection_task);
+        let test_selection_task = test_task_list.select_task(0);
+        assert_eq!(test_selection_task.name, "Test Task".to_string());
     }
 }
+
+
+
 
