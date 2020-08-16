@@ -21,11 +21,12 @@ impl TaskList{
     
     pub fn print_task_list(self, mut writer: impl std::io::Write) -> std::result::Result<(), std::io::Error>
         {
-        for task in self.tasks{
-            writeln!(writer, "{name}, {priority}, {completed}",
-                     name = task.name,
-                     priority = task.priority,
-                     completed = task.completed)?; 
+        for index in 0..=self.tasks.len()-1{
+            writeln!(writer, "{index}, {name}, {priority}, {completed}",
+                     index = index,
+                     name = self.tasks[index].name,
+                     priority = self.tasks[index].priority,
+                     completed = self.tasks[index].completed)?; 
         }
         Ok(())
     }
@@ -118,7 +119,7 @@ mod tests {
         test_task_list.create_task();
         let mut result = Vec::new();
         test_task_list.print_task_list(&mut result).unwrap();
-        assert_eq!(&result[..], "Test Task, 5, false\n".as_bytes());
+        assert_eq!(&result[..], "0, Test Task, 5, false\n".as_bytes());
         println!("{:?}", result);
     }
 
