@@ -11,7 +11,7 @@ fn main() {
         io::stdin().read_line(&mut inp).expect("failed to read line");
         match parse_input(&inp) {
             Ok(op) => {
-                println!("success!");
+                println!("success!, {}", op);
             },
             Err(err) => {
                 println!("error: {}", err);
