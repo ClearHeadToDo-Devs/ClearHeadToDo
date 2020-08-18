@@ -41,7 +41,7 @@ pub fn parse_priority(expr: &str) -> Result<PriEnum, String> {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub struct Task {
     name: String,
     completed: bool,
@@ -169,6 +169,8 @@ mod tests {
         test_task_list.create_task();
         let test_selection_task = test_task_list.select_task(0).unwrap();
         assert_eq!(test_selection_task.name, "Test Task".to_string());
+        let failed_selection = test_task_list.select_task(1).unwrap_err();
+        assert_eq!(failed_selection, "can't do that index number!"); 
     }
 }
 
