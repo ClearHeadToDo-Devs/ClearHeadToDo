@@ -58,7 +58,8 @@ impl TaskList {
         self.tasks.push(new_task);
     }
     
-    pub fn print_task_list(self, mut writer: impl std::io::Write) -> std::result::Result<(), std::io::Error> {
+    pub fn print_task_list(self, mut writer: impl std::io::Write)
+                                        -> Result<(), std::io::Error> {
         for index in 0..=self.tasks.len()-1 {
             writeln!(writer, "{index}, {name}, {priority}, {completed}",
                      index = index,
@@ -69,12 +70,12 @@ impl TaskList {
         Ok(())
     }
     
-    pub fn select_task(&mut self, index: usize) -> &Task {
+    pub fn select_task(&mut self, index: usize) -> Result<&Task, String> {
         if index < self.tasks.len() {
-            return &self.tasks[index];
+            return Ok(&self.tasks[index]);
         }
         else {
-            panic!("can't do that index number!");
+            return Err("can't do that index number!".to_string());
         }
     }
 
@@ -149,7 +150,7 @@ mod tests {
         test_task.change_priority("1");
         assert!(test_task.priority == PriEnum::Critical);
         test_task.change_priority("6");
-        assert!(test_task.priority == PriEnum::Critical); //should NOT change on invalid input
+        assert!(test_task.priority == PriEnum::Critical); //should NOT change on bad input
     }
     
     #[test]
@@ -166,7 +167,7 @@ mod tests {
     fn task_selection_test(){
         let mut test_task_list = TaskList{tasks: vec![]};
         test_task_list.create_task();
-        let test_selection_task = test_task_list.select_task(0);
+        let test_selection_task = test_task_list.select_task(0).unwrap();
         assert_eq!(test_selection_task.name, "Test Task".to_string());
     }
 }
