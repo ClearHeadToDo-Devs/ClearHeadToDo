@@ -1,4 +1,5 @@
 use std::fmt;
+use std::io::{Error, ErrorKind}; 
 
 pub struct TaskList{
     tasks: Vec<Task>
@@ -49,6 +50,9 @@ pub struct Task {
 }
 
 impl TaskList {
+    
+
+    
     pub fn create_task(&mut self) {
         let new_task = Task {
             name: String::from("Test Task"),
@@ -58,14 +62,18 @@ impl TaskList {
         self.tasks.push(new_task);
     }
     
-    pub fn print_task_list(self, mut writer: impl std::io::Write)
-                                        -> Result<(), std::io::Error> {
-        for index in 0..=self.tasks.len()-1 {
-            writeln!(writer, "{index}, {name}, {priority}, {completed}",
-                     index = index,
-                     name = self.tasks[index].name,
-                     priority = self.tasks[index].priority,
-                     completed = self.tasks[index].completed)?; 
+    pub fn print_task_list(self, mut writer: impl std::io::Write)->
+                                        Result<(), std::io::Error> {
+        if self.tasks.is_empty()==true{
+            return Err(Error::new(ErrorKind::Other, "list is empty"));
+        } else{
+            for index in 0..=self.tasks.len()-1 {
+                writeln!(writer, "{index}, {name}, {priority}, {completed}",
+                        index = index,
+                        name = self.tasks[index].name,
+                        priority = self.tasks[index].priority,
+                        completed = self.tasks[index].completed)?;
+            }
         }
         Ok(())
     }
@@ -154,13 +162,19 @@ mod tests {
     }
     
     #[test]
-    fn task_print_test(){
-        let mut test_task_list = TaskList{tasks: vec![]}; 
+    fn task_print_fail_test(){
+        let test_task_list = TaskList{tasks: vec![]};
+        let mut bad_result = Vec::new();
+        let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
+        assert_eq!(error.to_string(), "list is empty");
+    }
+    #[test]
+    fn task_print_full_test(){
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let mut good_result = Vec::new();
         test_task_list.create_task();
-        let mut result = Vec::new();
-        test_task_list.print_task_list(&mut result).unwrap();
-        assert_eq!(&result[..], "0, Test Task, Optional, false\n".as_bytes());
-        println!("{:?}", result);
+        test_task_list.print_task_list(&mut good_result).unwrap();
+        assert_eq!(&good_result[..], "0, Test Task, Optional, false\n".as_bytes());
     }
     
     #[test]
