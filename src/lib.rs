@@ -2,7 +2,7 @@ use std::fmt;
 use std::io::{Error, ErrorKind}; 
 
 pub struct TaskList{
-    tasks: Vec<Task>
+    pub tasks: Vec<Task>
 }
 
 #[derive(PartialEq)]
