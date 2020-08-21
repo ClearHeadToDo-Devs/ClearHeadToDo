@@ -62,7 +62,7 @@ impl TaskList {
         self.tasks.push(new_task);
     }
     
-    pub fn print_task_list(self, mut writer: impl std::io::Write)->
+    pub fn print_task_list(&self, mut writer: impl std::io::Write)->
                                         Result<(), std::io::Error> {
         if self.tasks.is_empty()==true{
             return Err(Error::new(ErrorKind::Other, "list is empty"));

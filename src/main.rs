@@ -31,7 +31,7 @@ pub fn parse_input(inp: &str, list: &mut TaskList) -> Result<(), String> {
     match inp.to_ascii_lowercase().trim() {
         //"foo" => Ok("test_foo".to_string()),
         "create_task" => Ok(list.create_task()),
-        //"list_tasks" => Ok(list.print_task_list(stdout()).unwrap()),
+        "list_tasks" => Ok(list.print_task_list(&mut stdout()).unwrap()),
         _ => Err(format!("invalid input")),
     }
 }
