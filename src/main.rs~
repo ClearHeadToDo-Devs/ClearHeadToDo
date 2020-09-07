@@ -1,6 +1,8 @@
 use std::io::{self, Write};
 use std::io::stdout;
+use std::borrow::Borrow;
 use clear_head_todo::TaskList;
+use clear_head_todo::Task;
 
 fn main() {
     let mut task_list = TaskList{ tasks: vec![]};
