@@ -137,7 +137,7 @@ impl TaskList {
             return Ok(());
         }
         else {
-            return Err(OtherError::new(ErrorKind::Other, "list is empty"));
+            return Err(OtherError::new(ErrorKind::Other, "Invalid Index for Deletion"));
         }
     }
 
@@ -199,7 +199,7 @@ mod tests {
     }
     
     #[test]
-    fn task_removal_test() {
+    fn task_successful_removal_test() {
         let mut test_task_list = TaskList{tasks: vec![]};
         let mut good_result = Vec::new();
         test_task_list.create_task();
@@ -208,6 +208,14 @@ mod tests {
         assert_eq!(&good_result[..], "Deleted Test Task Task\n".as_bytes());
     }
     
+    #[test]
+    fn task_removal_fail_test(){
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let mut bad_result = Vec::new();
+        let error = test_task_list.remove_task(0, &mut bad_result).unwrap_err();
+        assert_eq!(error.to_string(), "Invalid Index for Deletion");
+    }
+
     #[test]
     fn task_reprioritize_test() {
         let mut test_task_list = TaskList{tasks: vec![]}; 
