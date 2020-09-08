@@ -128,6 +128,14 @@ impl TaskList {
         }
     }
 
+    pub fn remove_task(&mut self, deltask: &Task) {
+        for taskindex in 0..=self.tasks.len()-1 {
+            if &self.tasks[taskindex] == deltask{
+                self.tasks.remove(taskindex);
+            }
+        }
+    }
+
 } //end 'impl TaskList'
  
 
@@ -253,6 +261,5 @@ mod tests {
             assert_eq!(record, vec!["test csv task", "Optional", "false"]);
         }
     }
+
 }
-
-
