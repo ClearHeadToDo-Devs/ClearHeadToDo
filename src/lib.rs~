@@ -119,12 +119,25 @@ impl TaskList {
         Ok(())
     }
     
-    pub fn select_task(&mut self, index: usize) -> Result<&Task, String> {
+    pub fn select_task(&mut self, index: usize) -> Result<&mut Task, String> {
         if index < self.tasks.len() {
-            return Ok(&self.tasks[index]);
+            return Ok(&mut self.tasks[index]);
         }
         else {
             return Err("can't do that index number!".to_string());
+        }
+    }
+
+    pub fn remove_task(&mut self, index: usize, mut writer: impl std::io::Write) -> 
+    Result<(), std::io::Error>  {
+        if index < self.tasks.len() {
+            writeln!(writer, "Deleted {name} Task", 
+                     name = self.tasks[index].name)?; 
+            self.tasks.remove(index);
+            return Ok(());
+        }
+        else {
+            return Err(OtherError::new(ErrorKind::Other, "list is empty"));
         }
     }
 
@@ -183,6 +196,16 @@ mod tests {
         let test_task = &mut test_task_list.tasks[0];
         test_task.mark_complete();
         assert!(test_task.completed == true);
+    }
+    
+    #[test]
+    fn task_removal_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let mut good_result = Vec::new();
+        test_task_list.create_task();
+        test_task_list.remove_task(0, &mut good_result).unwrap();
+        assert!(test_task_list.tasks.is_empty());
+        assert_eq!(&good_result[..], "Deleted Test Task Task".as_bytes());
     }
     
     #[test]
@@ -251,11 +274,7 @@ mod tests {
         if let Some(result) = iter.next() {
             let record = result.unwrap();
             assert_eq!(record, vec!["test csv task", "Optional", "false"]);
-          //  Ok(());
-        } /*else {
-            Err(From::from("expected at least one record but got none"));
-        }*/
+        }
     }
+
 }
-
-
