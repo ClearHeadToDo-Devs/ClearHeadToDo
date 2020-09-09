@@ -104,7 +104,7 @@ impl TaskList {
     }
     
     pub fn print_task_list(&self, mut writer: impl std::io::Write)->
-                                        Result<(), std::io::Error> {
+    Result<(), std::io::Error> {
         if self.tasks.is_empty()==true{
             return Err(OtherError::new(ErrorKind::Other, "list is empty"));
         } else{
@@ -119,15 +119,6 @@ impl TaskList {
         Ok(())
     }
     
-    pub fn select_task(&mut self, index: usize) -> Result<&mut Task, String> {
-        if index < self.tasks.len() {
-            return Ok(&mut self.tasks[index]);
-        }
-        else {
-            return Err("can't do that index number!".to_string());
-        }
-    }
-
     pub fn remove_task(&mut self, index: usize, mut writer: impl std::io::Write) -> 
     Result<(), std::io::Error>  {
         if index < self.tasks.len() {
@@ -247,16 +238,6 @@ mod tests {
         test_task_list.create_task();
         test_task_list.print_task_list(&mut good_result).unwrap();
         assert_eq!(&good_result[..], "0,Test Task,Optional,false\n".as_bytes());
-    }
-    
-    #[test]
-    fn task_selection_test(){
-        let mut test_task_list = TaskList{tasks: vec![]};
-        test_task_list.create_task();
-        let test_selection_task = test_task_list.select_task(0).unwrap();
-        assert_eq!(test_selection_task.name, "Test Task".to_string());
-        let failed_selection = test_task_list.select_task(1).unwrap_err();
-        assert_eq!(failed_selection, "can't do that index number!"); 
     }
     
     #[test]
