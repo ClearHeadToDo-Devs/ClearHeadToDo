@@ -9,8 +9,9 @@ use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde::{Serialize as AltSerialize};
 
 
-pub struct TaskList{
-    pub tasks: Vec<Task>
+pub struct TaskList<'a> {
+    pub tasks: Vec<Task>,
+    pub path: &'a std::path::Path
 }
 
 #[derive(PartialEq)]
@@ -70,10 +71,10 @@ pub struct Task {
     priority: PriEnum, 
 }
 
-impl TaskList {
+impl TaskList <'_> {
     //load tasks from either tasks.csv or testTasks.csv
     pub fn load_tasks(&mut self, path: &str) -> Result<(), Box<dyn Error>> {
-        let mut rdr = Reader::from_path(Path::new(path))?;
+        let mut rdr = Reader::from_path(self.path)?;
         for result in rdr.records() { 
             let record = result?;
             let new_task = Task {
@@ -87,7 +88,7 @@ impl TaskList {
     }
 
     pub fn load_csv(&mut self, path: &str) -> Result<(), Box<dyn Error>> {
-        let mut wtr = Writer::from_path(Path::new(path))?;
+        let mut wtr = Writer::from_path(self.path)?;
         for index in 0..=self.tasks.len()-1{
             wtr.serialize(&self.tasks[index]).unwrap();
         }
@@ -162,7 +163,7 @@ mod tests {
 
     #[test]
     fn task_creation_test() {
-        let mut test_task_list = TaskList{tasks: vec![]}; 
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")}; 
         test_task_list.create_task();
         let test_task = &test_task_list.tasks[0];
         assert!(test_task.name == "Test Task");
@@ -173,7 +174,7 @@ mod tests {
     
     #[test]
     fn task_rename_test() {
-        let mut test_task_list = TaskList{tasks: vec![]}; 
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")}; 
         test_task_list.create_task();         
         let test_task = &mut test_task_list.tasks[0];
         test_task.rename_task("Changed Name".to_string());
@@ -182,7 +183,7 @@ mod tests {
     
     #[test]
     fn task_completion_test() {
-        let mut test_task_list = TaskList{tasks: vec![]}; 
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")}; 
         test_task_list.create_task();
         let test_task = &mut test_task_list.tasks[0];
         test_task.mark_complete();
@@ -191,7 +192,7 @@ mod tests {
     
     #[test]
     fn task_successful_removal_test() {
-        let mut test_task_list = TaskList{tasks: vec![]};
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")};
         let mut good_result = Vec::new();
         test_task_list.create_task();
         test_task_list.remove_task(0, &mut good_result).unwrap();
@@ -201,7 +202,7 @@ mod tests {
     
     #[test]
     fn task_removal_fail_test(){
-        let mut test_task_list = TaskList{tasks: vec![]};
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")};
         let mut bad_result = Vec::new();
         let error = test_task_list.remove_task(0, &mut bad_result).unwrap_err();
         assert_eq!(error.to_string(), "Invalid Index for Deletion");
@@ -209,7 +210,7 @@ mod tests {
 
     #[test]
     fn task_reprioritize_test() {
-        let mut test_task_list = TaskList{tasks: vec![]}; 
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")}; 
         test_task_list.create_task();
         let test_task = &mut test_task_list.tasks[0];
         test_task.change_priority("4");
@@ -226,14 +227,14 @@ mod tests {
     
     #[test]
     fn task_print_fail_test(){
-        let test_task_list = TaskList{tasks: vec![]};
+        let test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")};
         let mut bad_result = Vec::new();
         let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
         assert_eq!(error.to_string(), "list is empty");
     }
     #[test]
     fn task_print_full_test(){
-        let mut test_task_list = TaskList{tasks: vec![]};
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")};
         let mut good_result = Vec::new();
         test_task_list.create_task();
         test_task_list.print_task_list(&mut good_result).unwrap();
@@ -242,7 +243,7 @@ mod tests {
     
     #[test]
     fn load_from_csv_sucessful_test(){
-        let mut test_task_list = TaskList{tasks: vec![]};
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")};
         test_task_list.load_tasks("./data/testTasks.csv");
         let test_task = &test_task_list.tasks[0];
         assert!(test_task.name == "test csv task");
@@ -252,7 +253,7 @@ mod tests {
 
     #[test]
     fn load_to_csv_successful_test(){
-        let mut test_task_list = TaskList{tasks: vec![]};
+        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")};
         test_task_list.create_task();
         test_task_list.tasks[0].rename_task("test csv task".to_string());
         test_task_list.load_csv("./data/testTasks.csv");

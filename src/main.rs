@@ -1,9 +1,10 @@
 use std::io::{self, Write};
 use std::io::stdout;
 use clear_head_todo::TaskList;
+use std::path::Path;
 
 fn main() {
-    let mut task_list = TaskList{ tasks: vec![]};
+    let mut task_list = TaskList{ tasks: vec![], path: Path::new("./data/testTasks.csv")};
     println!("starting program");
     
     loop {
