@@ -6,7 +6,7 @@ use csv::Writer;
 use std::path::Path;
 use std::str::FromStr;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
-use serde::Serialize as AltSerialize;
+use serde::{Serialize as AltSerialize};
 
 
 pub struct TaskList<'a> {
@@ -213,7 +213,6 @@ mod tests {
         let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")}; 
         test_task_list.create_task();
         let test_task = &mut test_task_list.tasks[0];
-        println!("{}", test_task.name);
         test_task.change_priority("4");
         assert!(test_task.priority == PriEnum::Low);
         test_task.change_priority("3");
@@ -245,7 +244,7 @@ mod tests {
     #[test]
     fn load_from_csv_sucessful_test(){
         let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")};
-        test_task_list.load_tasks().unwrap();
+        test_task_list.load_tasks();
         let test_task = &test_task_list.tasks[0];
         assert!(test_task.name == "test csv task");
         assert!(test_task.completed == false);
@@ -256,7 +255,7 @@ mod tests {
     #[should_panic]
     fn load_from_csv_fail_test(){
         let mut test_task_list = TaskList{tasks: vec![], path: Path::new("bad path")};
-        test_task_list.load_tasks().unwrap();
+        test_task_list.load_tasks();
         let test_task = &test_task_list.tasks[0];
     }
     
@@ -265,8 +264,8 @@ mod tests {
         let mut test_task_list = TaskList{tasks: vec![], path: Path::new("./data/testTasks.csv")};
         test_task_list.create_task();
         test_task_list.tasks[0].rename_task("test csv task".to_string());
-        test_task_list.load_csv().unwrap();
-        let rdr = Reader::from_path(Path::new("./data/testTasks.csv")).unwrap();
+        test_task_list.load_csv();
+        let mut rdr = Reader::from_path(Path::new("./data/testTasks.csv")).unwrap();
 
         let mut iter = rdr.into_records();
     
@@ -282,6 +281,6 @@ mod tests {
         let mut test_task_list = TaskList{tasks: vec![], path: Path::new("bad path")};
         test_task_list.create_task();
         test_task_list.tasks[0].rename_task("test csv task".to_string());
-        test_task_list.load_csv().unwrap();
+        test_task_list.load_csv();
     }
 }
