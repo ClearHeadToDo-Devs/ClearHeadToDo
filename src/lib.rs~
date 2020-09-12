@@ -253,11 +253,10 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn load_from_csv_fail_test(){
         let mut test_task_list = TaskList{tasks: vec![], path: Path::new("bad path")};
-        test_task_list.load_tasks().unwrap();
-        let test_task = &test_task_list.tasks[0];
+        let error = test_task_list.load_tasks().unwrap_err();
+        assert_eq!(error.to_string(), "no such file or directory");
     }
     
     #[test]
@@ -276,12 +275,4 @@ mod tests {
         }
     }
 
-    #[test]
-    #[should_panic]
-    fn load_to_csv_fail_test(){
-        let mut test_task_list = TaskList{tasks: vec![], path: Path::new("bad path")};
-        test_task_list.create_task();
-        test_task_list.tasks[0].rename_task("test csv task".to_string());
-        test_task_list.load_csv().unwrap();
-    }
 }
