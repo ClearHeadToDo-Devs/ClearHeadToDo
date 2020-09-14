@@ -3,11 +3,23 @@ use std::io::stdout;
 use clear_head_todo::TaskList;
 use std::path::Path;
 
+struct CLI{
+    pattern: String,
+    input: Option<String>,
+}
+
 fn main() {
+
     let mut task_list = TaskList{ tasks: vec![], path: Path::new("./data/testTasks.csv")};
     println!("starting program");
+    task_list.load_tasks();
+    let main_cli = CLI{
+        pattern : std::env::args().nth(1).expect("no pattern given"), 
+        input : Some(std::env::args().nth(2).expect("no pattern given")),
+
+    };
     
-    loop {
+/*    loop {
         let list = &mut task_list;
         print!("> ");
         io::stdout().flush().expect("failed to flush");
@@ -39,5 +51,5 @@ pub fn parse_input(inp: &str, index: usize, arg: &str, list: &mut TaskList) -> R
         "list_tasks" => Ok(list.print_task_list(&mut stdout()).unwrap()),
         "change_priority" => Ok(list.tasks[index].change_priority(arg)),
         _ => Err(format!("invalid input")),
-    }
+    }*/
 }
