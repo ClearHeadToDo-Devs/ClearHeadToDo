@@ -11,7 +11,7 @@ struct CLI{
 
 fn main() {
 
-    let mut task_list = TaskList{ tasks: vec![], path: Path::new("./data/testTasks.csv")};
+    let mut task_list = TaskList{ tasks: vec![], path: Path::new("./data/tasks.csv")};
     println!("starting program");
     
     task_list.load_tasks().unwrap();
