@@ -5,19 +5,33 @@ use std::path::Path;
 
 struct CLI{
     pattern: String,
-    input: Option<String>,
+    index: Option<String>,
+    input: Option<String>
 }
 
 fn main() {
 
     let mut task_list = TaskList{ tasks: vec![], path: Path::new("./data/testTasks.csv")};
     println!("starting program");
-    task_list.load_tasks();
+    
+    task_list.load_tasks().unwrap();
+    
     let main_cli = CLI{
         pattern : std::env::args().nth(1).expect("no pattern given"), 
-        input : Some(std::env::args().nth(2).expect("no pattern given")),
+        index: std::env::args().nth(2),
+        input: std::env::args().nth(3)
 
     };
+
+    match &main_cli.pattern as &str{
+        "create_task" => task_list.create_task(),
+        "list_tasks" => task_list.print_task_list(io::stdout()).unwrap(),
+        "remove_task" => task_list.remove_task(main_cli.index.unwrap().to_string().parse::<usize>().unwrap(), 
+                                               io::stdout()).expect("invalid index"),
+        _ => return
+    }
+
+    task_list.load_csv().unwrap();
     
 /*    loop {
         let list = &mut task_list;
