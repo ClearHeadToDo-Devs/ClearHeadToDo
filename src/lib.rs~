@@ -3,7 +3,7 @@ use std::io::{Error as OtherError, ErrorKind};
 use std::fmt;
 use csv::Reader;
 use csv::Writer;
-use std::path::Path;
+//use std::path::Path;
 use std::str::FromStr;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde::Serialize as AltSerialize;
@@ -256,7 +256,7 @@ mod tests {
     fn load_from_csv_fail_test(){
         let mut test_task_list = TaskList{tasks: vec![], path: Path::new("bad path")};
         let error = test_task_list.load_tasks().unwrap_err();
-        assert_eq!(error.to_string(), "no such file or directory");
+        assert_eq!(error.to_string(), "No such file or directory (os error 2)");
     }
     
     #[test]
