@@ -256,7 +256,7 @@ mod tests {
     fn load_from_csv_fail_test(){
         let mut test_task_list = TaskList{tasks: vec![], path: Path::new("bad path")};
         let error = test_task_list.load_tasks().unwrap_err();
-        assert_eq!(error.to_string(), "No such file or directory (os error 2)");
+        assert!(error.to_string().contains("(os error 2)"));
     }
     
     #[test]
@@ -266,9 +266,7 @@ mod tests {
         test_task_list.tasks[0].rename_task("test csv task".to_string());
         test_task_list.load_csv().unwrap();
         let rdr = Reader::from_path(Path::new("./data/testTasks.csv")).unwrap();
-
         let mut iter = rdr.into_records();
-    
         if let Some(result) = iter.next() {
             let record = result.unwrap();
             assert_eq!(record, vec!["test csv task", "Optional", "false"]);
