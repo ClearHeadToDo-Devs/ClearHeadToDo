@@ -28,7 +28,7 @@ pub enum PriEnum {
 
 impl fmt::Display for PriEnum {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let printable = match *self {
+        let printable: &str = match *self {
             PriEnum::Critical => "Critical",
             PriEnum::High => "High",
             PriEnum::Medium => "Medium",
@@ -74,7 +74,7 @@ pub struct Task {
 impl TaskList <'_> {
     //load tasks from either tasks.csv or testTasks.csv
     pub fn load_tasks(&mut self) -> Result<(), Box<dyn Error>> {
-        let mut rdr = Reader::from_path(self.path)?;
+        let mut rdr: Reader<std::fs::File> = Reader::from_path(self.path)?;
         for result in rdr.records() { 
             let record = result?;
             let new_task = Task {
@@ -88,15 +88,15 @@ impl TaskList <'_> {
     }
 
     pub fn load_csv(&mut self) -> Result<(), Box<dyn Error>> {
-        let mut wtr = Writer::from_path(self.path)?;
+        let mut wtr: Writer<std::fs::File> = Writer::from_path(self.path)?;
         for index in 0..=self.tasks.len()-1{
-            wtr.serialize(&self.tasks[index]).unwrap();
+            wtr.serialize::<_>(&self.tasks[index]).unwrap();
         }
         Ok(())
     }
 
     pub fn create_task(&mut self) {
-        let new_task = Task {
+        let new_task: Task = Task {
             name: String::from("Test Task"),
             completed: false,
             priority: PriEnum::Optional,
