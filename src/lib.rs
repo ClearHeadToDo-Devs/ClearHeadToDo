@@ -4,16 +4,15 @@ use std::fmt;
 use csv::Reader;
 use csv::Writer;
 use std::path::{Path, PathBuf};
-use relative_path::RelativePath;
 use std::env;
 use std::str::FromStr;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde::Serialize as AltSerialize;
 
-fn create_data_path(file: &str) -> &std::path::Path {
-    let relative_path: &RelativePath = RelativePath::new(file);
-    let full_path = relative_path.to_path(env::current_dir().unwrap());
-    return &full_path    
+fn create_data_path_buf(file: &str) -> std::path::PathBuf {
+//    let current_dir = std::env::current_dir().unwrap();  
+//    let full_path = current_dir.join("data").join(file);
+    return env::current_dir().unwrap().join("data").join(file);
 }
 
 pub struct TaskList<'a> {
