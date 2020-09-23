@@ -11,12 +11,10 @@ struct CLI{
 
 fn main() {
 
-    let mut task_list: TaskList = TaskList{ 
-                                    tasks: vec![],
-                                    path: Path::new(".\\data\\tasks.csv")};
+    let mut task_list: TaskList = TaskList{tasks: vec![]};
     println!("starting program");
     
-    task_list.load_tasks().unwrap();
+    task_list.load_tasks("tasks.csv").unwrap();
     
     let main_cli: CLI = CLI{
         pattern : std::env::args().nth(1).expect("no pattern given"), 
@@ -65,7 +63,7 @@ fn main() {
         _ => return
     }
 
-    task_list.load_csv().unwrap();
+    task_list.load_csv("tasks.csv").unwrap();
     
 /*    loop {
         let list = &mut task_list;
