@@ -9,13 +9,8 @@ use std::str::FromStr;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde::Serialize as AltSerialize;
 
-fn create_data_path_buf(file: &str) -> std::path::PathBuf {
-    return env::current_dir().unwrap().join("data").join(file);
-}
-
 pub struct TaskList {
     pub tasks: Vec<Task>
-//    pub path: &'a std::path::Path
 }
 
 #[derive(PartialEq)]
@@ -78,8 +73,8 @@ pub struct Task {
 impl TaskList {
     //load tasks from either tasks.csv or testTasks.csv
     pub fn load_tasks(&mut self, file_name: &str) -> Result<(), Box<dyn Error>> {
-        let path = env::current_dir().unwrap().join("data").join(file_name);
-        let mut rdr: Reader<std::fs::File> = Reader::from_path(path)?;
+        let pathbuf = env::current_dir().unwrap().join("data").join(file_name);
+        let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
         for result in rdr.records() { 
             let record = result?;
             let new_task = Task {
@@ -93,8 +88,8 @@ impl TaskList {
     }
 
     pub fn load_csv(&mut self, file_name: &str) -> Result<(), Box<dyn Error>> {
-        let path = env::current_dir().unwrap().join("data").join(file_name);
-        let mut wtr: Writer<std::fs::File> = Writer::from_path(path)?;
+        let pathbuf = env::current_dir().unwrap().join("data").join(file_name);
+        let mut wtr: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
         for index in 0..=self.tasks.len()-1{
             wtr.serialize::<_>(&self.tasks[index]).unwrap();
         }
@@ -167,14 +162,7 @@ mod tests {
     use super::*;
     
     #[test]
-    fn linux_data_path_test() {
-        let test_path = create_data_path_buf("test.csv");
-        assert!(test_path == env::current_dir().unwrap().join("data").join("test.csv"));
-    }
-
-    #[test]
     fn task_creation_test() {
-        let path = create_data_path_buf("testTasks.csv").as_path();
         let mut test_task_list = TaskList{tasks: vec![]}; 
         test_task_list.create_task();
         let test_task = &test_task_list.tasks[0];
@@ -277,7 +265,9 @@ mod tests {
         test_task_list.create_task();
         test_task_list.tasks[0].rename_task("test csv task".to_string());
         test_task_list.load_csv("testTask.csv").unwrap();
-        let rdr = Reader::from_path(create_data_path_buf("testTasks.csv").as_path()).unwrap();
+        let rdr = Reader::from_path(
+            env::current_dir().unwrap().join("data").join("testTasks.csv").as_path())
+            .unwrap();
         let mut iter = rdr.into_records();
         if let Some(result) = iter.next() {
             let record = result.unwrap();
