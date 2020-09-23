@@ -14,7 +14,7 @@ fn create_data_path_buf(file: &str) -> std::path::PathBuf {
 }
 
 pub struct TaskList {
-    pub tasks: Vec<Task>,
+    pub tasks: Vec<Task>
 //    pub path: &'a std::path::Path
 }
 
@@ -267,7 +267,7 @@ mod tests {
     #[test]
     fn load_from_csv_fail_test(){
         let mut test_task_list = TaskList{tasks: vec![]};
-        let error = test_task_list.load_tasks("testTasks.csv").unwrap_err();
+        let error = test_task_list.load_tasks("bad_file").unwrap_err();
         assert!(error.to_string().contains("(os error 2)"));
     }
     
