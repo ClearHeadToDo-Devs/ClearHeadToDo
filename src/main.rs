@@ -46,11 +46,11 @@ fn main() {
             .unwrap()]
             .mark_complete(),
         "change_priority" => task_list.tasks[
-                main_cli.index
-                .unwrap()
-                .parse::<usize>()
-                .unwrap()]
-                .change_priority(
+            main_cli.index
+            .unwrap()
+            .parse::<usize>()
+            .unwrap()]
+            .change_priority(
                     &main_cli.input.unwrap()[..]),
         "rename_task" => task_list.tasks[
             main_cli.index
