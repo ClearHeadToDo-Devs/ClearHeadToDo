@@ -71,7 +71,7 @@ pub struct Task {
 }
 
 impl TaskList {
-    //load tasks from either tasks.csv or testTasks.csv
+    //load tasks from either tasks.csv or testTasks.csv using the file_name
     pub fn load_tasks(&mut self, file_name: &str) -> Result<(), Box<dyn Error>> {
         let pathbuf = env::current_dir().unwrap().join("data").join(file_name);
         let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
