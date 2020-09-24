@@ -25,41 +25,41 @@ fn main() {
 
     match &main_cli.pattern as &str{
         "create_task" => task_list
-                            .create_task(),
+            .create_task(),
         "list_tasks" => task_list
-                            .print_task_list(
-                                    io::stdout())
-                                            .unwrap(),
+            .print_task_list(
+                io::stdout())
+                .unwrap(),
         "remove_task" => task_list
-                                .remove_task(
-                                        main_cli.index
-                                                .unwrap()
-                                                .to_string()
-                                                .parse::<usize>()
-                                                .unwrap(), 
-                                        io::stdout())
-                                                            .expect("invalid index"),
+            .remove_task(
+                main_cli.index
+                .unwrap()
+                .to_string()
+                .parse::<usize>()
+                .unwrap(), 
+                io::stdout())
+                .expect("invalid index"),
         "complete_task" => task_list.tasks[
-                                main_cli.index
-                                .unwrap()
-                                .parse::<usize>()
-                                .unwrap()]
-                                .mark_complete(),
+            main_cli.index
+            .unwrap()
+            .parse::<usize>()
+            .unwrap()]
+            .mark_complete(),
         "change_priority" => task_list.tasks[
-                                            main_cli.index
-                                            .unwrap()
-                                            .parse::<usize>()
-                                            .unwrap()]
-                                                    .change_priority(
-                                                        &main_cli.input.unwrap()[..]),
+                main_cli.index
+                .unwrap()
+                .parse::<usize>()
+                .unwrap()]
+                .change_priority(
+                    &main_cli.input.unwrap()[..]),
         "rename_task" => task_list.tasks[
-                                        main_cli.index
-                                        .unwrap()
-                                        .parse::<usize>()
-                                        .unwrap()]
-                                        .rename_task(
-                                    main_cli.input
-                                                    .unwrap()),
+            main_cli.index
+           .unwrap()
+           .parse::<usize>()
+           .unwrap()]
+           .rename_task(
+                main_cli.input
+               .unwrap()),
         _ => return
     }
 
