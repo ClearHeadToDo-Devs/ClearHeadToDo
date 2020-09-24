@@ -6,64 +6,69 @@ use std::path::Path;
 struct CLI{
     pattern: String,
     index: Option<String>,
-    input: Option<String>
+    input: Option<String>,
+    task_vec: TaskList
 }
 
+impl CLI {
+    pub fn parse_arguments(&mut self) {
+        match &self.pattern as &str{
+            "create_task" => self.task_vec
+                .create_task(),
+            "list_tasks" => self.task_vec
+                .print_task_list(
+                    io::stdout())
+                    .unwrap(),
+            "remove_task" => self.task_vec
+                .remove_task(
+                    self.index.as_ref()
+                    .unwrap()
+                    .to_string()
+                    .parse::<usize>()
+                    .unwrap(), 
+                    io::stdout())
+                    .expect("invalid index"),
+            "complete_task" => self.task_vec.tasks[
+                self.index.as_ref()
+                .unwrap()
+                .parse::<usize>()
+                .unwrap()]
+                .mark_complete(),
+            "change_priority" => self.task_vec.tasks[
+                self.index.as_ref()
+                .unwrap()
+                .parse::<usize>()
+                .unwrap()]
+                .change_priority(
+                        &self.input.as_ref().unwrap()[..]),
+            "rename_task" => self.task_vec.tasks[
+                self.index.as_ref()
+               .unwrap()
+               .parse::<usize>()
+               .unwrap()]
+               .rename_task(
+                    self.input.as_ref()
+                   .unwrap()),
+            _ => return
+        }
+    }
+}
 fn main() {
 
-    let mut task_list: TaskList = TaskList{tasks: vec![]};
     println!("starting program");
     
-    task_list.load_tasks("tasks.csv").unwrap();
-    
-    let main_cli: CLI = CLI{
+    let mut main_cli: CLI = CLI{
         pattern : std::env::args().nth(1).expect("no pattern given"), 
         index: std::env::args().nth(2),
-        input: std::env::args().nth(3)
-
+        input: std::env::args().nth(3),
+        task_vec: TaskList{tasks: vec![]}
     };
 
-    match &main_cli.pattern as &str{
-        "create_task" => task_list
-            .create_task(),
-        "list_tasks" => task_list
-            .print_task_list(
-                io::stdout())
-                .unwrap(),
-        "remove_task" => task_list
-            .remove_task(
-                main_cli.index
-                .unwrap()
-                .to_string()
-                .parse::<usize>()
-                .unwrap(), 
-                io::stdout())
-                .expect("invalid index"),
-        "complete_task" => task_list.tasks[
-            main_cli.index
-            .unwrap()
-            .parse::<usize>()
-            .unwrap()]
-            .mark_complete(),
-        "change_priority" => task_list.tasks[
-            main_cli.index
-            .unwrap()
-            .parse::<usize>()
-            .unwrap()]
-            .change_priority(
-                    &main_cli.input.unwrap()[..]),
-        "rename_task" => task_list.tasks[
-            main_cli.index
-           .unwrap()
-           .parse::<usize>()
-           .unwrap()]
-           .rename_task(
-                main_cli.input
-               .unwrap()),
-        _ => return
-    }
+    main_cli.task_vec.load_tasks("tasks.csv").unwrap();
+    
+    main_cli.parse_arguments();
 
-    task_list.load_csv("tasks.csv").unwrap();
+    main_cli.task_vec.load_csv("tasks.csv").unwrap();
     
 /*    loop {
         let list = &mut task_list;
