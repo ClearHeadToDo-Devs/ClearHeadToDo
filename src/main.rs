@@ -18,7 +18,7 @@ impl CLI {
             "list_tasks" => self.task_vec
                 .print_task_list(
                     io::stdout())
-                    .unwrap(),
+                        .unwrap(),
             "remove_task" => self.task_vec
                 .remove_task(
                     self.index.as_ref()
@@ -27,20 +27,21 @@ impl CLI {
                     .parse::<usize>()
                     .unwrap(), 
                     io::stdout())
-                    .expect("invalid index"),
+                        .expect("invalid index"),
             "complete_task" => self.task_vec.tasks[
                 self.index.as_ref()
                 .unwrap()
                 .parse::<usize>()
                 .unwrap()]
-                .mark_complete(),
+                    .mark_complete(),
             "change_priority" => self.task_vec.tasks[
                 self.index.as_ref()
                 .unwrap()
                 .parse::<usize>()
                 .unwrap()]
-                .change_priority(
-                        &self.input.as_ref().unwrap()[..]),
+                    .change_priority(
+                        &self.input.as_ref()
+                        .unwrap()[..]),
             "rename_task" => self.task_vec.tasks[
                 self.index.as_ref()
                .unwrap()
