@@ -3,7 +3,7 @@ use std::io::stdout;
 use clear_head_todo::TaskList;
 use std::path::Path;
 
-struct CLI{
+pub struct CLI{
     pattern: String,
     index: Option<String>,
     input: Option<String>,
@@ -23,7 +23,6 @@ impl CLI {
                 .remove_task(
                     self.index.as_ref()
                     .unwrap()
-                    .to_string()
                     .parse::<usize>()
                     .unwrap(), 
                     io::stdout())
@@ -59,10 +58,13 @@ fn main() {
     println!("starting program");
     
     let mut main_cli: CLI = CLI{
-        pattern : std::env::args().nth(1).expect("no pattern given"), 
+        pattern : std::env::args().nth(1)
+            .expect("no pattern given"), 
         index: std::env::args().nth(2),
         input: std::env::args().nth(3),
-        task_vec: TaskList{tasks: vec![]}
+        task_vec: TaskList{
+            tasks: vec![]
+        }
     };
 
     main_cli.task_vec.load_tasks("tasks.csv").unwrap();
@@ -71,37 +73,21 @@ fn main() {
 
     main_cli.task_vec.load_csv("tasks.csv").unwrap();
     
-/*    loop {
-        let list = &mut task_list;
-        print!("> ");
-        io::stdout().flush().expect("failed to flush");
-        
-        let mut inp = String::new();
-        io::stdin().read_line(&mut inp).expect("failed to read line");
-        let mut words = inp.trim().split_whitespace();
-        let command = words.next().unwrap();
-        let index = words.next().unwrap().parse::<usize>().unwrap();
-        let arg = words.next().unwrap();
-  
-        
-        match parse_input(command, index, &arg, list) {
-            Ok(op) => {
-                println!("success!");
-            },
-            Err(err) => {
-                println!("error: {}", err);
-            }
-        } //end 'match parse_input()'
-        
-    } //end 'loop'
-} //end main
+}
 
-pub fn parse_input(inp: &str, index: usize, arg: &str, list: &mut TaskList) -> Result<(), String> {
-    match inp.to_ascii_lowercase().trim() {
-        //"foo" => Ok("test_foo".to_string()),
-        "create_task" => Ok(list.create_task()),
-        "list_tasks" => Ok(list.print_task_list(&mut stdout()).unwrap()),
-        "change_priority" => Ok(list.tasks[index].change_priority(arg)),
-        _ => Err(format!("invalid input")),
-    }*/
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cli_creation_test () {
+        let test_cli = CLI {
+            pattern: "test_pattern".to_string(), 
+            index: Some("test_index".to_string()),
+            input: Some("test_input".to_string()),
+            task_vec: TaskList{tasks: vec![]}, 
+
+        };
+        assert!(test_cli.pattern == "test_pattern".to_string());
+    }
 }
