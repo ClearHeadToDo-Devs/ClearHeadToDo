@@ -1,101 +1,112 @@
 use std::io::{self, Write};
 use std::io::stdout;
 use clear_head_todo::TaskList;
+use clear_head_todo::PriEnum;
 use std::path::Path;
 
-struct CLI{
-    pattern: String,
-    index: Option<String>,
-    input: Option<String>
+pub struct CLI{
+    pub pattern: Option<String>,
+    pub index: Option<String>,
+    pub input: Option<String>,
+    pub task_vec: TaskList
 }
 
+impl CLI {
+        pub fn parse_arguments(&mut self) {
+            match self.pattern.as_ref().unwrap() as &str{
+            "create_task" | "create" | "ct" | "new_task" | "new" => self.task_vec
+                .create_task(),
+            "list_tasks" | "lt" | "list" | "list_all" => self.task_vec
+                .print_task_list(
+                    io::stdout())
+                    .unwrap(),
+            "remove_task" | "remove" | "rt" | "delete_task" | "delete" => self.task_vec
+                .remove_task(
+                    self.index.as_ref()
+                    .unwrap()
+                    .to_string()
+                    .parse::<usize>()
+                    .unwrap(), 
+                    io::stdout())
+                    .expect("invalid index"),
+            "complete_task" | "complete" | "mark_complete" => self.task_vec.tasks[
+                self.index.as_ref()
+                .unwrap()
+                .parse::<usize>()
+                .unwrap()]
+                .mark_complete(),
+            "change_priority" | "cp" | "new_priority" | "np" => self.task_vec.tasks[
+                self.index.as_ref()
+                .unwrap()
+                .parse::<usize>()
+                .unwrap()]
+                .change_priority(
+                        &self.input.as_ref().unwrap()[..]),
+            "rename_task" | "rename" | "name" | "r" => self.task_vec.tasks[
+                self.index.as_ref()
+               .unwrap()
+               .parse::<usize>()
+               .unwrap()]
+               .rename_task(
+                    self.input.as_ref()
+                   .unwrap()),
+            _ => return
+            };
+    }
+}
 fn main() {
 
-    let mut task_list: TaskList = TaskList{tasks: vec![]};
     println!("starting program");
     
-    task_list.load_tasks("tasks.csv").unwrap();
-    
-    let main_cli: CLI = CLI{
-        pattern : std::env::args().nth(1).expect("no pattern given"), 
+    let mut main_cli: CLI = CLI{
+        pattern : std::env::args().nth(1),
         index: std::env::args().nth(2),
-        input: std::env::args().nth(3)
-
+        input: std::env::args().nth(3),
+        task_vec: TaskList{
+            tasks: vec![]
+        }
     };
 
-    match &main_cli.pattern.to_ascii_lowercase() as &str{
-        "create_task" | "create" | "ct" | "new_task" | "new" => task_list
-            .create_task(),
-        "list_tasks" | "lt" | "list" | "list_all" => task_list
-            .print_task_list(
-                io::stdout())
-                .unwrap(),
-        "remove_task" | "remove" | "rt" | "delete_task" | "delete" => task_list
-            .remove_task(
-                main_cli.index
-                .unwrap()
-                .to_string()
-                .parse::<usize>()
-                .unwrap(), 
-                io::stdout())
-                .expect("invalid index"),
-        "complete_task" | "complete" | "mark_complete" => task_list.tasks[
-            main_cli.index
-            .unwrap()
-            .parse::<usize>()
-            .unwrap()]
-            .mark_complete(),
-        "change_priority" | "cp" | "new_priority" | "np" => task_list.tasks[
-            main_cli.index
-            .unwrap()
-            .parse::<usize>()
-            .unwrap()]
-            .change_priority(
-                    &main_cli.input.unwrap()[..]),
-        "rename_task" | "rename" | "name" | "r" => task_list.tasks[
-            main_cli.index
-           .unwrap()
-           .parse::<usize>()
-           .unwrap()]
-           .rename_task(
-                main_cli.input
-               .unwrap()),
-        _ => return
+    main_cli.task_vec.load_tasks("tasks.csv").unwrap();
+    
+    main_cli.parse_arguments();
+
+    main_cli.task_vec.load_csv("tasks.csv").unwrap();
+    
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cli_creation_test () {
+        let test_cli = CLI {
+            pattern: Some("test_pattern".to_string()), 
+            index: Some("test_index".to_string()),
+            input: Some("test_input".to_string()),
+            task_vec: TaskList{tasks: vec![]}, 
+
+        };
+        assert!(test_cli.pattern == Some("test_pattern".to_string()));
+        assert!(test_cli.index == Some("test_index".to_string()));
+        assert!(test_cli.input == Some("test_input".to_string()));
+        assert!(test_cli.task_vec.tasks.len() == 0);
     }
 
-    task_list.load_csv("tasks.csv").unwrap();
-    
-/*    loop {
-        let list = &mut task_list;
-        print!("> ");
-        io::stdout().flush().expect("failed to flush");
-        
-        let mut inp = String::new();
-        io::stdin().read_line(&mut inp).expect("failed to read line");
-        let mut words = inp.trim().split_whitespace();
-        let command = words.next().unwrap();
-        let index = words.next().unwrap().parse::<usize>().unwrap();
-        let arg = words.next().unwrap();
-  
-        
-        match parse_input(command, index, &arg, list) {
-            Ok(op) => {
-                println!("success!");
-            },
-            Err(err) => {
-                println!("error: {}", err);
-            }
-        } //end 'match parse_input()'
-        
-    } //end 'loop'
-} //end main
+    #[test]
+    fn cli_task_creation_test () {
+        let mut test_cli = CLI {
+            pattern: Some("create_task".to_string()), 
+            index: None,
+            input: None,
+            task_vec: TaskList{tasks: vec![]}, 
 
-pub fn parse_input(inp: &str, index: usize, arg: &str, list: &mut TaskList) -> Result<(), String> {
-    match inp.to_ascii_lowercase().trim() {
-        //"foo" => Ok("test_foo".to_string()),
-        "create_task" => Ok(list.create_task()),
-        "list_tasks" => Ok(list.print_task_list(&mut stdout()).unwrap()),
-        "change_priority" => Ok(list.tasks[index].change_priority(arg)),
-        _ => Err(format!("invalid input")),
-    }*/
+        };
+        test_cli.parse_arguments();
+        assert!(test_cli.task_vec.tasks.len() == 1);
+        assert!(test_cli.task_vec.tasks[0].name == "Test Task");
+        assert!(test_cli.task_vec.tasks[0].completed == false);
+        assert!(test_cli.task_vec.tasks[0].priority == PriEnum::Optional);
+    }
 }

@@ -65,9 +65,9 @@ pub fn parse_priority(expr: &str) -> Result<PriEnum, String> {
 
 #[derive(PartialEq, Debug)]
 pub struct Task {
-    name: String,
-    completed: bool,
-    priority: PriEnum, 
+    pub name: String,
+    pub completed: bool,
+    pub priority: PriEnum, 
 }
 
 impl TaskList {
@@ -138,8 +138,8 @@ impl TaskList {
  
 
 impl Task {
-    pub fn rename_task(&mut self, new_task_name: String) {
-        self.name = new_task_name;
+    pub fn rename_task(&mut self, new_task_name: &String) {
+        self.name = new_task_name.to_owned();
     }
     
     pub fn mark_complete(&mut self) {
@@ -177,7 +177,7 @@ mod tests {
         let mut test_task_list = TaskList{tasks: vec![]}; 
         test_task_list.create_task();         
         let test_task = &mut test_task_list.tasks[0];
-        test_task.rename_task("Changed Name".to_string());
+        test_task.rename_task(&"Changed Name".to_string());
         assert!(test_task.name == "Changed Name");
     }
     
@@ -263,7 +263,7 @@ mod tests {
     fn load_to_csv_successful_test(){
         let mut test_task_list = TaskList{tasks: vec![]};
         test_task_list.create_task();
-        test_task_list.tasks[0].rename_task("test csv task".to_string());
+        test_task_list.tasks[0].rename_task(&"test csv task".to_string());
         test_task_list.load_csv("testTask.csv").unwrap();
         let rdr = Reader::from_path(
             env::current_dir().unwrap().join("data").join("testTasks.csv").as_path())
