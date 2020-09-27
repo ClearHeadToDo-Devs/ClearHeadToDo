@@ -1,18 +1,19 @@
 use std::io::{self, Write};
 use std::io::stdout;
 use clear_head_todo::TaskList;
+use clear_head_todo::PriEnum;
 use std::path::Path;
 
 pub struct CLI{
-    pattern: String,
-    index: Option<String>,
-    input: Option<String>,
-    task_vec: TaskList
+    pub pattern: Option<String>,
+    pub index: Option<String>,
+    pub input: Option<String>,
+    pub task_vec: TaskList
 }
 
 impl CLI {
     pub fn parse_arguments(&mut self) {
-        match &self.pattern as &str{
+        match &self.pattern.as_ref().unwrap() as &str{
             "create_task" => self.task_vec
                 .create_task(),
             "list_tasks" => self.task_vec
@@ -49,7 +50,7 @@ impl CLI {
                .rename_task(
                     self.input.as_ref()
                    .unwrap()),
-            _ => return
+            _ => return println!("No command given")
         }
     }
 }
@@ -58,8 +59,7 @@ fn main() {
     println!("starting program");
     
     let mut main_cli: CLI = CLI{
-        pattern : std::env::args().nth(1)
-            .expect("no pattern given"), 
+        pattern : std::env::args().nth(1),
         index: std::env::args().nth(2),
         input: std::env::args().nth(3),
         task_vec: TaskList{
@@ -82,12 +82,31 @@ mod tests {
     #[test]
     fn cli_creation_test () {
         let test_cli = CLI {
-            pattern: "test_pattern".to_string(), 
+            pattern: Some("test_pattern".to_string()), 
             index: Some("test_index".to_string()),
             input: Some("test_input".to_string()),
             task_vec: TaskList{tasks: vec![]}, 
 
         };
-        assert!(test_cli.pattern == "test_pattern".to_string());
+        assert!(test_cli.pattern == Some("test_pattern".to_string()));
+        assert!(test_cli.index == Some("test_index".to_string()));
+        assert!(test_cli.input == Some("test_input".to_string()));
+        assert!(test_cli.task_vec.tasks.len() == 0);
+    }
+
+    #[test]
+    fn cli_task_creation_test () {
+        let mut test_cli = CLI {
+            pattern: Some("create_task".to_string()), 
+            index: None,
+            input: None,
+            task_vec: TaskList{tasks: vec![]}, 
+
+        };
+        test_cli.parse_arguments();
+        assert!(test_cli.task_vec.tasks.len() == 1);
+        assert!(test_cli.task_vec.tasks[0].name == "Test Task");
+        assert!(test_cli.task_vec.tasks[0].completed == false);
+        assert!(test_cli.task_vec.tasks[0].priority == PriEnum::Optional);
     }
 }

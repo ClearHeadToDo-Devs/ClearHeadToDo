@@ -96,7 +96,8 @@ BytesDeserializer	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/
 BytesDeserializer	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/private/de.rs	/^pub struct BytesDeserializer<'a, E> {$/;"	s
 BytesVisitor	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/impls.rs	/^impl<'a> Visitor<'a> for BytesVisitor {$/;"	c
 BytesVisitor	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/impls.rs	/^struct BytesVisitor;$/;"	s
-CLI	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^struct CLI{$/;"	s
+CLI	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^impl CLI {$/;"	c
+CLI	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^pub struct CLI{$/;"	s
 CRLF	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/lib.rs	/^    CRLF,$/;"	e	enum:Terminator
 CStr	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/ser/impls.rs	/^impl Serialize for CStr {$/;"	c
 CString	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/impls.rs	/^impl<'de> Deserialize<'de> for CString {$/;"	c
@@ -1160,6 +1161,8 @@ check_variant_skip_attrs	/home/darrion/.cargo/registry/src/github.com-1ecc6299db
 clear	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/byte_record.rs	/^    pub fn clear(&mut self) {$/;"	P	implementation:ByteRecord
 clear	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/string_record.rs	/^    pub fn clear(&mut self) {$/;"	P	implementation:StringRecord
 clear	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/writer.rs	/^    fn clear(&mut self) {$/;"	P	implementation:Buffer
+cli_creation_test	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    fn cli_creation_test () {$/;"	f	module:tests
+cli_task_creation_test	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    fn cli_task_creation_test () {$/;"	f	module:tests
 clone	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/value.rs	/^    fn clone(&self) -> Self {$/;"	P	implementation:CowStrDeserializer
 clone	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/value.rs	/^    fn clone(&self) -> Self {$/;"	P	implementation:StringDeserializer
 clone	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/value.rs	/^    fn clone(&self) -> Self {$/;"	f
@@ -1170,7 +1173,7 @@ collect_str	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-
 collect_str	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/ser/fmt.rs	/^    fn collect_str<T: ?Sized>(self, value: &T) -> fmt::Result$/;"	P	implementation:Formatter
 collect_str	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/ser/mod.rs	/^    fn collect_str<T: ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error>$/;"	P	interface:Serializer
 comment	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/reader.rs	/^    pub fn comment(&mut self, comment: Option<u8>) -> &mut ReaderBuilder {$/;"	P	implementation:ReaderBuilder
-completed	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    completed: bool,$/;"	m	struct:Task
+completed	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    pub completed: bool,$/;"	m	struct:Task
 constrain	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/private/ser.rs	/^pub fn constrain<T: ?Sized>(t: &T) -> &T {$/;"	f
 content	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/private/de.rs	/^        content: &'a Content<'de>,$/;"	m	struct:content::ContentRefDeserializer
 content	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/private/de.rs	/^        content: Content<'de>,$/;"	m	struct:content::ContentDeserializer
@@ -1742,13 +1745,13 @@ in_place	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_der
 in_place	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/de.rs	/^    fn in_place(self) -> InPlaceTypeGenerics<'a> {$/;"	P	implementation:DeTypeGenerics
 index	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/byte_record.rs	/^    fn index(&self, i: usize) -> &[u8] {$/;"	P	implementation:ByteRecord
 index	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/string_record.rs	/^    fn index(&self, i: usize) -> &str {$/;"	P	implementation:StringRecord
-index	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    index: Option<String>,$/;"	m	struct:CLI
+index	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    pub index: Option<String>,$/;"	m	struct:CLI
 infer_deserialize	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^    fn infer_deserialize<'de, V: Visitor<'de>>($/;"	P	implementation:DeByteRecord
 infer_deserialize	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^    fn infer_deserialize<'de, V: Visitor<'de>>($/;"	P	implementation:DeRecordWrap
 infer_deserialize	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^    fn infer_deserialize<'de, V: Visitor<'de>>($/;"	P	implementation:DeStringRecord
 infer_deserialize	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^    fn infer_deserialize<'de, V: Visitor<'de>>($/;"	P	interface:DeRecord
 input	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^            input: Input,$/;"	m	struct:tests::flatten::Row
-input	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    input: Option<String>$/;"	m	struct:CLI
+input	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    pub input: Option<String>,$/;"	m	struct:CLI
 insert	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^    fn insert<A: ToTokens>(&mut self, obj: A, value: T) {$/;"	P	implementation:VecAttr
 int_to_int	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/from_primitive.rs	/^macro_rules! int_to_int {$/;"	M
 int_to_uint	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/from_primitive.rs	/^macro_rules! int_to_uint {$/;"	M
@@ -1905,7 +1908,7 @@ name	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-
 name	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^    pub fn name(&self) -> &Name {$/;"	P	implementation:Container
 name	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^    pub fn name(&self) -> &Name {$/;"	P	implementation:Field
 name	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^    pub fn name(&self) -> &Name {$/;"	P	implementation:Variant
-name	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    name: String,$/;"	m	struct:Task
+name	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    pub name: String,$/;"	m	struct:Task
 names	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/mod.rs	/^    names: &'static [&'static str],$/;"	m	struct:OneOf
 needs_deserialize_bound	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/de.rs	/^fn needs_deserialize_bound(field: &attr::Field, variant: Option<&attr::Variant>) -> bool {$/;"	f
 needs_serialize_bound	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/ser.rs	/^fn needs_serialize_bound(field: &attr::Field, variant: Option<&attr::Variant>) -> bool {$/;"	f
@@ -2052,6 +2055,7 @@ other	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive
 other	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^    pub fn other(&self) -> bool {$/;"	P	implementation:Variant
 panicked	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/writer.rs	/^    panicked: bool,$/;"	m	struct:WriterState
 parse	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^        fn parse(input: ParseStream) -> parse::Result<Self> {$/;"	P	implementation:parse_lit_into_lifetimes::BorrowedLifetimes
+parse_arguments	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    pub fn parse_arguments(&mut self) {$/;"	P	implementation:CLI
 parse_ip_impl	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/impls.rs	/^macro_rules! parse_ip_impl {$/;"	M
 parse_lit_into_expr_path	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^fn parse_lit_into_expr_path($/;"	f
 parse_lit_into_lifetimes	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^fn parse_lit_into_lifetimes($/;"	f
@@ -2062,7 +2066,7 @@ parse_lit_str	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serd
 parse_priority	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^pub fn parse_priority(expr: &str) -> Result<PriEnum, String> {$/;"	f
 parse_socket_impl	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/impls.rs	/^macro_rules! parse_socket_impl {$/;"	M
 partially_invalid_utf8	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^    fn partially_invalid_utf8() {$/;"	f	module:tests
-pattern	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    pattern: String,$/;"	m	struct:CLI
+pattern	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    pub pattern: Option<String>,$/;"	m	struct:CLI
 peek_field	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^    fn peek_field(&mut self) -> Option<&'r [u8]> {$/;"	P	implementation:DeByteRecord
 peek_field	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^    fn peek_field(&mut self) -> Option<&'r [u8]> {$/;"	P	implementation:DeRecordWrap
 peek_field	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^    fn peek_field(&mut self) -> Option<&'r [u8]> {$/;"	P	implementation:DeStringRecord
@@ -2093,7 +2097,7 @@ pretend_variants_used	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec
 primitive_deserializer	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/value.rs	/^macro_rules! primitive_deserializer {$/;"	M
 primitive_impl	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/ser/impls.rs	/^macro_rules! primitive_impl {$/;"	M
 print_task_list	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    pub fn print_task_list(&self, mut writer: impl std::io::Write)->$/;"	P	implementation:TaskList
-priority	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    priority: PriEnum, $/;"	m	struct:Task
+priority	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    pub priority: PriEnum, $/;"	m	struct:Task
 private	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/de/value.rs	/^mod private {$/;"	n
 private	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/lib.rs	/^pub mod private;$/;"	n
 prop1	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/deserializer.rs	/^            prop1: f64,$/;"	m	struct:tests::flatten::Properties
@@ -2176,7 +2180,7 @@ rename_all_rules	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/s
 rename_by_rules	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^    pub fn rename_by_rules(&mut self, rules: &RenameAllRules) {$/;"	P	implementation:Field
 rename_by_rules	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^    pub fn rename_by_rules(&mut self, rules: &RenameAllRules) {$/;"	P	implementation:Variant
 rename_fields	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/case.rs	/^fn rename_fields() {$/;"	f
-rename_task	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    pub fn rename_task(&mut self, new_task_name: String) {$/;"	P	implementation:Task
+rename_task	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    pub fn rename_task(&mut self, new_task_name: &String) {$/;"	P	implementation:Task
 rename_variants	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/case.rs	/^fn rename_variants() {$/;"	f
 replacement	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/try.rs	/^pub fn replacement() -> TokenStream {$/;"	f
 requires_default	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/de.rs	/^fn requires_default(field: &attr::Field, _variant: Option<&attr::Variant>) -> bool {$/;"	f
@@ -2567,6 +2571,7 @@ task_removal_fail_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn 
 task_rename_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_rename_test() {$/;"	f	module:tests
 task_reprioritize_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_reprioritize_test() {$/;"	f	module:tests
 task_successful_removal_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_successful_removal_test() {$/;"	f	module:tests
+task_vec	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^    pub task_vec: TaskList$/;"	m	struct:CLI
 tasks	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    pub tasks: Vec<Task>$/;"	m	struct:TaskList
 terminator	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/reader.rs	/^    pub fn terminator(&mut self, term: Terminator) -> &mut ReaderBuilder {$/;"	P	implementation:ReaderBuilder
 terminator	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/writer.rs	/^    pub fn terminator(&mut self, term: Terminator) -> &mut WriterBuilder {$/;"	P	implementation:WriterBuilder
@@ -2577,6 +2582,7 @@ tests	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/sr
 tests	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/string_record.rs	/^mod tests {$/;"	n
 tests	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/csv-1.1.3/src/writer.rs	/^mod tests {$/;"	n
 tests	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^mod tests {$/;"	n
+tests	/home/darrion/Projects/ClearHeadToDo/src/main.rs	/^mod tests {$/;"	n
 this	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/de.rs	/^    this: syn::Path,$/;"	m	struct:Parameters
 this	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/ser.rs	/^    this: syn::Path,$/;"	m	struct:Parameters
 to_compile_errors	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/lib.rs	/^fn to_compile_errors(errors: Vec<syn::Error>) -> proc_macro2::TokenStream {$/;"	f

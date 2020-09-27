@@ -65,9 +65,9 @@ pub fn parse_priority(expr: &str) -> Result<PriEnum, String> {
 
 #[derive(PartialEq, Debug)]
 pub struct Task {
-    name: String,
-    completed: bool,
-    priority: PriEnum, 
+    pub name: String,
+    pub completed: bool,
+    pub priority: PriEnum, 
 }
 
 impl TaskList {
