@@ -23,14 +23,14 @@ fn main() {
 
     };
 
-    match &main_cli.pattern as &str{
-        "create_task" => task_list
+    match &main_cli.pattern.to_ascii_lowercase() as &str{
+        "create_task" | "create" | "ct" | "new_task" | "new" => task_list
             .create_task(),
-        "list_tasks" => task_list
+        "list_tasks" | "lt" | "list" | "list_all" => task_list
             .print_task_list(
                 io::stdout())
                 .unwrap(),
-        "remove_task" => task_list
+        "remove_task" | "remove" | "rt" | "delete_task" | "delete" => task_list
             .remove_task(
                 main_cli.index
                 .unwrap()
@@ -39,20 +39,20 @@ fn main() {
                 .unwrap(), 
                 io::stdout())
                 .expect("invalid index"),
-        "complete_task" => task_list.tasks[
+        "complete_task" | "complete" | "mark_complete" => task_list.tasks[
             main_cli.index
             .unwrap()
             .parse::<usize>()
             .unwrap()]
             .mark_complete(),
-        "change_priority" => task_list.tasks[
+        "change_priority" | "cp" | "new_priority" | "np" => task_list.tasks[
             main_cli.index
             .unwrap()
             .parse::<usize>()
             .unwrap()]
             .change_priority(
                     &main_cli.input.unwrap()[..]),
-        "rename_task" => task_list.tasks[
+        "rename_task" | "rename" | "name" | "r" => task_list.tasks[
             main_cli.index
            .unwrap()
            .parse::<usize>()
