@@ -19,10 +19,7 @@ impl CLI {
                 self.task_vec
                 .create_task(),
             "list_tasks" | "lt" | "list" | "list_all" =>
-                self.task_vec
-                .print_task_list(
-                    io::stdout())
-                    .unwrap_or(()),
+                cli_list_tasks(io::stdout()),
             "remove_task" | "remove" | "rt" | "delete_task" | "delete" =>
                 self.task_vec
                 .remove_task(
@@ -59,6 +56,9 @@ impl CLI {
                    .unwrap()),
             _ => return
             };
+    }
+    pub fn cli_list_tasks(&self, mut writer: impl std::io::Write){
+        self.task_vec.print_task_list(writer).unwrap_or(());
     }
 }
 fn main() {
@@ -120,17 +120,15 @@ mod tests {
 
     #[test]
     fn cli_task_list_test () {
+        //let mut good_result = Vec::new();
         let mut test_cli = CLI {
-            pattern: Some("create_task".to_string()), 
+            pattern: Some("list_tasks".to_string()), 
             index: None,
             input: None,
             task_vec: TaskList{tasks: vec![]}, 
 
         };
+
         test_cli.parse_arguments();
-        assert!(test_cli.task_vec.tasks.len() == 1);
-        assert!(test_cli.task_vec.tasks[0].name == "Test Task");
-        assert!(test_cli.task_vec.tasks[0].completed == false);
-        assert!(test_cli.task_vec.tasks[0].priority == PriEnum::Optional);
     }
 }
