@@ -19,7 +19,7 @@ impl CLI {
                 self.task_vec
                 .create_task(),
             "list_tasks" | "lt" | "list" | "list_all" =>
-                cli_list_tasks(io::stdout()),
+                self.task_vec.print_task_list(std::io::stdout()).unwrap_or(()),
             "remove_task" | "remove" | "rt" | "delete_task" | "delete" =>
                 self.task_vec
                 .remove_task(
