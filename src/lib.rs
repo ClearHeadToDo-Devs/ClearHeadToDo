@@ -72,7 +72,7 @@ pub struct Task {
 
 impl TaskList {
     //load tasks from either tasks.csv or testTasks.csv using the file_name
-    pub fn load_tasks(&mut self, file_name: &str) -> Result<(), Box<dyn Error>> {
+    pub fn load_tasks(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
         let pathbuf = env::current_dir().unwrap().join("data").join(file_name);
         let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
         for result in rdr.records() { 
@@ -84,16 +84,16 @@ impl TaskList {
             };
             self.tasks.push(new_task);
         }
-        Ok(())
+        Ok("Successfully Loaded Tasks into List".to_string())
     }
 
-    pub fn load_csv(&mut self, file_name: &str) -> Result<(), Box<dyn Error>> {
+    pub fn load_csv(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
         let pathbuf = env::current_dir().unwrap().join("data").join(file_name);
         let mut wtr: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
         for index in 0..=self.tasks.len()-1{
             wtr.serialize::<_>(&self.tasks[index]).unwrap();
         }
-        Ok(())
+        Ok("Successfully Saved Tasks Into CSV".to_string())
     }
 
     pub fn create_task(&mut self) {

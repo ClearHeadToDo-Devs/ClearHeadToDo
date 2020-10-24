@@ -12,7 +12,7 @@ pub struct CLI{
 }
 
 impl CLI {
-        pub fn parse_arguments(&mut self) {
+        pub fn parse_arguments(&mut self) -> Result<String, String> {
             match self.pattern.as_ref().unwrap_or(
                 &"no command given".to_string()) as &str{
             "create_task" | "create" | "ct" | "new_task" | "new" =>
