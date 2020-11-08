@@ -96,17 +96,19 @@ impl TaskList {
         Ok("Successfully Saved Tasks Into CSV".to_string())
     }
 
-    pub fn create_task(&mut self) {
+    pub fn create_task(&mut self) -> Result<String, std::io::Error> {
         let new_task: Task = Task {
             name: String::from("Test Task"),
             completed: false,
             priority: PriEnum::Optional,
         };
+        let new_task_name: String = new_task.name.clone();
         self.tasks.push(new_task);
+        return Ok(format!("Created new task named {}", new_task_name).to_string());
     }
     
     pub fn print_task_list(&self, mut writer: impl std::io::Write)->
-    Result<(), std::io::Error> {
+    Result<String, std::io::Error> {
         if self.tasks.is_empty()==true{
             return Err(OtherError::new(ErrorKind::Other, "list is empty"));
         } else{
@@ -118,7 +120,7 @@ impl TaskList {
                         completed = self.tasks[index].completed)?;
             }
         }
-        Ok(())
+        Ok("Successfully Printed {}".to_string())
     }
     
     pub fn remove_task(&mut self, index: usize, mut writer: impl std::io::Write) -> 
