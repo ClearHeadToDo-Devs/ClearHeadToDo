@@ -168,14 +168,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn task_creation_test() {
+    fn task_creation_test() -> Result<(), std::io::Error>{
         let mut test_task_list = TaskList { tasks: vec![] };
-        test_task_list.create_task();
+        let mut creation_result = test_task_list.create_task()?;
         let test_task = &test_task_list.tasks[0];
         assert!(test_task.name == "Test Task");
         assert!(test_task.completed == false);
         assert!(test_task.priority == PriEnum::Optional);
         assert!(&test_task_list.tasks[0] == test_task);
+        return Ok(())
     }
 
     #[test]

@@ -2560,7 +2560,7 @@ tag	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1
 tag	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-1.0.116/src/internals/attr.rs	/^    tag: TagType,$/;"	m	struct:Container
 tag_name	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0.116/src/private/de.rs	/^        tag_name: &'static str,$/;"	m	struct:content::TaggedContentVisitor
 task_completion_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_completion_test() {$/;"	f	module:tests
-task_creation_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_creation_test() {$/;"	f	module:tests
+task_creation_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_creation_test() -> Result<(), std::io::Error>{$/;"	f	module:tests
 task_print_fail_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_print_fail_test() {$/;"	f	module:tests
 task_print_full_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_print_full_test() {$/;"	f	module:tests
 task_removal_fail_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_removal_fail_test() {$/;"	f	module:tests
