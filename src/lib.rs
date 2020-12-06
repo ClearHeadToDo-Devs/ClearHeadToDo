@@ -168,43 +168,50 @@ mod tests {
     use super::*;
 
     #[test]
-    fn task_creation_test() -> Result<(), std::io::Error>{
+    fn task_creation_test() -> Result<(), std::io::Error> {
         let mut test_task_list = TaskList { tasks: vec![] };
-        let mut creation_result = test_task_list.create_task()?;
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
         let test_task = &test_task_list.tasks[0];
         assert!(test_task.name == "Test Task");
         assert!(test_task.completed == false);
         assert!(test_task.priority == PriEnum::Optional);
         assert!(&test_task_list.tasks[0] == test_task);
-        return Ok(())
+        return Ok(());
     }
 
     #[test]
-    fn task_rename_test() {
+    fn task_rename_test() -> Result<(), std::io::Error> {
         let mut test_task_list = TaskList { tasks: vec![] };
-        test_task_list.create_task();
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
         let test_task = &mut test_task_list.tasks[0];
         test_task.rename_task(&"Changed Name".to_string());
         assert!(test_task.name == "Changed Name");
+        return Ok(());
     }
 
     #[test]
-    fn task_completion_test() {
+    fn task_completion_test() -> Result<(), std::io::Error> {
         let mut test_task_list = TaskList { tasks: vec![] };
-        test_task_list.create_task();
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
         let test_task = &mut test_task_list.tasks[0];
         test_task.mark_complete();
         assert!(test_task.completed == true);
+        return Ok(());
     }
 
     #[test]
-    fn task_successful_removal_test() {
+    fn task_successful_removal_test() -> Result<(), std::io::Error> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let mut good_result = Vec::new();
-        test_task_list.create_task();
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
         test_task_list.remove_task(0, &mut good_result).unwrap();
         assert!(test_task_list.tasks.is_empty());
         assert_eq!(&good_result[..], "Deleted Test Task Task\n".as_bytes());
+        return Ok(());
     }
 
     #[test]
@@ -216,9 +223,10 @@ mod tests {
     }
 
     #[test]
-    fn task_reprioritize_test() {
+    fn task_reprioritize_test() -> Result<(), std::io::Error> {
         let mut test_task_list = TaskList { tasks: vec![] };
-        test_task_list.create_task();
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
         let test_task = &mut test_task_list.tasks[0];
         println!("{}", test_task.name);
         test_task.change_priority("4");
@@ -231,6 +239,7 @@ mod tests {
         assert!(test_task.priority == PriEnum::Critical);
         test_task.change_priority("6");
         assert!(test_task.priority == PriEnum::Critical); //should NOT change on bad input
+        return Ok(());
     }
 
     #[test]
@@ -267,9 +276,10 @@ mod tests {
     }
 
     #[test]
-    fn load_to_csv_successful_test() {
+    fn load_to_csv_successful_test() -> Result<(), std::io::Error> {
         let mut test_task_list = TaskList { tasks: vec![] };
-        test_task_list.create_task();
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
         test_task_list.tasks[0].rename_task(&"test csv task".to_string());
         test_task_list.load_csv("testTask.csv").unwrap();
         let rdr = Reader::from_path(
@@ -285,5 +295,9 @@ mod tests {
             let record = result.unwrap();
             assert_eq!(record, vec!["test csv task", "Optional", "false"]);
         }
+        else{
+            return Ok(())
+        }
+        return Ok(())
     }
 }
