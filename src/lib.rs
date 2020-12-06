@@ -250,12 +250,14 @@ mod tests {
         assert_eq!(error.to_string(), "list is empty");
     }
     #[test]
-    fn task_print_full_test() {
+    fn task_print_full_test() -> Result<(), std::io::Error> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let mut good_result = Vec::new();
-        test_task_list.create_task();
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
         test_task_list.print_task_list(&mut good_result).unwrap();
         assert_eq!(&good_result[..], "0,Test Task,Optional,false\n".as_bytes());
+        return Ok(());
     }
 
     #[test]

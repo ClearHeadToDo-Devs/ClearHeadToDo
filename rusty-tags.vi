@@ -2562,7 +2562,7 @@ tag_name	/home/darrion/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-1.0
 task_completion_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_completion_test() -> Result<(), std::io::Error> {$/;"	f	module:tests
 task_creation_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_creation_test() -> Result<(), std::io::Error> {$/;"	f	module:tests
 task_print_fail_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_print_fail_test() {$/;"	f	module:tests
-task_print_full_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_print_full_test() {$/;"	f	module:tests
+task_print_full_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_print_full_test() -> Result<(), std::io::Error> {$/;"	f	module:tests
 task_removal_fail_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_removal_fail_test() {$/;"	f	module:tests
 task_rename_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_rename_test() -> Result<(), std::io::Error> {$/;"	f	module:tests
 task_reprioritize_test	/home/darrion/Projects/ClearHeadToDo/src/lib.rs	/^    fn task_reprioritize_test() -> Result<(), std::io::Error> {$/;"	f	module:tests
