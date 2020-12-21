@@ -14,6 +14,13 @@ pub struct TaskList {
 }
 
 #[derive(PartialEq, Debug)]
+pub struct Task {
+    pub name: String,
+    pub completed: bool,
+    pub priority: PriEnum,
+}
+
+#[derive(PartialEq, Debug)]
 #[repr(u8)]
 #[derive(AltSerialize)]
 pub enum PriEnum {
@@ -24,55 +31,10 @@ pub enum PriEnum {
     Optional = 5,
 }
 
-impl fmt::Display for PriEnum {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let printable: &str = match *self {
-            PriEnum::Critical => "Critical",
-            PriEnum::High => "High",
-            PriEnum::Medium => "Medium",
-            PriEnum::Low => "Low",
-            PriEnum::Optional => "Optional",
-        };
-        write!(f, "{}", printable)
-    }
-}
-
-impl Serialize for Task {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut s = serializer.serialize_struct("Task", 3)?;
-        s.serialize_field("name", &self.name)?;
-        s.serialize_field("priority", &self.priority)?;
-        s.serialize_field("completed", &self.completed)?;
-        s.end()
-    }
-}
-
-pub fn parse_priority(expr: &str) -> Result<PriEnum, String> {
-    match expr.to_ascii_lowercase().trim() {
-        "1" | "critical" | "crit" | "c" => Ok(PriEnum::Critical),
-        "2" | "high" | "hi" | "h" => Ok(PriEnum::High),
-        "3" | "medium" | "med" | "m" => Ok(PriEnum::Medium),
-        "4" | "low" | "lo" | "l" => Ok(PriEnum::Low),
-        "5" | "optional" | "opt" | "o" => Ok(PriEnum::Optional),
-        "" => Ok(PriEnum::Optional), //defaults to this
-        _ => Err(format!("Invalid priority value")),
-    }
-}
-
-#[derive(PartialEq, Debug)]
-pub struct Task {
-    pub name: String,
-    pub completed: bool,
-    pub priority: PriEnum,
-}
-
 impl TaskList {
     //load tasks from either tasks.csv or testTasks.csv using the file_name
     pub fn load_tasks(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
-        let pathbuf = env::current_dir().unwrap().join("data").join(file_name);
+        let pathbuf = env::current_dir()?.join("data").join(file_name);
         let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
         for result in rdr.records() {
             let record = result?;
@@ -87,10 +49,10 @@ impl TaskList {
     }
 
     pub fn load_csv(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
-        let pathbuf = env::current_dir().unwrap().join("data").join(file_name);
+        let pathbuf = env::current_dir()?.join("data").join(file_name);
         let mut wtr: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
         for index in 0..=self.tasks.len() - 1 {
-            wtr.serialize::<_>(&self.tasks[index]).unwrap();
+            wtr.serialize::<_>(&self.tasks[index])?;
         }
         Ok("Successfully Saved Tasks Into CSV".to_string())
     }
@@ -162,6 +124,45 @@ impl Task {
         };
     }
 } //end 'impl Task'
+
+pub fn parse_priority(expr: &str) -> Result<PriEnum, String> {
+    match expr.to_ascii_lowercase().trim() {
+        "1" | "critical" | "crit" | "c" => Ok(PriEnum::Critical),
+        "2" | "high" | "hi" | "h" => Ok(PriEnum::High),
+        "3" | "medium" | "med" | "m" => Ok(PriEnum::Medium),
+        "4" | "low" | "lo" | "l" => Ok(PriEnum::Low),
+        "5" | "optional" | "opt" | "o" => Ok(PriEnum::Optional),
+        "" => Ok(PriEnum::Optional), //defaults to this
+        _ => Err(format!("Invalid priority value")),
+    }
+}
+
+impl Serialize for Task {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_struct("Task", 3)?;
+        s.serialize_field("name", &self.name)?;
+        s.serialize_field("priority", &self.priority)?;
+        s.serialize_field("completed", &self.completed)?;
+        s.end()
+    }
+}
+
+impl fmt::Display for PriEnum {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let printable: &str = match *self {
+            PriEnum::Critical => "Critical",
+            PriEnum::High => "High",
+            PriEnum::Medium => "Medium",
+            PriEnum::Low => "Low",
+            PriEnum::Optional => "Optional",
+        };
+        write!(f, "{}", printable)
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
