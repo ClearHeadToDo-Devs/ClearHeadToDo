@@ -7,6 +7,6 @@
 **/*.rs.bk
 
 **/*.csv
-rusty-tags.vi
+./rusty-tags.vi
 profile.log
 
