@@ -14,6 +14,7 @@ pub struct TaskList {
 }
 
 #[derive(PartialEq, Debug)]
+#[derive(Clone)]
 pub struct Task {
     pub name: String,
     pub completed: bool,
@@ -23,6 +24,7 @@ pub struct Task {
 #[derive(PartialEq, Debug)]
 #[repr(u8)]
 #[derive(AltSerialize)]
+#[derive(Copy, Clone)]
 pub enum PriEnum {
     Critical = 1,
     High = 2,
@@ -57,7 +59,7 @@ impl TaskList {
         Ok("Successfully Saved Tasks Into CSV".to_string())
     }
 
-    pub fn create_task(&mut self) -> Result<String, std::io::Error> {
+    pub fn create_task(&mut self) -> Result<String, Box<dyn Error>> {
         let new_task: Task = Task {
             name: String::from("Test Task"),
             completed: false,
@@ -71,9 +73,9 @@ impl TaskList {
     pub fn print_task_list(
         &self,
         mut writer: impl std::io::Write,
-    ) -> Result<String, std::io::Error> {
+    ) -> Result<String, Box<dyn Error>> {
         if self.tasks.is_empty() == true {
-            return Err(OtherError::new(ErrorKind::Other, "list is empty"));
+            return Err(Box::new(OtherError::new(ErrorKind::Other, "list is empty")));
         } else {
             for index in 0..=self.tasks.len() - 1 {
                 writeln!(
@@ -93,39 +95,47 @@ impl TaskList {
         &mut self,
         index: usize,
         mut writer: impl std::io::Write,
-    ) -> Result<(), std::io::Error> {
+    ) -> Result<(), Box<dyn Error>> {
         if index < self.tasks.len() {
             writeln!(writer, "Deleted {name} Task", name = self.tasks[index].name)?;
             self.tasks.remove(index);
             return Ok(());
         } else {
-            return Err(OtherError::new(
-                ErrorKind::Other,
-                "Invalid Index for Deletion",
-            ));
+            return Err(Box::new(OtherError::new(ErrorKind::Other, "Invalid Index for Deletion",)));
         }
     }
 } //end 'impl TaskList'
 
 impl Task {
-    pub fn rename_task(&mut self, new_task_name: &String) {
+    pub fn rename_task(&mut self, new_task_name: &String) -> Result<String, Box<dyn Error>> {
+        let old_name = self.name.clone();
         self.name = new_task_name.to_owned();
+        return Ok(format!("Task {old} renamed to {new}",old = old_name, new = self.name));
     }
 
-    pub fn mark_complete(&mut self) {
-        self.completed = true;
+    pub fn mark_complete(&mut self) -> Result<String, Box<dyn Error>> {
+        if self.completed == false {
+            self.completed = true;
+            return Ok(format!("completed Task: {}",self.name));
+        } else {
+            return Err(Box::new(OtherError::new(
+                        ErrorKind::Other, "Task is already completed")));
+        }
     }
 
-    pub fn change_priority(&mut self, new_priority: &str) {
-        let new_pri = parse_priority(new_priority);
-        match new_pri {
-            Ok(i) => self.priority = i,
-            Err(err) => println!("{}", err),
-        };
+    pub fn change_priority(&mut self, new_priority: &str) 
+    -> Result<String, Box<dyn Error>> {
+        let new_pri = parse_priority(new_priority)?;
+        if self.priority == new_pri {
+            return Err(Box::new(OtherError::new(ErrorKind::Other, "duplicate priority")));
+        } else {
+            self.priority = new_pri.clone();
+            return Ok(format!("changed Task: {name} priority changed to {new}",name = self.name, new = self.priority)); 
+        }
     }
 } //end 'impl Task'
 
-pub fn parse_priority(expr: &str) -> Result<PriEnum, String> {
+pub fn parse_priority(expr: &str) -> Result<PriEnum, Box<dyn Error>> {
     match expr.to_ascii_lowercase().trim() {
         "1" | "critical" | "crit" | "c" => Ok(PriEnum::Critical),
         "2" | "high" | "hi" | "h" => Ok(PriEnum::High),
@@ -133,7 +143,10 @@ pub fn parse_priority(expr: &str) -> Result<PriEnum, String> {
         "4" | "low" | "lo" | "l" => Ok(PriEnum::Low),
         "5" | "optional" | "opt" | "o" => Ok(PriEnum::Optional),
         "" => Ok(PriEnum::Optional), //defaults to this
-        _ => Err(format!("Invalid priority value")),
+        _ => Err(Box::new(OtherError::new(
+            ErrorKind::Other,
+            "invalid priority",
+        ))),
     }
 }
 
@@ -163,13 +176,12 @@ impl fmt::Display for PriEnum {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn task_creation_test() -> Result<(), std::io::Error> {
+    fn task_creation_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let creation_result = test_task_list.create_task()?;
         assert!(creation_result == "Created new task named Test Task");
@@ -182,7 +194,7 @@ mod tests {
     }
 
     #[test]
-    fn task_rename_test() -> Result<(), std::io::Error> {
+    fn task_rename_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let creation_result = test_task_list.create_task()?;
         assert!(creation_result == "Created new task named Test Task");
@@ -193,7 +205,7 @@ mod tests {
     }
 
     #[test]
-    fn task_completion_test() -> Result<(), std::io::Error> {
+    fn task_completion_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let creation_result = test_task_list.create_task()?;
         assert!(creation_result == "Created new task named Test Task");
@@ -204,7 +216,7 @@ mod tests {
     }
 
     #[test]
-    fn task_successful_removal_test() -> Result<(), std::io::Error> {
+    fn task_successful_removal_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let mut good_result = Vec::new();
         let creation_result = test_task_list.create_task()?;
@@ -224,22 +236,20 @@ mod tests {
     }
 
     #[test]
-    fn task_reprioritize_test() -> Result<(), std::io::Error> {
+    fn task_successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let creation_result = test_task_list.create_task()?;
         assert!(creation_result == "Created new task named Test Task");
         let test_task = &mut test_task_list.tasks[0];
         println!("{}", test_task.name);
-        test_task.change_priority("4");
+        test_task.change_priority("4")?;
         assert!(test_task.priority == PriEnum::Low);
-        test_task.change_priority("3");
+        test_task.change_priority("3")?;
         assert!(test_task.priority == PriEnum::Medium);
-        test_task.change_priority("2");
+        test_task.change_priority("2")?;
         assert!(test_task.priority == PriEnum::High);
-        test_task.change_priority("1");
+        test_task.change_priority("1")?;
         assert!(test_task.priority == PriEnum::Critical);
-        test_task.change_priority("6");
-        assert!(test_task.priority == PriEnum::Critical); //should NOT change on bad input
         return Ok(());
     }
 
@@ -251,7 +261,7 @@ mod tests {
         assert_eq!(error.to_string(), "list is empty");
     }
     #[test]
-    fn task_print_full_test() -> Result<(), std::io::Error> {
+    fn task_print_full_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let mut good_result = Vec::new();
         let creation_result = test_task_list.create_task()?;
@@ -279,7 +289,7 @@ mod tests {
     }
 
     #[test]
-    fn load_to_csv_successful_test() -> Result<(), std::io::Error> {
+    fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let creation_result = test_task_list.create_task()?;
         assert!(creation_result == "Created new task named Test Task");
@@ -297,10 +307,9 @@ mod tests {
         if let Some(result) = iter.next() {
             let record = result.unwrap();
             assert_eq!(record, vec!["test csv task", "Optional", "false"]);
+        } else {
+            return Ok(());
         }
-        else{
-            return Ok(())
-        }
-        return Ok(())
+        return Ok(());
     }
 }
