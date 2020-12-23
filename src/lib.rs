@@ -6,7 +6,7 @@ use std::env;
 use std::error::Error;
 use std::fmt;
 use std::io::{Error as OtherError, ErrorKind};
-use std::path::{Path, PathBuf};
+//use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 pub struct TaskList {
@@ -181,6 +181,47 @@ mod tests {
     use super::*;
 
     #[test]
+    fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
+        let mut test_task_list = TaskList { tasks: vec![] };
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
+        test_task_list.tasks[0].rename_task(&"test csv task".to_string())?;
+        test_task_list.load_csv("testTask.csv")?;
+        let rdr = Reader::from_path(
+            env::current_dir()?
+                .join("data")
+                .join("testTasks.csv")
+                .as_path(),
+        )?;
+        let mut iter = rdr.into_records();
+        if let Some(result) = iter.next() {
+            let record = result?;
+            assert_eq!(record, vec!["test csv task", "Optional", "false"]);
+        } else {
+            return Ok(());
+        }
+        return Ok(());
+    }
+
+    #[test]
+    #[should_panic]
+    fn load_from_csv_fail_test() {
+        let mut test_task_list = TaskList { tasks: vec![] };
+        let error = test_task_list.load_tasks("bad_file").unwrap();
+        eprintln!("{}",error);
+    }
+
+    #[test]
+    fn load_from_csv_sucessful_test() {
+        let mut test_task_list = TaskList { tasks: vec![] };
+        test_task_list.load_tasks("testTasks.csv").unwrap();
+        let test_task = &test_task_list.tasks[0];
+        assert!(test_task.name == "test csv task");
+        assert!(test_task.completed == false);
+        assert!(test_task.priority == PriEnum::Optional);
+    }
+
+    #[test]
     fn task_creation_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let creation_result = test_task_list.create_task()?;
@@ -199,7 +240,7 @@ mod tests {
         let creation_result = test_task_list.create_task()?;
         assert!(creation_result == "Created new task named Test Task");
         let test_task = &mut test_task_list.tasks[0];
-        test_task.rename_task(&"Changed Name".to_string());
+        test_task.rename_task(&"Changed Name".to_string())?;
         assert!(test_task.name == "Changed Name");
         return Ok(());
     }
@@ -210,7 +251,7 @@ mod tests {
         let creation_result = test_task_list.create_task()?;
         assert!(creation_result == "Created new task named Test Task");
         let test_task = &mut test_task_list.tasks[0];
-        test_task.mark_complete();
+        test_task.mark_complete()?;
         assert!(test_task.completed == true);
         return Ok(());
     }
@@ -271,45 +312,6 @@ mod tests {
         return Ok(());
     }
 
-    #[test]
-    fn load_from_csv_sucessful_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        test_task_list.load_tasks("testTasks.csv").unwrap();
-        let test_task = &test_task_list.tasks[0];
-        assert!(test_task.name == "test csv task");
-        assert!(test_task.completed == false);
-        assert!(test_task.priority == PriEnum::Optional);
-    }
 
-    #[test]
-    fn load_from_csv_fail_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let error = test_task_list.load_tasks("bad_file").unwrap_err();
-        assert!(error.to_string().contains("(os error 2)"));
-    }
 
-    #[test]
-    fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        test_task_list.tasks[0].rename_task(&"test csv task".to_string());
-        test_task_list.load_csv("testTask.csv").unwrap();
-        let rdr = Reader::from_path(
-            env::current_dir()
-                .unwrap()
-                .join("data")
-                .join("testTasks.csv")
-                .as_path(),
-        )
-        .unwrap();
-        let mut iter = rdr.into_records();
-        if let Some(result) = iter.next() {
-            let record = result.unwrap();
-            assert_eq!(record, vec!["test csv task", "Optional", "false"]);
-        } else {
-            return Ok(());
-        }
-        return Ok(());
-    }
 }
