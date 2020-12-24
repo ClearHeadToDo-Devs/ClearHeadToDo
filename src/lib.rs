@@ -204,11 +204,12 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn load_from_csv_fail_test() {
         let mut test_task_list = TaskList { tasks: vec![] };
-        let error = test_task_list.load_tasks("bad_file").unwrap();
-        eprintln!("{}",error);
+        let error = test_task_list.load_tasks("bad_file").unwrap_err();
+        let error = error.downcast_ref::<std::io::Error>().unwrap();
+
+        assert!(error.kind() == std::io::ErrorKind::NotFound);
     }
 
     #[test]
@@ -301,6 +302,7 @@ mod tests {
         let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
         assert_eq!(error.to_string(), "list is empty");
     }
+
     #[test]
     fn task_print_full_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
@@ -311,7 +313,5 @@ mod tests {
         assert_eq!(&good_result[..], "0,Test Task,Optional,false\n".as_bytes());
         return Ok(());
     }
-
-
 
 }
