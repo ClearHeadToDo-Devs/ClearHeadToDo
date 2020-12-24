@@ -207,9 +207,9 @@ mod tests {
     fn load_from_csv_fail_test() {
         let mut test_task_list = TaskList { tasks: vec![] };
         let error = test_task_list.load_tasks("bad_file").unwrap_err();
-        let error = error.downcast_ref::<std::io::Error>().unwrap();
-
-        assert!(error.kind() == std::io::ErrorKind::NotFound);
+        let dyn_error= error.source().unwrap();
+        println!("Error Message: {}", dyn_error.to_string());
+        assert_eq!(*dyn_error.to_string() , *"No such file or directory (os error 2)");
     }
 
     #[test]
