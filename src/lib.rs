@@ -2,7 +2,7 @@ use csv::Reader;
 use csv::Writer;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde::Serialize as AltSerialize;
-use std::env;
+use std::{env, path::PathBuf};
 use std::error::Error;
 use std::fmt;
 use std::io::{Error as OtherError, ErrorKind};
@@ -36,11 +36,11 @@ pub enum PriEnum {
 impl TaskList {
     //load tasks from either tasks.csv or testTasks.csv using the file_name
     pub fn load_tasks(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
-        let pathbuf = env::current_dir()?.join("data").join(file_name);
-        let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
+        let pathbuf :PathBuf = env::current_dir()?.join("data").join(file_name);
+        let mut rdr :Reader<std::fs::File> = Reader::from_path(pathbuf)?;
         for result in rdr.records() {
-            let record = result?;
-            let new_task = Task {
+            let record :csv::StringRecord = result?;
+            let new_task: Task = Task {
                 name: record[0].to_string(),
                 completed: FromStr::from_str(&record[2])?,
                 priority: parse_priority(&record[1])?,
@@ -181,16 +181,40 @@ mod tests {
     use super::*;
 
     #[test]
+    fn load_from_csv_bad_file_test() {
+        let mut test_task_list = TaskList { tasks: vec![] };
+        let error = test_task_list.load_tasks("bad_file").unwrap_err();
+        assert_eq!(error.to_string() , "No such file or directory (os error 2)");
+    }
+
+    #[test]
+    fn load_from_csv_bad_completion_status_test() {
+        let mut test_task_list = TaskList { tasks: vec![] };
+        let error = test_task_list.load_tasks("bad_completion_status.csv").unwrap_err();
+        assert_eq!(error.to_string() , "provided string was not `true` or `false`");
+    }
+
+    #[test]
+    fn load_from_csv_sucessful_test() {
+        let mut test_task_list = TaskList { tasks: vec![] };
+        test_task_list.load_tasks("successful_import_test.csv").unwrap();
+        let test_task = &test_task_list.tasks[0];
+        assert!(test_task.name == "test csv task");
+        assert!(test_task.completed == false);
+        assert!(test_task.priority == PriEnum::Optional);
+    }
+
+    #[test]
     fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
         let mut test_task_list = TaskList { tasks: vec![] };
         let creation_result = test_task_list.create_task()?;
         assert!(creation_result == "Created new task named Test Task");
         test_task_list.tasks[0].rename_task(&"test csv task".to_string())?;
-        test_task_list.load_csv("testTask.csv")?;
+        test_task_list.load_csv("successful_export_test.csv")?;
         let rdr = Reader::from_path(
             env::current_dir()?
                 .join("data")
-                .join("testTasks.csv")
+                .join("successful_export_test.csv")
                 .as_path(),
         )?;
         let mut iter = rdr.into_records();
@@ -201,25 +225,6 @@ mod tests {
             return Ok(());
         }
         return Ok(());
-    }
-
-    #[test]
-    fn load_from_csv_fail_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let error = test_task_list.load_tasks("bad_file").unwrap_err();
-        let dyn_error= error.source().unwrap();
-        println!("Error Message: {}", dyn_error.to_string());
-        assert_eq!(*dyn_error.to_string() , *"No such file or directory (os error 2)");
-    }
-
-    #[test]
-    fn load_from_csv_sucessful_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        test_task_list.load_tasks("testTasks.csv").unwrap();
-        let test_task = &test_task_list.tasks[0];
-        assert!(test_task.name == "test csv task");
-        assert!(test_task.completed == false);
-        assert!(test_task.priority == PriEnum::Optional);
     }
 
     #[test]
