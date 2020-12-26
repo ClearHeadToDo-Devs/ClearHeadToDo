@@ -108,7 +108,7 @@ impl TaskList {
 
 impl Task {
     pub fn rename_task(&mut self, new_task_name: &String) -> Result<String, Box<dyn Error>> {
-        let old_name = self.name.clone();
+        let old_name: String = self.name.clone();
         self.name = new_task_name.to_owned();
         return Ok(format!(
             "Task {old} renamed to {new}",
@@ -130,7 +130,7 @@ impl Task {
     }
 
     pub fn change_priority(&mut self, new_priority: &str) -> Result<String, Box<dyn Error>> {
-        let new_pri = parse_priority(new_priority)?;
+        let new_pri: PriEnum = parse_priority(new_priority)?;
         if self.priority == new_pri {
             return Err(Box::new(OtherError::new(
                 ErrorKind::Other,
@@ -341,6 +341,15 @@ mod tests {
             return Ok(());
         }
 
+        #[test]
+        fn task_reprioritize_duplicate_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = TaskList { tasks: vec![] };
+            test_task_list.create_task()?;
+            let test_task = &mut test_task_list.tasks[0];
+            let error = test_task.change_priority("5").unwrap_err();
+            assert_eq!(error.to_string(), "duplicate priority");
+            return Ok(());
+        }
 
         #[test]
         fn task_reprioritize_failure_test() -> Result<(), Box<dyn Error>> {
