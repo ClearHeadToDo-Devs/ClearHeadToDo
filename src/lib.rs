@@ -36,8 +36,8 @@ pub enum PriEnum {
 impl TaskList {
     //load tasks from either tasks.csv or testTasks.csv using the file_name
     pub fn load_tasks(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
-        let pathbuf :PathBuf = env::current_dir()?.join("data").join(file_name);
-        let mut rdr :Reader<std::fs::File> = Reader::from_path(pathbuf)?;
+        let pathbuf: PathBuf = env::current_dir()?.join("data").join(file_name);
+        let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
         for result in rdr.records() {
             let record :csv::StringRecord = result?;
             let new_task: Task = Task {
@@ -51,7 +51,7 @@ impl TaskList {
     }
 
     pub fn load_csv(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
-        let pathbuf = env::current_dir()?.join("data").join(file_name);
+        let pathbuf: PathBuf = env::current_dir()?.join("data").join(file_name);
         let mut wtr: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
         for index in 0..=self.tasks.len() - 1 {
             wtr.serialize::<_>(&self.tasks[index])?;
@@ -178,151 +178,158 @@ impl fmt::Display for PriEnum {
 mod tests {
     use super::*;
 
-    #[test]
-    fn load_from_csv_bad_file_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let error = test_task_list.load_tasks("bad_file").unwrap_err();
-        assert_eq!(error.to_string() , "No such file or directory (os error 2)");
-    }
+        mod task_list_tests{
+            use super::*;
 
-    #[test]
-    fn load_from_csv_bad_completion_status_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let error = test_task_list.load_tasks("bad_completion_status.csv").unwrap_err();
-        assert_eq!(error.to_string() , "provided string was not `true` or `false`");
-    }
+            #[test]
+            fn load_from_csv_bad_file_test() {
+                let mut test_task_list = TaskList { tasks: vec![] };
+                let error = test_task_list.load_tasks("bad_file").unwrap_err();
+                assert_eq!(error.to_string() , "No such file or directory (os error 2)");
+            }
 
-    #[test]
-    fn load_from_csv_bad_priority_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let error = test_task_list.load_tasks("bad_priority_test.csv").unwrap_err();
-        assert_eq!(error.to_string() , "invalid priority");
-    }
+            #[test]
+            fn load_from_csv_bad_completion_status_test() {
+                let mut test_task_list = TaskList { tasks: vec![] };
+                let error = test_task_list.load_tasks("bad_completion_status.csv").unwrap_err();
+                assert_eq!(error.to_string() , "provided string was not `true` or `false`");
+            }
 
-    #[test]
-    fn load_from_csv_sucessful_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        test_task_list.load_tasks("successful_import_test.csv").unwrap();
-        let test_task = &test_task_list.tasks[0];
-        assert!(test_task.name == "test csv task");
-        assert!(test_task.completed == false);
-        assert!(test_task.priority == PriEnum::Optional);
-    }
+            #[test]
+            fn load_from_csv_bad_priority_test() {
+                let mut test_task_list = TaskList { tasks: vec![] };
+                let error = test_task_list.load_tasks("bad_priority_test.csv").unwrap_err();
+                assert_eq!(error.to_string() , "invalid priority");
+            }
 
-    #[test]
-    fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        test_task_list.tasks[0].rename_task(&"test csv task".to_string())?;
-        test_task_list.load_csv("successful_export_test.csv")?;
-        let rdr = Reader::from_path(
-            env::current_dir()?
-                .join("data")
-                .join("successful_export_test.csv")
-                .as_path(),
-        )?;
-        let mut iter = rdr.into_records();
-        if let Some(result) = iter.next() {
-            let record = result?;
-            assert_eq!(record, vec!["test csv task", "Optional", "false"]);
-        } else {
+            #[test]
+            fn load_from_csv_sucessful_test() {
+                let mut test_task_list = TaskList { tasks: vec![] };
+                test_task_list.load_tasks("successful_import_test.csv").unwrap();
+                let test_task = &test_task_list.tasks[0];
+                assert!(test_task.name == "test csv task");
+                assert!(test_task.completed == false);
+                assert!(test_task.priority == PriEnum::Optional);
+            }
+
+            #[test]
+            fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
+                let mut test_task_list = TaskList { tasks: vec![] };
+                let creation_result = test_task_list.create_task()?;
+                assert!(creation_result == "Created new task named Test Task");
+                test_task_list.tasks[0].rename_task(&"test csv task".to_string())?;
+                test_task_list.load_csv("successful_export_test.csv")?;
+                let rdr = Reader::from_path(
+                    env::current_dir()?
+                        .join("data")
+                        .join("successful_export_test.csv")
+                        .as_path(),
+                )?;
+                let mut iter = rdr.into_records();
+                if let Some(result) = iter.next() {
+                    let record = result?;
+                    assert_eq!(record, vec!["test csv task", "Optional", "false"]);
+                } else {
+                    return Ok(());
+                }
+                return Ok(());
+            }
+
+            #[test]
+            fn task_creation_test() -> Result<(), Box<dyn Error>> {
+                let mut test_task_list = TaskList { tasks: vec![] };
+                let creation_result = test_task_list.create_task()?;
+                assert!(creation_result == "Created new task named Test Task");
+                let test_task = &test_task_list.tasks[0];
+                assert!(test_task.name == "Test Task");
+                assert!(test_task.completed == false);
+                assert!(test_task.priority == PriEnum::Optional);
+                assert!(&test_task_list.tasks[0] == test_task);
+                return Ok(());
+            }
+
+            #[test]
+            fn task_print_fail_test() {
+                let test_task_list = TaskList { tasks: vec![] };
+                let mut bad_result = Vec::new();
+                let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
+                assert_eq!(error.to_string(), "list is empty");
+            }
+
+            #[test]
+            fn task_print_full_test() -> Result<(), Box<dyn Error>> {
+                let mut test_task_list = TaskList { tasks: vec![] };
+                let mut good_result = Vec::new();
+                let creation_result = test_task_list.create_task()?;
+                assert!(creation_result == "Created new task named Test Task");
+                test_task_list.print_task_list(&mut good_result).unwrap();
+                assert_eq!(&good_result[..], "0,Test Task,Optional,false\n".as_bytes());
+                return Ok(());
+            }
+
+            #[test]
+            fn task_removal_fail_test() {
+                let mut test_task_list = TaskList { tasks: vec![] };
+                let mut bad_result = Vec::new();
+                let error = test_task_list.remove_task(0, &mut bad_result).unwrap_err();
+                assert_eq!(error.to_string(), "Invalid Index for Deletion");
+            }
+        }
+
+    mod task_tests{
+        use super::*;
+
+        #[test]
+        fn task_rename_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = TaskList { tasks: vec![] };
+            let creation_result = test_task_list.create_task()?;
+            assert!(creation_result == "Created new task named Test Task");
+            let test_task = &mut test_task_list.tasks[0];
+            test_task.rename_task(&"Changed Name".to_string())?;
+            assert!(test_task.name == "Changed Name");
             return Ok(());
         }
-        return Ok(());
+
+        #[test]
+        fn task_completion_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = TaskList { tasks: vec![] };
+            let creation_result = test_task_list.create_task()?;
+            assert!(creation_result == "Created new task named Test Task");
+            let test_task = &mut test_task_list.tasks[0];
+            test_task.mark_complete()?;
+            assert!(test_task.completed == true);
+            return Ok(());
+        }
+
+        #[test]
+        fn task_successful_removal_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut good_result = Vec::new();
+            let creation_result = test_task_list.create_task()?;
+            assert!(creation_result == "Created new task named Test Task");
+            test_task_list.remove_task(0, &mut good_result).unwrap();
+            assert!(test_task_list.tasks.is_empty());
+            assert_eq!(&good_result[..], "Deleted Test Task Task\n".as_bytes());
+            return Ok(());
+        }
+
+
+        #[test]
+        fn task_successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = TaskList { tasks: vec![] };
+            let creation_result = test_task_list.create_task()?;
+            assert!(creation_result == "Created new task named Test Task");
+            let test_task = &mut test_task_list.tasks[0];
+            println!("{}", test_task.name);
+            test_task.change_priority("4")?;
+            assert!(test_task.priority == PriEnum::Low);
+            test_task.change_priority("3")?;
+            assert!(test_task.priority == PriEnum::Medium);
+            test_task.change_priority("2")?;
+            assert!(test_task.priority == PriEnum::High);
+            test_task.change_priority("1")?;
+            assert!(test_task.priority == PriEnum::Critical);
+            return Ok(());
+        }
     }
-
-    #[test]
-    fn task_creation_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        let test_task = &test_task_list.tasks[0];
-        assert!(test_task.name == "Test Task");
-        assert!(test_task.completed == false);
-        assert!(test_task.priority == PriEnum::Optional);
-        assert!(&test_task_list.tasks[0] == test_task);
-        return Ok(());
-    }
-
-    #[test]
-    fn task_print_fail_test() {
-        let test_task_list = TaskList { tasks: vec![] };
-        let mut bad_result = Vec::new();
-        let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
-        assert_eq!(error.to_string(), "list is empty");
-    }
-
-    #[test]
-    fn task_print_full_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let mut good_result = Vec::new();
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        test_task_list.print_task_list(&mut good_result).unwrap();
-        assert_eq!(&good_result[..], "0,Test Task,Optional,false\n".as_bytes());
-        return Ok(());
-    }
-
-    #[test]
-    fn task_rename_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        let test_task = &mut test_task_list.tasks[0];
-        test_task.rename_task(&"Changed Name".to_string())?;
-        assert!(test_task.name == "Changed Name");
-        return Ok(());
-    }
-
-    #[test]
-    fn task_completion_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        let test_task = &mut test_task_list.tasks[0];
-        test_task.mark_complete()?;
-        assert!(test_task.completed == true);
-        return Ok(());
-    }
-
-    #[test]
-    fn task_successful_removal_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let mut good_result = Vec::new();
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        test_task_list.remove_task(0, &mut good_result).unwrap();
-        assert!(test_task_list.tasks.is_empty());
-        assert_eq!(&good_result[..], "Deleted Test Task Task\n".as_bytes());
-        return Ok(());
-    }
-
-    #[test]
-    fn task_removal_fail_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let mut bad_result = Vec::new();
-        let error = test_task_list.remove_task(0, &mut bad_result).unwrap_err();
-        assert_eq!(error.to_string(), "Invalid Index for Deletion");
-    }
-
-    #[test]
-    fn task_successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        let test_task = &mut test_task_list.tasks[0];
-        println!("{}", test_task.name);
-        test_task.change_priority("4")?;
-        assert!(test_task.priority == PriEnum::Low);
-        test_task.change_priority("3")?;
-        assert!(test_task.priority == PriEnum::Medium);
-        test_task.change_priority("2")?;
-        assert!(test_task.priority == PriEnum::High);
-        test_task.change_priority("1")?;
-        assert!(test_task.priority == PriEnum::Critical);
-        return Ok(());
-    }
-
-
 }
