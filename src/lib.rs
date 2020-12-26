@@ -144,9 +144,7 @@ pub fn parse_priority(expr: &str) -> Result<PriEnum, Box<dyn Error>> {
         "5" | "optional" | "opt" | "o" => Ok(PriEnum::Optional),
         "" => Ok(PriEnum::Optional), //defaults to this
         _ => Err(Box::new(OtherError::new(
-            ErrorKind::Other,
-            "invalid priority",
-        ))),
+                    ErrorKind::Other, "invalid priority",))),
     }
 }
 
@@ -195,6 +193,13 @@ mod tests {
     }
 
     #[test]
+    fn load_from_csv_bad_priority_test() {
+        let mut test_task_list = TaskList { tasks: vec![] };
+        let error = test_task_list.load_tasks("bad_priority_test.csv").unwrap_err();
+        assert_eq!(error.to_string() , "invalid priority");
+    }
+
+    #[test]
     fn load_from_csv_sucessful_test() {
         let mut test_task_list = TaskList { tasks: vec![] };
         test_task_list.load_tasks("successful_import_test.csv").unwrap();
@@ -237,6 +242,25 @@ mod tests {
         assert!(test_task.completed == false);
         assert!(test_task.priority == PriEnum::Optional);
         assert!(&test_task_list.tasks[0] == test_task);
+        return Ok(());
+    }
+
+    #[test]
+    fn task_print_fail_test() {
+        let test_task_list = TaskList { tasks: vec![] };
+        let mut bad_result = Vec::new();
+        let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
+        assert_eq!(error.to_string(), "list is empty");
+    }
+
+    #[test]
+    fn task_print_full_test() -> Result<(), Box<dyn Error>> {
+        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut good_result = Vec::new();
+        let creation_result = test_task_list.create_task()?;
+        assert!(creation_result == "Created new task named Test Task");
+        test_task_list.print_task_list(&mut good_result).unwrap();
+        assert_eq!(&good_result[..], "0,Test Task,Optional,false\n".as_bytes());
         return Ok(());
     }
 
@@ -300,23 +324,5 @@ mod tests {
         return Ok(());
     }
 
-    #[test]
-    fn task_print_fail_test() {
-        let test_task_list = TaskList { tasks: vec![] };
-        let mut bad_result = Vec::new();
-        let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
-        assert_eq!(error.to_string(), "list is empty");
-    }
-
-    #[test]
-    fn task_print_full_test() -> Result<(), Box<dyn Error>> {
-        let mut test_task_list = TaskList { tasks: vec![] };
-        let mut good_result = Vec::new();
-        let creation_result = test_task_list.create_task()?;
-        assert!(creation_result == "Created new task named Test Task");
-        test_task_list.print_task_list(&mut good_result).unwrap();
-        assert_eq!(&good_result[..], "0,Test Task,Optional,false\n".as_bytes());
-        return Ok(());
-    }
 
 }
