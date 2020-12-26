@@ -321,13 +321,23 @@ mod tests {
         }
 
         #[test]
-        fn task_completion_test() -> Result<(), Box<dyn Error>> {
+        fn task_completion_successful_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = TaskList { tasks: vec![] };
-            let creation_result = test_task_list.create_task()?;
-            assert!(creation_result == "Created new task named Test Task");
+            test_task_list.create_task()?;
             let test_task = &mut test_task_list.tasks[0];
             test_task.mark_complete()?;
             assert!(test_task.completed == true);
+            return Ok(());
+        }
+
+        #[test]
+        fn task_completion_fail_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = TaskList { tasks: vec![] };
+            test_task_list.create_task()?;
+            let test_task = &mut test_task_list.tasks[0];
+            test_task.mark_complete()?;
+            let failure = test_task.mark_complete().unwrap_err();
+            assert_eq!(failure.to_string(), "Task is already completed");
             return Ok(());
         }
 
