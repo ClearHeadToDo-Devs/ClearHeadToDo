@@ -82,8 +82,7 @@ mod tests {
         assert!(test_cli.task_vec.tasks.len() == 0);
     }
 
-    #[test]
-    fn cli_task_creation_test() {
+    #[test] fn cli_task_creation_test() {
         let mut test_cli = Cli {
             pattern: Some("create_task".to_string()),
             index: None,
@@ -98,7 +97,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_task_list_test() {
+    fn cli_task_list_successful_test() {
         //let mut good_result = Vec::new();
         let mut test_cli = Cli {
             pattern: Some("list_tasks".to_string()),
@@ -109,5 +108,42 @@ mod tests {
         test_cli.task_vec.create_task().unwrap();
         let response: String = test_cli.parse_arguments().unwrap();
         assert_eq!(response, "Successfully Printed {}");
+    }
+
+    #[test]
+    fn cli_task_list_failure_test() {
+        //let mut good_result = Vec::new();
+        let mut test_cli = Cli {
+            pattern: Some("list_tasks".to_string()),
+            index: None,
+            input: None,
+            task_vec: TaskList { tasks: vec![] },
+        };
+        let response: String = test_cli.parse_arguments().unwrap_err().to_string();
+        assert_eq!(response, "list is empty");
+    }
+
+    #[test] fn cli_task_removal_successful_test() {
+        let mut test_cli = Cli {
+            pattern: Some("remove_task".to_string()),
+            index: Some(0),
+            input: None,
+            task_vec: TaskList { tasks: vec![] },
+        };
+        test_cli.task_vec.create_task().unwrap();
+        let response = test_cli.parse_arguments().unwrap();
+        assert!(test_cli.task_vec.tasks.is_empty());
+        assert_eq!(response, "Successfully Removed Task Test Task");
+    }
+    
+    #[test] fn cli_task_removal_failure_test() {
+        let mut test_cli = Cli {
+            pattern: Some("remove_task".to_string()),
+            index: Some(0),
+            input: None,
+            task_vec: TaskList { tasks: vec![] },
+        };
+        let error = test_cli.parse_arguments().unwrap_err();
+        assert_eq!(error.to_string(), "Invalid Index for Deletion");
     }
 }
