@@ -1,9 +1,9 @@
 use clear_head_todo::PriEnum;
 use clear_head_todo::TaskList;
 use std::error::Error;
-use std::io::stdout;
-use std::io::{self, Write};
-use std::path::Path;
+//use std::io::stdout;
+//use std::io::{self, Write};
+//use std::path::Path;
 
 pub struct Cli {
     pub pattern: Option<String>,
@@ -16,7 +16,7 @@ impl Cli {
     pub fn parse_arguments(&mut self) -> Result<String, Box<dyn Error>> {
         let index = |index: &Option<String>|{
             index.as_ref().unwrap().to_string().parse::<usize>().unwrap()};
-        match self.pattern.as_ref().unwrap() as &str {
+        match self.pattern.as_ref().unwrap_or(&"None".to_string()) as &str {
             "create_task" | "create" | "ct" | "new_task" | "new" => self.task_vec.create_task(),
             "list_tasks" | "lt" | "list" | "list_all" => {
                 self.task_vec.print_task_list(std::io::stdout())
@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn cli_creation_test() {
-        let mut test_cli = Cli {
+        let test_cli = Cli {
             pattern: None,
             index: None,
             input: None,
@@ -74,6 +74,18 @@ mod tests {
         assert!(test_cli.index == None);
         assert!(test_cli.input == None);
         assert!(test_cli.task_vec.tasks.len() == 0);
+    }
+
+    #[test]
+    fn cli_blank_test() {
+        let mut test_cli = Cli {
+            pattern: None,
+            index: None,
+            input: None,
+            task_vec: TaskList { tasks: vec![] },
+        };
+        let result = test_cli.parse_arguments().unwrap();
+        assert_eq!(result, "Try putting in a command to see what we can do!");
     }
 
     #[test]
