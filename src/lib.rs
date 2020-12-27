@@ -4,6 +4,7 @@ use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde::Serialize as AltSerialize;
 use std::error::Error;
 use std::fmt;
+use std::fmt::write as FmtWriter;
 use std::io::{Error as OtherError, ErrorKind};
 use std::{env, path::PathBuf};
 //use std::path::{Path, PathBuf};
@@ -75,6 +76,7 @@ impl TaskList {
         if self.tasks.is_empty() == true {
             return Err(Box::new(OtherError::new(ErrorKind::Other, "list is empty")));
         } else {
+            writeln!(writer, "index,name,priority,completed")?;
             for index in 0..=self.tasks.len() - 1 {
                 writeln!(
                     writer,
@@ -89,10 +91,7 @@ impl TaskList {
         Ok("Successfully Printed {}".to_string())
     }
 
-    pub fn remove_task(
-        &mut self,
-        index: usize,
-    ) -> Result<String, Box<dyn Error>> {
+    pub fn remove_task(&mut self, index: usize) -> Result<String, Box<dyn Error>> {
         if index < self.tasks.len() {
             let name: String = self.tasks[index].name.clone();
             self.tasks.remove(index);
@@ -286,7 +285,10 @@ mod tests {
             let creation_result = test_task_list.create_task()?;
             assert!(creation_result == "Created new task named Test Task");
             test_task_list.print_task_list(&mut good_result).unwrap();
-            assert_eq!(&good_result[..], "0,Test Task,Optional,false\n".as_bytes());
+            assert_eq!(
+                &good_result[..],
+                "index,name,priority,completed\n0,Test Task,Optional,false\n".as_bytes()
+            );
             return Ok(());
         }
 
@@ -302,7 +304,10 @@ mod tests {
             let mut test_task_list = TaskList { tasks: vec![] };
             test_task_list.create_task().unwrap();
             let good_result = test_task_list.remove_task(0).unwrap();
-            assert_eq!(good_result.to_string(), "Successfully Removed Task Test Task");
+            assert_eq!(
+                good_result.to_string(),
+                "Successfully Removed Task Test Task"
+            );
         }
     }
 

@@ -7,29 +7,31 @@ use std::path::Path;
 
 pub struct Cli {
     pub pattern: Option<String>,
-    pub index: Option<usize>,
+    pub index: Option<String>,
     pub input: Option<String>,
     pub task_vec: TaskList,
 }
 
 impl Cli {
     pub fn parse_arguments(&mut self) -> Result<String, Box<dyn Error>> {
+        let index = |index: &Option<String>|{
+            index.as_ref().unwrap().to_string().parse::<usize>().unwrap()};
         match self.pattern.as_ref().unwrap() as &str {
             "create_task" | "create" | "ct" | "new_task" | "new" => self.task_vec.create_task(),
             "list_tasks" | "lt" | "list" | "list_all" => {
                 self.task_vec.print_task_list(std::io::stdout())
             }
             "remove_task" | "remove" | "rt" | "delete_task" | "delete" => {
-                self.task_vec.remove_task(self.index.unwrap())
+                self.task_vec.remove_task(index(&self.index))
             }
             "complete_task" | "complete" | "mark_complete" => {
-                self.task_vec.tasks[self.index.unwrap()].mark_complete()
+                self.task_vec.tasks[index(&self.index)].mark_complete()
             }
             "change_priority" | "cp" | "new_priority" | "np" => self.task_vec.tasks
-                [self.index.unwrap()]
+                [index(&self.index)]
             .change_priority(&self.input.as_ref().unwrap()[..]),
             "rename_task" | "rename" | "name" | "r" => {
-                self.task_vec.tasks[self.index.unwrap()].rename_task(self.input.as_ref().unwrap())
+                self.task_vec.tasks[index(&self.index)].rename_task(self.input.as_ref().unwrap())
             }
             _ => return Ok("Try putting in a command to see what we can do!".to_string()),
         }
@@ -41,15 +43,7 @@ fn main() {
 
     let mut main_cli: Cli = Cli {
         pattern: std::env::args().nth(1),
-        index: Some(
-            std::env::args()
-                .nth(2)
-                .as_ref()
-                .unwrap()
-                .to_string()
-                .parse::<usize>()
-                .unwrap(),
-        ),
+        index: std::env::args().nth(2),
         input: std::env::args().nth(3),
         task_vec: TaskList { tasks: vec![] },
     };
@@ -128,7 +122,7 @@ mod tests {
     fn cli_task_removal_successful_test() {
         let mut test_cli = Cli {
             pattern: Some("remove_task".to_string()),
-            index: Some(0),
+            index: Some("0".to_string()),
             input: None,
             task_vec: TaskList { tasks: vec![] },
         };
@@ -142,7 +136,7 @@ mod tests {
     fn cli_task_removal_failure_test() {
         let mut test_cli = Cli {
             pattern: Some("remove_task".to_string()),
-            index: Some(0),
+            index: Some("0".to_string()),
             input: None,
             task_vec: TaskList { tasks: vec![] },
         };
@@ -154,7 +148,7 @@ mod tests {
     fn cli_task_completion_successful_test() {
         let mut test_cli = Cli {
             pattern: Some("complete".to_string()),
-            index: Some(0),
+            index: Some("0".to_string()),
             input: None,
             task_vec: TaskList { tasks: vec![] },
         };
@@ -168,7 +162,7 @@ mod tests {
     fn cli_task_completion_failure_test() {
         let mut test_cli = Cli {
             pattern: Some("complete".to_string()),
-            index: Some(0),
+            index: Some("0".to_string()),
             input: None,
             task_vec: TaskList { tasks: vec![] },
         };
@@ -183,7 +177,7 @@ mod tests {
     fn cli_task_reprioritize_successful_test() {
         let mut test_cli = Cli {
             pattern: Some("cp".to_string()),
-            index: Some(0),
+            index: Some("0".to_string()),
             input: Some("high".to_string()),
             task_vec: TaskList { tasks: vec![] },
         };
@@ -197,7 +191,7 @@ mod tests {
     fn cli_task_reprioritize_failure_test() {
         let mut test_cli = Cli {
             pattern: Some("cp".to_string()),
-            index: Some(0),
+            index: Some("0".to_string()),
             input: Some("bad".to_string()),
             task_vec: TaskList { tasks: vec![] },
         };
@@ -210,7 +204,7 @@ mod tests {
     fn cli_task_reprioritize_duplicate_test() {
         let mut test_cli = Cli {
             pattern: Some("cp".to_string()),
-            index: Some(0),
+            index: Some("0".to_string()),
             input: Some("Optional".to_string()),
             task_vec: TaskList { tasks: vec![] },
         };
@@ -223,7 +217,7 @@ mod tests {
     fn cli_task_rename_successful_test() {
         let mut test_cli = Cli {
             pattern: Some("rename".to_string()),
-            index: Some(0),
+            index: Some("0".to_string()),
             input: Some("test rename function".to_string()),
             task_vec: TaskList { tasks: vec![] },
         };
