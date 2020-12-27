@@ -82,7 +82,8 @@ mod tests {
         assert!(test_cli.task_vec.tasks.len() == 0);
     }
 
-    #[test] fn cli_task_creation_test() {
+    #[test]
+    fn cli_task_creation_test() {
         let mut test_cli = Cli {
             pattern: Some("create_task".to_string()),
             index: None,
@@ -123,7 +124,8 @@ mod tests {
         assert_eq!(response, "list is empty");
     }
 
-    #[test] fn cli_task_removal_successful_test() {
+    #[test] 
+    fn cli_task_removal_successful_test() {
         let mut test_cli = Cli {
             pattern: Some("remove_task".to_string()),
             index: Some(0),
@@ -136,7 +138,8 @@ mod tests {
         assert_eq!(response, "Successfully Removed Task Test Task");
     }
     
-    #[test] fn cli_task_removal_failure_test() {
+    #[test] 
+    fn cli_task_removal_failure_test() {
         let mut test_cli = Cli {
             pattern: Some("remove_task".to_string()),
             index: Some(0),
@@ -145,5 +148,74 @@ mod tests {
         };
         let error = test_cli.parse_arguments().unwrap_err();
         assert_eq!(error.to_string(), "Invalid Index for Deletion");
+    }
+
+    #[test] 
+    fn cli_task_completion_successful_test() {
+        let mut test_cli = Cli {
+            pattern: Some("complete".to_string()),
+            index: Some(0),
+            input: None,
+            task_vec: TaskList { tasks: vec![] },
+        };
+        test_cli.task_vec.create_task().unwrap();
+        let response = test_cli.parse_arguments().unwrap();
+        assert!(test_cli.task_vec.tasks[0].completed == true);
+        assert_eq!(response, "completed Task: Test Task");
+    }
+
+    #[test] 
+    fn cli_task_completion_failure_test() {
+        let mut test_cli = Cli {
+            pattern: Some("complete".to_string()),
+            index: Some(0),
+            input: None,
+            task_vec: TaskList { tasks: vec![] },
+        };
+        test_cli.task_vec.create_task().unwrap();
+        test_cli.task_vec.tasks[0].mark_complete().unwrap();
+        let error = test_cli.parse_arguments().unwrap_err().to_string();
+        assert!(test_cli.task_vec.tasks[0].completed == true);
+        assert_eq!(error, "Task is already completed");
+    }
+
+    #[test] 
+    fn cli_task_reprioritize_successful_test() {
+        let mut test_cli = Cli {
+            pattern: Some("cp".to_string()),
+            index: Some(0),
+            input: Some("high".to_string()),
+            task_vec: TaskList { tasks: vec![] },
+        };
+        test_cli.task_vec.create_task().unwrap();
+        let response = test_cli.parse_arguments().unwrap();
+        assert!(test_cli.task_vec.tasks[0].priority == PriEnum::High);
+        assert_eq!(response, "changed Task: Test Task priority changed to High");
+    }
+
+    #[test] 
+    fn cli_task_reprioritize_failure_test() {
+        let mut test_cli = Cli {
+            pattern: Some("cp".to_string()),
+            index: Some(0),
+            input: Some("bad".to_string()),
+            task_vec: TaskList { tasks: vec![] },
+        };
+        test_cli.task_vec.create_task().unwrap();
+        let error = test_cli.parse_arguments().unwrap_err().to_string();
+        assert_eq!(error, "invalid priority");
+    }
+
+    #[test] 
+    fn cli_task_reprioritize_duplicate_test() {
+        let mut test_cli = Cli {
+            pattern: Some("cp".to_string()),
+            index: Some(0),
+            input: Some("Optional".to_string()),
+            task_vec: TaskList { tasks: vec![] },
+        };
+        test_cli.task_vec.create_task().unwrap();
+        let error = test_cli.parse_arguments().unwrap_err().to_string();
+        assert_eq!(error, "duplicate priority");
     }
 }
