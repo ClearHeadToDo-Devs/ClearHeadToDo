@@ -218,4 +218,18 @@ mod tests {
         let error = test_cli.parse_arguments().unwrap_err().to_string();
         assert_eq!(error, "duplicate priority");
     }
+
+    #[test] 
+    fn cli_task_rename_successful_test() {
+        let mut test_cli = Cli {
+            pattern: Some("rename".to_string()),
+            index: Some(0),
+            input: Some("test rename function".to_string()),
+            task_vec: TaskList { tasks: vec![] },
+        };
+        test_cli.task_vec.create_task().unwrap();
+        let response = test_cli.parse_arguments().unwrap();
+        assert!(test_cli.task_vec.tasks[0].name == "test rename function".to_string());
+        assert_eq!(response, "Task Test Task renamed to test rename function");
+    }
 }
