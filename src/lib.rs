@@ -4,7 +4,6 @@ use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde::Serialize as AltSerialize;
 use std::error::Error;
 use std::fmt;
-use std::fmt::write as FmtWriter;
 use std::io::{Error as OtherError, ErrorKind};
 use std::{env, path::PathBuf};
 //use std::path::{Path, PathBuf};

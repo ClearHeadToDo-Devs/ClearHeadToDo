@@ -1,9 +1,6 @@
 use clear_head_todo::PriEnum;
 use clear_head_todo::TaskList;
 use std::error::Error;
-//use std::io::stdout;
-//use std::io::{self, Write};
-//use std::path::Path;
 
 pub struct Cli {
     pub pattern: Option<String>,
@@ -33,13 +30,26 @@ impl Cli {
             "rename_task" | "rename" | "name" | "r" => {
                 self.task_vec.tasks[index(&self.index)].rename_task(self.input.as_ref().unwrap())
             }
+            "help" | "commands" | "h" | "cmds" => {
+                return Ok(
+                "Here are the list of commands you can use \n\
+                create task: create a default task with default configurations \n\
+                list_task: list all existing tasks with all state information \n\
+                complete_task: given an index, sets the task to complete \n\
+                change_priority: given an index and a new priority {{Critical, \
+                    high, medium, low, optional}} the selected task will be changed \n\
+                rename_task: given and index and a new name, change task {{\
+                    REMEMBER, new name must be surrounded by \" to get more than\
+                    1 word }} \n\
+                remove task: given an index, remove the task from the list forever.".to_string());
+            }
             _ => return Ok("Try putting in a command to see what we can do!".to_string()),
         }
     }
 }
 
 fn main() {
-    println!("starting program");
+    println!("Hello, Welcome to ClearHead ToDo!");
 
     let mut main_cli: Cli = Cli {
         pattern: std::env::args().nth(1),
