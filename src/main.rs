@@ -1,19 +1,23 @@
 use clear_head_todo::PriEnum;
 use clear_head_todo::TaskList;
 use std::error::Error;
+
+#[macro_use]
 extern crate clap;
 use clap::{Arg, App, SubCommand};
+
 fn main() {
     let matches = App::new("ClearHeadToDo")
+        .author(crate_authors!())
+        .version(crate_version!())
         .subcommand(
             App::new("List Tasks")
-                .about("Creates new file in Task List")
-                .version("1.0"))
+                .about("Creates new file in Task List"))
         .get_matches();
 
 
     if matches.is_present("List Tasks") {
-        println!("created new task!");
+        println!("Listing all Tasks");
     }
 }
 
