@@ -1,4 +1,5 @@
 name,priority,completed
-paper towels,Medium,true
-Test Task,Optional,false
-Test Task,Optional,false
+paper towels,High,true
+test rename,Optional,true
+Test Task,Optional,true
+Test Task,High,false
