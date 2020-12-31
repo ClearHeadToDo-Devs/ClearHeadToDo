@@ -21,6 +21,19 @@ fn main() {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+
+    #[test]
+    fn cli_creation_test() {
+        let test_matches = App::new("Test App")
+            .author(crate_authors!());
+        assert_eq!(test_matches.p.meta.author.unwrap() , "Mantis-Shrimp <dargondab9@gmail.com>");
+    }
+
+}
 //pub struct Cli {
 //    pub pattern: Option<String>,
 //    pub index: Option<String>,
