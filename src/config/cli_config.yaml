@@ -1,0 +1,9 @@
+name: ClearHeadToDo
+version: "0.1.0"
+about: can be used to manage every part of your productive life!
+author: Darrion Burgess <darrionburgess@gmail.com>
+
+subcommands:
+        - list_tasks:
+                about: prints all tasks in the list
+

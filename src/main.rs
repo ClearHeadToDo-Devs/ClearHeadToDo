@@ -2,23 +2,31 @@ use clear_head_todo::PriEnum;
 use clear_head_todo::TaskList;
 use std::error::Error;
 
+
 #[macro_use]
 extern crate clap;
-use clap::{Arg, App, SubCommand};
+use clap::{Arg, App, SubCommand, load_yaml, ArgMatches};
+
+fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Error>>{
+    let outcome = match matches.subcommand_name() {
+        Some("list_tasks")=> task_list.print_task_list(std::io::stdout()),
+        _ => Ok("no command given".to_string()),
+    };
+    return outcome
+}
 
 fn main() {
-    let matches = App::new("ClearHeadToDo")
-        .author(crate_authors!())
-        .version(crate_version!())
-        .subcommand(
-            App::new("List Tasks")
-                .about("Creates new file in Task List"))
-        .get_matches();
+    let mut task_list: TaskList= TaskList{tasks: vec![]};
 
-
-    if matches.is_present("List Tasks") {
-        println!("Listing all Tasks");
+    task_list.load_tasks("tasks.csv").unwrap();
+    let yaml = load_yaml!("config/cli_config.yaml");
+    let matches = App::from(yaml).get_matches();
+    let result = run(matches,&mut task_list);
+    match result {
+        Ok(s) => println!("{}",s),
+        Err(e) => eprintln!("{}",e),
     }
+    task_list.load_csv("tasks.csv").unwrap();
 }
 
 #[cfg(test)]
@@ -27,19 +35,45 @@ mod tests {
 
 
     #[test]
-    fn cli_creation_test() {
-        let test_matches = App::new("Test App")
-            .author(crate_authors!());
-        assert_eq!(test_matches.p.meta.author.unwrap() , "Mantis-Shrimp <dargondab9@gmail.com>");
+    fn cli_creation_author_test() {
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let m = App::from(yaml);
+        assert_eq!(&m.p.meta.author.unwrap() , &"Darrion Burgess <darrionburgess@gmail.com>");
     }
 
+    #[test]
+    fn cli_creation_version_test() {
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let m = App::from(yaml);
+        assert_eq!(m.p.meta.version.unwrap() , "0.1.0");
+    }
+
+    #[test]
+    fn cli_creation_about_test() {
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let m = App::from(yaml);
+        assert_eq!(m.p.meta.about.unwrap() , 
+        "can be used to manage every part of your productive life!");
+    }
+
+    #[test]
+    fn cli_list_task_successful_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "list_tasks");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "Successfully Printed {}");
+    }
 }
-//pub struct Cli {
-//    pub pattern: Option<String>,
-//    pub index: Option<String>,
-//    pub input: Option<String>,
-//    pub task_vec: TaskList,
-//}
+// pub struct Cli {
+//     pub pattern: Option<String>,
+//     pub index: Option<String>,
+//     pub input: Option<String>,
+//     pub task_vec: TaskList,
+// }
 
 //impl Cli {
 //    pub fn parse_arguments(&mut self) -> Result<String, Box<dyn Error>> {
