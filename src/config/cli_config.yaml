@@ -6,4 +6,11 @@ author: Darrion Burgess <darrionburgess@gmail.com>
 subcommands:
         - list_tasks:
                 about: prints all tasks in the list
+        - create_task:
+                about: creates a new task in the task list. defaults to low priority named test task.
+        - complete_task:
+                about: completes a given task, using the required index argument, use "list_task" to see index numbers.
+                args:
+                        - index:
+                                required: true
 

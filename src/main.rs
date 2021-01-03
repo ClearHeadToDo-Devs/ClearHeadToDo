@@ -10,7 +10,10 @@ use clap::{Arg, App, SubCommand, load_yaml, ArgMatches};
 fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Error>>{
     let outcome = match matches.subcommand_name() {
         Some("list_tasks")=> task_list.print_task_list(std::io::stdout()),
-        _ => Ok("no command given".to_string()),
+        Some("create_task")=> task_list.create_task(),
+        Some("complete_task")=> task_list.tasks[matches.subcommand_matches("complete_task").unwrap().value_of("index")
+            .unwrap().parse::<usize>()?].mark_complete(),
+        _ => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
     };
     return outcome
 }
@@ -67,6 +70,44 @@ mod tests {
         let result = run(test_matches, &mut test_task_list);
         assert_eq!(result.unwrap(), "Successfully Printed {}");
     }
+
+    #[test]
+    fn cli_list_task_failure_empty_list_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(
+            vec!["ClearHeadToDo", "list_tasks"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "list_tasks");
+
+        let error = run(test_matches, &mut test_task_list);
+        assert_eq!(error.unwrap_err().to_string(), "list is empty");
+    }
+
+    #[test]
+    fn cli_create_task_successful_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "create_task"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "create_task");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "Created new task named Test Task");
+        assert!(test_task_list.tasks.is_empty() == false)
+    }
+
+    #[test]
+    fn cli_complete_task_successful_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "complete_task");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "completed Task: Test Task");
+        assert!(test_task_list.tasks[0].completed == true)
+    }
+
 }
 // pub struct Cli {
 //     pub pattern: Option<String>,
