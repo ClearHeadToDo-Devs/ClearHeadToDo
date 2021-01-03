@@ -105,7 +105,33 @@ mod tests {
 
         let result = run(test_matches, &mut test_task_list);
         assert_eq!(result.unwrap(), "completed Task: Test Task");
-        assert!(test_task_list.tasks[0].completed == true)
+        assert!(test_task_list.tasks[0].completed == true);
+    }
+
+    #[test]
+    #[should_panic]
+    fn cli_complete_task_failing_invalid_index_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "complete_task");
+
+        let error = run(test_matches, &mut test_task_list);
+    }
+
+    #[test]
+    fn cli_complete_task_failing_already_complete_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        test_task_list.tasks[0].mark_complete().unwrap();
+
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "complete_task");
+
+        let error = run(test_matches, &mut test_task_list);
+        assert_eq!(error.unwrap_err().to_string(), "Task is already completed");
+        assert!(test_task_list.tasks[0].completed == true);
     }
 
 }
