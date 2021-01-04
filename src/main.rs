@@ -13,6 +13,8 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
         Some("create_task")=> task_list.create_task(),
         Some("complete_task")=> task_list.tasks.get_mut(matches.subcommand_matches("complete_task").unwrap().value_of("index")
             .unwrap().parse::<usize>()?).ok_or("Out of Bounds Index")?.mark_complete(),
+        Some("remove_task")=> task_list.remove_task(matches.subcommand_matches("remove_task").unwrap().value_of("index")
+            .unwrap().parse::<usize>()?),
         _ => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
     };
     return outcome
@@ -134,6 +136,18 @@ mod tests {
         assert!(test_task_list.tasks[0].completed == true);
     }
 
+    #[test]
+    fn cli_remove_task_successful_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "remove_task", "0"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "remove_task");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "Successfully Removed Task Test Task");
+        assert!(test_task_list.tasks.is_empty());
+    }
 }
 // pub struct Cli {
 //     pub pattern: Option<String>,
