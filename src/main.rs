@@ -11,10 +11,17 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
     let outcome = match matches.subcommand_name() {
         Some("list_tasks")=> task_list.print_task_list(std::io::stdout()),
         Some("create_task")=> task_list.create_task(),
-        Some("complete_task")=> task_list.tasks.get_mut(matches.subcommand_matches("complete_task").unwrap().value_of("index")
-            .unwrap().parse::<usize>()?).ok_or("Out of Bounds Index")?.mark_complete(),
-        Some("remove_task")=> task_list.remove_task(matches.subcommand_matches("remove_task").unwrap().value_of("index")
-            .unwrap().parse::<usize>()?),
+        Some("complete_task")=> task_list.tasks.get_mut(matches.subcommand_matches("complete_task").unwrap()
+            .value_of("index").unwrap().parse::<usize>()?)
+            .ok_or("Out of Bounds Index")?.mark_complete(),
+        Some("remove_task")=> task_list.remove_task(matches.subcommand_matches("remove_task").unwrap()
+            .value_of("index").unwrap().parse::<usize>()?),
+        Some("rename_task")=> task_list.tasks.get_mut(
+            matches.subcommand_matches("rename_task").unwrap()
+            .value_of("index").unwrap().parse::<usize>()?)
+            .ok_or("Out of Bounds Index")?
+            .rename_task(&matches.subcommand_matches("rename_task").unwrap()
+                .value_of("new_name").unwrap().to_string()),
         _ => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
     };
     return outcome
@@ -74,6 +81,18 @@ mod tests {
     }
 
     #[test]
+    fn cli_list_task_alias_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "lt"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "list_tasks");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "Successfully Printed {}");
+    }
+
+    #[test]
     fn cli_list_task_failure_empty_list_test() {
         let mut test_task_list = TaskList{tasks: vec![]};
         let yaml = load_yaml!("config/cli_config.yaml");
@@ -98,11 +117,36 @@ mod tests {
     }
 
     #[test]
+    fn cli_create_task_alias_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "create"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "create_task");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "Created new task named Test Task");
+        assert!(test_task_list.tasks.is_empty() == false)
+    }
+
+    #[test]
     fn cli_complete_task_successful_test() {
         let mut test_task_list = TaskList{tasks: vec![]};
         test_task_list.create_task().unwrap();
         let yaml = load_yaml!("config/cli_config.yaml");
         let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "complete_task");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "completed Task: Test Task");
+        assert!(test_task_list.tasks[0].completed == true);
+    }
+
+    #[test]
+    fn cli_complete_task_alias_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "complete", "0"]);
         assert_eq!(test_matches.subcommand_name().unwrap(), "complete_task");
 
         let result = run(test_matches, &mut test_task_list);
@@ -150,6 +194,19 @@ mod tests {
     }
 
     #[test]
+    fn cli_remove_task_alias_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "delete", "0"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "remove_task");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "Successfully Removed Task Test Task");
+        assert!(test_task_list.tasks.is_empty());
+    }
+
+    #[test]
     fn cli_remove_task_failing_invalid_index_test() {
         let mut test_task_list = TaskList{tasks: vec![]};
         let yaml = load_yaml!("config/cli_config.yaml");
@@ -158,6 +215,19 @@ mod tests {
 
         let error = run(test_matches, &mut test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "Invalid Index for Deletion");
+    }
+
+    #[test]
+    fn cli_rename_task_successful_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test Rename"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "rename_task");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "Task Test Task renamed to Test Rename");
+        assert!(test_task_list.tasks[0].name == "Test Rename");
     }
 }
 // pub struct Cli {
