@@ -148,6 +148,17 @@ mod tests {
         assert_eq!(result.unwrap(), "Successfully Removed Task Test Task");
         assert!(test_task_list.tasks.is_empty());
     }
+
+    #[test]
+    fn cli_remove_task_failing_invalid_index_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "remove_task", "0"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "remove_task");
+
+        let error = run(test_matches, &mut test_task_list);
+        assert_eq!(error.unwrap_err().to_string(), "Invalid Index for Deletion");
+    }
 }
 // pub struct Cli {
 //     pub pattern: Option<String>,
