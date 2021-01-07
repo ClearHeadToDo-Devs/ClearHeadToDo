@@ -87,7 +87,7 @@ impl TaskList {
                 )?;
             }
         }
-        Ok("Successfully Printed {}".to_string())
+        Ok("End of List".to_string())
     }
 
     pub fn remove_task(&mut self, index: usize) -> Result<String, Box<dyn Error>> {
@@ -281,13 +281,13 @@ mod tests {
         fn task_print_successful_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = TaskList { tasks: vec![] };
             let mut good_result = Vec::new();
-            let creation_result = test_task_list.create_task()?;
-            assert!(creation_result == "Created new task named Test Task");
-            test_task_list.print_task_list(&mut good_result).unwrap();
+            test_task_list.create_task()?;
+            let success = test_task_list.print_task_list(&mut good_result).unwrap();
             assert_eq!(
                 &good_result[..],
                 "index,name,priority,completed\n0,Test Task,Optional,false\n".as_bytes()
             );
+            assert_eq!(success , "End of List");
             return Ok(());
         }
 
