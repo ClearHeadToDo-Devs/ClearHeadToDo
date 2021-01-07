@@ -23,7 +23,14 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
             .value_of("index").unwrap().parse::<usize>()?)
             .ok_or("Out of Bounds Index")?
             .rename_task(&matches.subcommand_matches("rename_task").unwrap()
-                .values_of("new_name").unwrap().collect::<Vec<&str>>().join(" ").to_string()),
+                .values_of("new_name").unwrap()
+                .collect::<Vec<&str>>().join(" ").to_string()),
+        Some("reprioritize")=> task_list.tasks.get_mut(
+            matches.subcommand_matches("reprioritize").unwrap()
+            .value_of("index").unwrap().parse::<usize>()?)
+            .ok_or("Out of Bounds Index")?
+            .change_priority(&matches.subcommand_matches("reprioritize").unwrap()
+                .value_of("new_priority").unwrap()),
         _ => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
     };
     return outcome
@@ -254,6 +261,42 @@ mod tests {
 
         let error = run(test_matches, &mut test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "Out of Bounds Index");
+    }
+
+    #[test]
+    fn cli_change_priority_successful_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "reprioritize", "0", "High"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "reprioritize");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "changed Task: Test Task priority changed to High");
+        assert!(test_task_list.tasks[0].priority == PriEnum::High);
+    }
+
+    #[test]
+    fn cli_reprioritize_failing_invalid_index_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "reprioritize", "0", "High"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "reprioritize");
+
+        let error = run(test_matches, &mut test_task_list);
+        assert_eq!(error.unwrap_err().to_string(), "Out of Bounds Index");
+    }
+
+    #[test]
+    fn cli_reprioritize_duplicate_failing_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "reprioritize", "0", "Optional"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "reprioritize");
+
+        let error = run(test_matches, &mut test_task_list);
+        assert_eq!(error.unwrap_err().to_string(), "duplicate priority");
     }
 }
 // pub struct Cli {
