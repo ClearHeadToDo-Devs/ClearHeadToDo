@@ -23,7 +23,7 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
             .value_of("index").unwrap().parse::<usize>()?)
             .ok_or("Out of Bounds Index")?
             .rename_task(&matches.subcommand_matches("rename_task").unwrap()
-                .value_of("new_name").unwrap().to_string()),
+                .values_of("new_name").unwrap().collect::<Vec<&str>>().join(" ").to_string()),
         _ => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
     };
     return outcome
@@ -224,7 +224,7 @@ mod tests {
         let mut test_task_list = TaskList{tasks: vec![]};
         test_task_list.create_task().unwrap();
         let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test Rename"]);
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test", "Rename"]);
         assert_eq!(test_matches.subcommand_name().unwrap(), "rename_task");
 
         let result = run(test_matches, &mut test_task_list);

@@ -30,3 +30,4 @@ subcommands:
                                 required: true
                         - new_name:
                                 required: true
+                                multiple: true
