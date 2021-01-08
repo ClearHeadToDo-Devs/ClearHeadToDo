@@ -37,7 +37,8 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
         Some("complete_task")=> run_subcommand(CliSubCommand::CompleteTask(
                 matches.subcommand_matches("complete_task").unwrap()
             .value_of("index").unwrap().parse::<usize>()?),task_list),
-        Some("remove_task")=> run_subcommand(CliSubCommand::RemoveTask(matches.subcommand_matches("remove_task").unwrap()
+        Some("remove_task")=> run_subcommand(CliSubCommand::RemoveTask(
+                matches.subcommand_matches("remove_task").unwrap()
             .value_of("index").unwrap().parse::<usize>()?), task_list),
         Some("rename_task")=> run_subcommand(CliSubCommand::RenameTask{
             index: matches.subcommand_matches("rename_task").unwrap()
@@ -51,7 +52,8 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
             new_priority: matches.subcommand_matches("reprioritize").unwrap()
                 .value_of("new_priority").unwrap().to_string()}
                 , task_list),
-        _ => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
+        None => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
+        _ => unreachable!(),
     };
     return outcome
 }
