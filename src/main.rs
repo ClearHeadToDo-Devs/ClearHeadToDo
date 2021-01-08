@@ -7,30 +7,50 @@ use std::error::Error;
 extern crate clap;
 use clap::{Arg, App, SubCommand, load_yaml, ArgMatches};
 
+enum CliSubCommand {
+    ListTasks,
+    CreateTask,
+    CompleteTask (usize),
+    RemoveTask (usize),
+    RenameTask {index: usize, new_name: String},
+    Reprioritize {index: usize, new_priority: String},
+}
+
+fn run_subcommand(command: CliSubCommand, task_list: &mut TaskList) -> Result<String, Box<dyn Error>>{
+   match command {
+        CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
+        CliSubCommand::CreateTask => task_list.create_task(),
+        CliSubCommand::CompleteTask(i) => task_list.tasks.get_mut(i)
+            .ok_or("Out of Bounds Index")?.mark_complete(),
+        CliSubCommand::RemoveTask(i) => task_list.remove_task(i),
+        CliSubCommand::RenameTask{index,new_name} => task_list.tasks.get_mut(index)
+            .ok_or("Out of Bounds Index")?.rename_task(&new_name),
+        CliSubCommand::Reprioritize{index,new_priority} => task_list.tasks.get_mut(index)
+            .ok_or("Out of Bounds Index")?.change_priority(&new_priority[..]),
+   }
+}
+
 fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Error>>{
     let outcome = match matches.subcommand_name() {
-        Some("list_tasks")=> task_list.print_task_list(std::io::stdout()),
-        Some("create_task")=> task_list.create_task(),
-        Some("complete_task")=> task_list.tasks
-            .get_mut(matches.subcommand_matches("complete_task").unwrap()
-            .value_of("index").unwrap().parse::<usize>()?)
-            .ok_or("Out of Bounds Index")?.mark_complete(),
-        Some("remove_task")=> task_list
-            .remove_task(matches.subcommand_matches("remove_task").unwrap()
-            .value_of("index").unwrap().parse::<usize>()?),
-        Some("rename_task")=> task_list.tasks.get_mut(
-            matches.subcommand_matches("rename_task").unwrap()
-            .value_of("index").unwrap().parse::<usize>()?)
-            .ok_or("Out of Bounds Index")?
-            .rename_task(&matches.subcommand_matches("rename_task").unwrap()
-                .values_of("new_name").unwrap()
-                .collect::<Vec<&str>>().join(" ").to_string()),
-        Some("reprioritize")=> task_list.tasks.get_mut(
-            matches.subcommand_matches("reprioritize").unwrap()
-            .value_of("index").unwrap().parse::<usize>()?)
-            .ok_or("Out of Bounds Index")?
-            .change_priority(&matches.subcommand_matches("reprioritize").unwrap()
-                .value_of("new_priority").unwrap()),
+        Some("list_tasks")=> run_subcommand(CliSubCommand::ListTasks, task_list),
+        Some("create_task")=> run_subcommand(CliSubCommand::CreateTask, task_list),
+        Some("complete_task")=> run_subcommand(CliSubCommand::CompleteTask(
+                matches.subcommand_matches("complete_task").unwrap()
+            .value_of("index").unwrap().parse::<usize>()?),task_list),
+        Some("remove_task")=> run_subcommand(CliSubCommand::RemoveTask(matches.subcommand_matches("remove_task").unwrap()
+            .value_of("index").unwrap().parse::<usize>()?), task_list),
+        Some("rename_task")=> run_subcommand(CliSubCommand::RenameTask{
+            index: matches.subcommand_matches("rename_task").unwrap()
+            .value_of("index").unwrap().parse::<usize>()?, 
+            new_name: matches.subcommand_matches("rename_task").unwrap()
+             .values_of("new_name").unwrap().collect::<Vec<&str>>().join(" ").to_string()
+                }, task_list),
+        Some("reprioritize")=> run_subcommand(CliSubCommand::Reprioritize{
+            index: matches.subcommand_matches("reprioritize").unwrap()
+            .value_of("index").unwrap().parse::<usize>()?,
+            new_priority: matches.subcommand_matches("reprioritize").unwrap()
+                .value_of("new_priority").unwrap().to_string()}
+                , task_list),
         _ => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
     };
     return outcome
@@ -38,15 +58,17 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
 
 fn main() {
     let mut task_list: TaskList= TaskList{tasks: vec![]};
-
     task_list.load_tasks("tasks.csv").unwrap();
+
     let yaml = load_yaml!("config/cli_config.yaml");
     let matches = App::from(yaml).get_matches();
+
     let result = run(matches,&mut task_list);
     match result {
         Ok(s) => println!("{}",s),
         Err(e) => eprintln!("{}",e),
     }
+
     task_list.load_csv("tasks.csv").unwrap();
 }
 
@@ -78,7 +100,19 @@ mod tests {
     }
 
     #[test]
-    fn cli_list_task_successful_test() {
+    fn cli_list_task_successful_match_test() {
+        let mut test_task_list = TaskList{tasks: vec![]};
+        test_task_list.create_task().unwrap();
+        let yaml = load_yaml!("config/cli_config.yaml");
+        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "list_tasks");
+
+        let result = run(test_matches, &mut test_task_list);
+        assert_eq!(result.unwrap(), "End of List");
+    }
+
+    #[test]
+    fn cli_list_task_successful_run_test() {
         let mut test_task_list = TaskList{tasks: vec![]};
         test_task_list.create_task().unwrap();
         let yaml = load_yaml!("config/cli_config.yaml");
