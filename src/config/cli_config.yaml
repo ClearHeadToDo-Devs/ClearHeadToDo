@@ -10,6 +10,23 @@ subcommands:
         - create_task:
                 about: creates a new task in the task list. defaults to low priority named test task.
                 alias: create
+        - rename_task:
+                about: removes a given task from the list permanantly, only do this if you're sure you don't want the task anymore.
+                alias: rename
+                args:
+                        - index:
+                                required: true
+                        - new_name:
+                                required: true
+                                multiple: true
+        - reprioritize:
+                about: changes task priority to the given priority, duplicates are rejected
+                alias: rp
+                args:
+                        - index: 
+                                required: true
+                        - new_priority:
+                                required: true
         - complete_task:
                 about: completes a given task, using the required index argument, use "list_task" to see index numbers.
                 alias: complete
@@ -22,12 +39,3 @@ subcommands:
                 args:
                         - index:
                                 required: true
-        - rename_task:
-                about: removes a given task from the list permanantly, only do this if you're sure you don't want the task anymore.
-                alias: rename
-                args:
-                        - index:
-                                required: true
-                        - new_name:
-                                required: true
-                                multiple: true
