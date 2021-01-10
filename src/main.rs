@@ -3,9 +3,8 @@ use clear_head_todo::TaskList;
 use std::error::Error;
 
 
-#[macro_use]
 extern crate clap;
-use clap::{Arg, App, SubCommand, load_yaml, ArgMatches};
+use clap::{App, load_yaml, ArgMatches};
 
 enum CliSubCommand {
     ListTasks,
@@ -44,7 +43,7 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
             index: matches.subcommand_matches("rename_task").unwrap()
             .value_of("index").unwrap().parse::<usize>()?, 
             new_name: matches.subcommand_matches("rename_task").unwrap()
-             .values_of("new_name").unwrap().collect::<Vec<&str>>().join(" ").to_string()
+            .values_of("new_name").unwrap().collect::<Vec<&str>>().join(" ").to_string()
                 }, task_list),
         Some("reprioritize")=> run_subcommand(CliSubCommand::Reprioritize{
             index: matches.subcommand_matches("reprioritize").unwrap()
@@ -52,7 +51,6 @@ fn run(matches: ArgMatches,task_list: &mut TaskList)->Result<String, Box<dyn Err
             new_priority: matches.subcommand_matches("reprioritize").unwrap()
                 .value_of("new_priority").unwrap().to_string()}
                 , task_list),
-        None => Ok("Not a valid command, run --help to see the list of valid commands".to_string()),
         _ => unreachable!(),
     };
     return outcome
