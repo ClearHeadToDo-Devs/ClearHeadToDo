@@ -9,6 +9,7 @@ use std::{env, path::PathBuf};
 //use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
+#[derive(Debug, PartialEq)]
 pub struct TaskList {
     pub tasks: Vec<Task>,
 }
@@ -18,6 +19,10 @@ pub struct Task {
     pub name: String,
     pub completed: bool,
     pub priority: PriEnum,
+}
+
+pub fn create_task_list()->TaskList{
+    return TaskList{tasks: vec![]};
 }
 
 #[derive(PartialEq, Debug)]
@@ -194,15 +199,21 @@ mod tests {
         use super::*;
 
         #[test]
+        fn create_task_list_test(){
+            let test_task_list = create_task_list();
+            assert_eq!(test_task_list, TaskList {tasks: vec![]});
+        }
+
+        #[test]
         fn load_from_csv_bad_file_test() {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             let error = test_task_list.load_tasks("bad_file").unwrap_err();
             assert_eq!(error.to_string(), "No such file or directory (os error 2)");
         }
 
         #[test]
         fn load_from_csv_bad_completion_status_test() {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             let error = test_task_list
                 .load_tasks("bad_completion_status.csv")
                 .unwrap_err();
@@ -214,7 +225,7 @@ mod tests {
 
         #[test]
         fn load_from_csv_bad_priority_test() {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             let error = test_task_list
                 .load_tasks("bad_priority_test.csv")
                 .unwrap_err();
@@ -223,7 +234,7 @@ mod tests {
 
         #[test]
         fn load_from_csv_sucessful_test() {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             test_task_list
                 .load_tasks("successful_import_test.csv")
                 .unwrap();
@@ -235,7 +246,7 @@ mod tests {
 
         #[test]
         fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             let creation_result = test_task_list.create_task()?;
             assert!(creation_result == "Created new task named Test Task");
             test_task_list.tasks[0].rename_task(&"test csv task".to_string())?;
@@ -258,7 +269,7 @@ mod tests {
 
         #[test]
         fn task_creation_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             let creation_result = test_task_list.create_task()?;
             assert!(creation_result == "Created new task named Test Task");
             let test_task = &test_task_list.tasks[0];
@@ -271,7 +282,7 @@ mod tests {
 
         #[test]
         fn task_print_fail_test() {
-            let test_task_list = TaskList { tasks: vec![] };
+            let test_task_list = create_task_list();
             let mut bad_result = Vec::new();
             let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
             assert_eq!(error.to_string(), "list is empty");
@@ -279,7 +290,7 @@ mod tests {
 
         #[test]
         fn task_print_successful_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             let mut good_result = Vec::new();
             test_task_list.create_task()?;
             let success = test_task_list.print_task_list(&mut good_result).unwrap();
@@ -293,14 +304,14 @@ mod tests {
 
         #[test]
         fn task_removal_fail_test() {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             let error = test_task_list.remove_task(0).unwrap_err();
             assert_eq!(error.to_string(), "Invalid Index for Deletion");
         }
 
         #[test]
         fn task_removal_successful_test() {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             test_task_list.create_task().unwrap();
             let good_result = test_task_list.remove_task(0).unwrap();
             assert_eq!(
@@ -315,7 +326,7 @@ mod tests {
 
         #[test]
         fn task_rename_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             let creation_result = test_task_list.create_task()?;
             assert!(creation_result == "Created new task named Test Task");
             let test_task = &mut test_task_list.tasks[0];
@@ -326,7 +337,7 @@ mod tests {
 
         #[test]
         fn task_completion_successful_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             test_task_list.create_task()?;
             let test_task = &mut test_task_list.tasks[0];
             test_task.mark_complete()?;
@@ -336,7 +347,7 @@ mod tests {
 
         #[test]
         fn task_completion_fail_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             test_task_list.create_task()?;
             let test_task = &mut test_task_list.tasks[0];
             test_task.mark_complete()?;
@@ -347,7 +358,7 @@ mod tests {
 
         #[test]
         fn task_reprioritize_duplicate_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             test_task_list.create_task()?;
             let test_task = &mut test_task_list.tasks[0];
             let error = test_task.change_priority("5").unwrap_err();
@@ -357,7 +368,7 @@ mod tests {
 
         #[test]
         fn task_reprioritize_failure_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             test_task_list.create_task()?;
             let test_task = &mut test_task_list.tasks[0];
             let error = test_task.change_priority("6").unwrap_err();
@@ -367,7 +378,7 @@ mod tests {
 
         #[test]
         fn task_successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = TaskList { tasks: vec![] };
+            let mut test_task_list = create_task_list();
             test_task_list.create_task()?;
             let test_task = &mut test_task_list.tasks[0];
             test_task.change_priority("4")?;

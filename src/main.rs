@@ -1,5 +1,6 @@
 use clear_head_todo::PriEnum;
 use clear_head_todo::TaskList;
+use clear_head_todo::create_task_list;
 use std::error::Error;
 
 extern crate clap;
@@ -104,7 +105,7 @@ fn run(matches: ArgMatches) -> CliSubCommand {
 }
 
 fn main() {
-    let mut task_list: TaskList = TaskList { tasks: vec![] };
+    let mut task_list: TaskList = create_task_list();
     task_list.load_tasks("tasks.csv").unwrap();
 
     let yaml = load_yaml!("config/cli_config.yaml");
@@ -172,7 +173,7 @@ mod tests {
 
     #[test]
     fn cli_list_task_successful_run_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
         let result = run_subcommand(CliSubCommand::ListTasks, &mut test_task_list);
@@ -190,7 +191,7 @@ mod tests {
 
     #[test]
     fn cli_list_task_failure_empty_list_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::ListTasks, &mut test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "list is empty");
@@ -207,7 +208,7 @@ mod tests {
 
     #[test]
     fn cli_create_task_successful_run_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
         let result = run_subcommand(CliSubCommand::CreateTask, &mut test_task_list);
 
         assert_eq!(result.unwrap(), "Created new task named Test Task");
@@ -235,7 +236,7 @@ mod tests {
 
     #[test]
     fn cli_complete_task_successful_run_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
         let result = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
@@ -254,7 +255,7 @@ mod tests {
 
     #[test]
     fn cli_complete_task_failing_invalid_index_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "Out of Bounds Index");
@@ -262,7 +263,7 @@ mod tests {
 
     #[test]
     fn cli_complete_task_failing_already_complete_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
         test_task_list.tasks[0].mark_complete().unwrap();
 
@@ -283,7 +284,7 @@ mod tests {
 
     #[test]
     fn cli_remove_task_successful_run_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
         let result = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
@@ -302,7 +303,7 @@ mod tests {
 
     #[test]
     fn cli_remove_task_failing_invalid_index_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "Invalid Index for Deletion");
@@ -331,7 +332,7 @@ mod tests {
 
     #[test]
     fn cli_rename_task_successful_run_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
         let result = run_subcommand(
@@ -365,7 +366,7 @@ mod tests {
 
     #[test]
     fn cli_rename_task_failing_invalid_index_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
 
         let error = run_subcommand(
             CliSubCommand::RenameTask {
@@ -395,7 +396,7 @@ mod tests {
 
     #[test]
     fn cli_change_priority_successful_run_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
         let result = run_subcommand(
@@ -414,7 +415,7 @@ mod tests {
 
     #[test]
     fn cli_reprioritize_failing_invalid_index_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::Reprioritize{
             index: 0,
@@ -424,7 +425,7 @@ mod tests {
 
     #[test]
     fn cli_reprioritize_duplicate_failing_test() {
-        let mut test_task_list = TaskList { tasks: vec![] };
+        let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
         let error = run_subcommand(CliSubCommand::Reprioritize{
