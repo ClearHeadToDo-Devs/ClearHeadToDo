@@ -3,8 +3,16 @@ use clear_head_todo::TaskList;
 use clear_head_todo::create_task_list;
 use std::error::Error;
 
+
 extern crate clap;
 use clap::{load_yaml, App, ArgMatches, ErrorKind};
+
+fn create_app()->App<'static,'static>{
+    App::new("Clear Head Todo")
+        .author("Darrion Burgess <darrionburgess@gmail.com>")
+	.version("0.1.0")
+        .about("can be used to manage every part of your productive life!")
+}
 
 #[derive(Debug, PartialEq)]
 pub enum CliSubCommand {
@@ -127,28 +135,38 @@ mod tests {
     use super::*;
 
     #[test]
-    fn cli_creation_author_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let m = App::from(yaml);
+    fn cli_creation_name_test() {
+        let app = create_app();
+
         assert_eq!(
-            &m.p.meta.author.unwrap(),
+            &app.p.meta.name,
+            &"Clear Head Todo"
+        );
+    }
+
+    #[test]
+    fn cli_creation_author_test() {
+        let app = create_app();
+
+        assert_eq!(
+            &app.p.meta.author.unwrap(),
             &"Darrion Burgess <darrionburgess@gmail.com>"
         );
     }
 
     #[test]
     fn cli_creation_version_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let m = App::from(yaml);
-        assert_eq!(m.p.meta.version.unwrap(), "0.1.0");
+        let app = create_app();
+
+        assert_eq!(app.p.meta.version.unwrap(), "0.1.0");
     }
 
     #[test]
     fn cli_creation_about_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let m = App::from(yaml);
+        let app = create_app();
+
         assert_eq!(
-            m.p.meta.about.unwrap(),
+            app.p.meta.about.unwrap(),
             "can be used to manage every part of your productive life!"
         );
     }
