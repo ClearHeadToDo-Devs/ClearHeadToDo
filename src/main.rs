@@ -5,13 +5,15 @@ use std::error::Error;
 
 
 extern crate clap;
-use clap::{load_yaml, App, ArgMatches, ErrorKind};
+use clap::{load_yaml, App, ArgMatches, ErrorKind, AppSettings, SubCommand};
 
 fn create_app()->App<'static,'static>{
     App::new("Clear Head Todo")
         .author("Darrion Burgess <darrionburgess@gmail.com>")
-	.version("0.1.0")
+        .version("0.1.0")
         .about("can be used to manage every part of your productive life!")
+        .setting(AppSettings::SubcommandRequiredElseHelp)
+        .subcommand(SubCommand::with_name("list_tasks"))
 }
 
 #[derive(Debug, PartialEq)]
@@ -173,17 +175,19 @@ mod tests {
 
     #[test]
     fn cli_creation_subcommand_or_help_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let app = App::from(yaml);
+        let app = create_app();
+
         let matches = app.get_matches_from_safe(&[""]);
         let error = matches.unwrap_err();
+
         assert_eq!(error.kind, ErrorKind::MissingArgumentOrSubcommand);
     }
 
     #[test]
     fn cli_list_task_successful_match_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
+        let app = create_app();
+            
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
 
         let result = run(test_matches);
         assert_eq!(result, CliSubCommand::ListTasks);
