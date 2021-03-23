@@ -394,7 +394,6 @@ mod tests {
     fn cli_rename_task_alias_test() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rename", "0", "Test Rename"]);
-        assert_eq!(test_matches.subcommand_name().unwrap(), "rename_task");
 
         let result = run(test_matches);
         assert_eq!(
@@ -458,7 +457,6 @@ mod tests {
     fn cli_reprioritize_task_alias_test() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rp", "0", "High"]);
-        assert_eq!(test_matches.subcommand_name().unwrap(), "reprioritize");
 
         let result = run(test_matches);
         assert_eq!(
