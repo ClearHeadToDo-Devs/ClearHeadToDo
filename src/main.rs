@@ -5,7 +5,7 @@ use std::error::Error;
 
 
 extern crate clap;
-use clap::{load_yaml, App, ArgMatches, ErrorKind, AppSettings, SubCommand, Arg};
+use clap::{App, ArgMatches, AppSettings, SubCommand, Arg};
 
 fn create_app<'a>() -> App<'a,'a> {
     App::new("Clear Head Todo")
@@ -142,8 +142,8 @@ fn main() {
     let mut task_list: TaskList = create_task_list();
     task_list.load_tasks("tasks.csv").unwrap();
 
-    let yaml = load_yaml!("config/cli_config.yaml");
-    let matches = App::from(yaml).get_matches();
+    let app = create_app();
+    let matches = app.get_matches();
 
     let subcommand = run(matches);
     let result = run_subcommand(subcommand, &mut task_list);
