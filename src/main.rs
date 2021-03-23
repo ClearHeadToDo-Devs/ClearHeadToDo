@@ -5,15 +5,39 @@ use std::error::Error;
 
 
 extern crate clap;
-use clap::{load_yaml, App, ArgMatches, ErrorKind, AppSettings, SubCommand};
+use clap::{load_yaml, App, ArgMatches, ErrorKind, AppSettings, SubCommand, Arg};
 
-fn create_app()->App<'static,'static>{
+fn create_app<'a>() -> App<'a,'a> {
     App::new("Clear Head Todo")
         .author("Darrion Burgess <darrionburgess@gmail.com>")
         .version("0.1.0")
         .about("can be used to manage every part of your productive life!")
         .setting(AppSettings::SubcommandRequiredElseHelp)
-        .subcommand(SubCommand::with_name("list_tasks"))
+        .subcommand(SubCommand::with_name("list_tasks")
+		.alias("lt"))
+	.subcommand(SubCommand::with_name("create_task")
+		.alias("create"))
+	.subcommand(SubCommand::with_name("complete_task")
+		.alias("complete")
+		.arg(Arg::with_name("index")
+			.required(true)))
+	.subcommand(SubCommand::with_name("remove_task")
+		.alias("remove")
+		.arg(Arg::with_name("index")
+			.required(true)))
+	.subcommand(SubCommand::with_name("rename_task")
+		.alias("rename")
+		.arg(Arg::with_name("index")
+			.required(true))
+		.arg(Arg::with_name("new_name")
+			.required(true)
+			.multiple(true)))
+	.subcommand(SubCommand::with_name("reprioritize")
+		.alias("rp")
+		.arg(Arg::with_name("index")
+			.required(true))
+		.arg(Arg::with_name("new_priority")
+			.required(true)))
 }
 
 #[derive(Debug, PartialEq)]
@@ -186,7 +210,6 @@ mod tests {
     #[test]
     fn cli_list_task_successful_match_test() {
         let app = create_app();
-            
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
 
         let result = run(test_matches);
@@ -204,8 +227,8 @@ mod tests {
 
     #[test]
     fn cli_list_task_alias_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "lt"]);
+        let app = create_app();
+	let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "lt"]);
 
         let result = run(test_matches);
         assert_eq!(result, CliSubCommand::ListTasks);
@@ -221,8 +244,8 @@ mod tests {
 
     #[test]
     fn cli_create_task_successful_parse_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "create_task"]);
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_task"]);
 
         let result = run(test_matches);
         assert_eq!(result, CliSubCommand::CreateTask);
@@ -239,8 +262,8 @@ mod tests {
 
     #[test]
     fn cli_create_task_alias_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "create"]);
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create"]);
 
         let result = run(test_matches);
         assert_eq!(result, CliSubCommand::CreateTask);
@@ -248,9 +271,8 @@ mod tests {
 
     #[test]
     fn cli_complete_task_successful_parse_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches =
-            App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
 
         let result = run(test_matches);
         assert_eq!(result, CliSubCommand::CompleteTask(0));
@@ -268,8 +290,8 @@ mod tests {
 
     #[test]
     fn cli_complete_task_alias_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "complete", "0"]);
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "0"]);
 
         let result = run(test_matches);
         assert_eq!(result, CliSubCommand::CompleteTask(0));
@@ -296,9 +318,8 @@ mod tests {
 
     #[test]
     fn cli_remove_task_successful_parse_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches =
-            App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "remove_task", "0"]);
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove_task", "0"]);
 
         let result = run(test_matches);
         assert_eq!(result, CliSubCommand::RemoveTask(0));
@@ -316,8 +337,8 @@ mod tests {
 
     #[test]
     fn cli_remove_task_alias_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches = App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "delete", "0"]);
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "0"]);
 
         let result = run(test_matches);
         assert_eq!(result, CliSubCommand::RemoveTask(0));
@@ -333,8 +354,8 @@ mod tests {
 
     #[test]
     fn cli_rename_task_successful_parse_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches = App::from(yaml).get_matches_from(vec![
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec![
             "ClearHeadToDo",
             "rename_task",
             "0",
@@ -371,9 +392,8 @@ mod tests {
 
     #[test]
     fn cli_rename_task_alias_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches =
-            App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "rename", "0", "Test Rename"]);
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rename", "0", "Test Rename"]);
         assert_eq!(test_matches.subcommand_name().unwrap(), "rename_task");
 
         let result = run(test_matches);
@@ -402,9 +422,8 @@ mod tests {
 
     #[test]
     fn cli_change_priority_successful_parse_test() {
-        let yaml = load_yaml!("config/cli_config.yaml");
-        let test_matches =
-            App::from(yaml).get_matches_from(vec!["ClearHeadToDo", "reprioritize", "0", "High"]);
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "reprioritize", "0", "High"]);
 
         let result = run(test_matches);
         assert_eq!(
@@ -433,6 +452,22 @@ mod tests {
             "changed Task: Test Task priority changed to High"
         );
         assert!(test_task_list.tasks[0].priority == PriEnum::High);
+    }
+
+    #[test]
+    fn cli_reprioritize_task_alias_test() {
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rp", "0", "High"]);
+        assert_eq!(test_matches.subcommand_name().unwrap(), "reprioritize");
+
+        let result = run(test_matches);
+        assert_eq!(
+            result,
+            CliSubCommand::Reprioritize {
+                index: 0,
+                new_priority: "High".to_string()
+            }
+        );
     }
 
     #[test]
