@@ -5,7 +5,7 @@ use std::error::Error;
 
 
 extern crate clap;
-use clap::{App, ArgMatches, AppSettings, SubCommand, Arg};
+use clap::{App, ArgMatches, AppSettings, SubCommand, Arg, ErrorKind};
 
 fn create_app<'a>() -> App<'a,'a> {
     App::new("Clear Head Todo")
