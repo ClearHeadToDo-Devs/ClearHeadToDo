@@ -21,8 +21,8 @@ pub struct Task {
     pub priority: PriEnum,
 }
 
-pub fn create_task_list()->TaskList{
-    return TaskList{tasks: vec![]};
+pub fn create_task_list() -> TaskList {
+    return TaskList { tasks: vec![] };
 }
 
 #[derive(PartialEq, Debug)]
@@ -39,7 +39,9 @@ pub enum PriEnum {
 impl TaskList {
     //load tasks from either tasks.csv or testTasks.csv using the file_name
     pub fn load_tasks(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
-        let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data").join(file_name);
+        let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("data")
+            .join(file_name);
         let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
         for result in rdr.records() {
             let record: csv::StringRecord = result?;
@@ -54,7 +56,9 @@ impl TaskList {
     }
 
     pub fn load_csv(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
-        let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data").join(file_name);
+        let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("data")
+            .join(file_name);
         let mut wtr: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
         for index in 0..=self.tasks.len() - 1 {
             wtr.serialize::<_>(&self.tasks[index])?;
@@ -148,7 +152,7 @@ impl Task {
             ));
         }
     }
-} //end 'impl Task'
+}
 
 pub fn parse_priority(expr: &str) -> Result<PriEnum, Box<dyn Error>> {
     match expr.to_ascii_lowercase().trim() {
@@ -199,9 +203,9 @@ mod tests {
         use super::*;
 
         #[test]
-        fn create_task_list_test(){
+        fn create_task_list_test() {
             let test_task_list = create_task_list();
-            assert_eq!(test_task_list, TaskList {tasks: vec![]});
+            assert_eq!(test_task_list, TaskList { tasks: vec![] });
         }
 
         #[test]
@@ -298,7 +302,7 @@ mod tests {
                 &good_result[..],
                 "index,name,priority,completed\n0,Test Task,Optional,false\n".as_bytes()
             );
-            assert_eq!(success , "End of List");
+            assert_eq!(success, "End of List");
             return Ok(());
         }
 
