@@ -16,6 +16,7 @@ pub struct TaskList {
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Task {
+    pub ID: usize,
     pub name: String,
     pub completed: bool,
     pub priority: PriEnum,
@@ -46,6 +47,7 @@ impl TaskList {
         for result in rdr.records() {
             let record: csv::StringRecord = result?;
             let new_task: Task = Task {
+                ID: self.tasks.len()+1,
                 name: record[0].to_string(),
                 completed: FromStr::from_str(&record[2])?,
                 priority: parse_priority(&record[1])?,
@@ -68,6 +70,7 @@ impl TaskList {
 
     pub fn create_task(&mut self) -> Result<String, Box<dyn Error>> {
         let new_task: Task = Task {
+            ID: self.tasks.len()+1,
             name: String::from("Test Task"),
             completed: false,
             priority: PriEnum::Optional,
@@ -84,15 +87,15 @@ impl TaskList {
         if self.tasks.is_empty() == true {
             return Err(Box::new(OtherError::new(ErrorKind::Other, "list is empty")));
         } else {
-            writeln!(writer, "index,name,priority,completed")?;
-            for index in 0..=self.tasks.len() - 1 {
+            writeln!(writer, "ID,name,priority,completed")?;
+            for task in &self.tasks{
                 writeln!(
                     writer,
-                    "{index},{name},{priority},{completed}",
-                    index = index,
-                    name = self.tasks[index].name,
-                    priority = self.tasks[index].priority,
-                    completed = self.tasks[index].completed
+                    "{ID},{name},{priority},{completed}",
+                    ID = task.ID,
+                    name = task.name,
+                    priority = task.priority,
+                    completed = task.completed
                 )?;
             }
         }
@@ -243,6 +246,7 @@ mod tests {
                 .load_tasks("successful_import_test.csv")
                 .unwrap();
             let test_task = &test_task_list.tasks[0];
+            assert!(test_task.ID == 1);
             assert!(test_task.name == "test csv task");
             assert!(test_task.completed == false);
             assert!(test_task.priority == PriEnum::Optional);
@@ -277,10 +281,21 @@ mod tests {
             let creation_result = test_task_list.create_task()?;
             assert!(creation_result == "Created new task named Test Task");
             let test_task = &test_task_list.tasks[0];
+            assert!(test_task.ID == 1);
             assert!(test_task.name == "Test Task");
             assert!(test_task.completed == false);
             assert!(test_task.priority == PriEnum::Optional);
             assert!(&test_task_list.tasks[0] == test_task);
+            return Ok(());
+        }
+
+        #[test]
+        fn task_creation_new_id_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = create_task_list();
+            test_task_list.create_task()?;
+            test_task_list.create_task()?;
+            let new_id_test_task = &test_task_list.tasks[1];
+            assert!(new_id_test_task.ID == 2);
             return Ok(());
         }
 
@@ -300,7 +315,7 @@ mod tests {
             let success = test_task_list.print_task_list(&mut good_result).unwrap();
             assert_eq!(
                 &good_result[..],
-                "index,name,priority,completed\n0,Test Task,Optional,false\n".as_bytes()
+                "ID,name,priority,completed\n1,Test Task,Optional,false\n".as_bytes()
             );
             assert_eq!(success, "End of List");
             return Ok(());
