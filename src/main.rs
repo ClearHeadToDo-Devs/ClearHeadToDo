@@ -1,7 +1,6 @@
 mod cli;
 
 use cli::create_app;
-use cli::CliSubCommand;
 use cli::run_subcommand;
 use cli::run;
 use clear_head_todo::create_task_list;
