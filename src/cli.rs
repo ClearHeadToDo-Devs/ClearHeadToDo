@@ -55,10 +55,8 @@ pub fn run_subcommand(
     match command {
         CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
         CliSubCommand::CreateTask => task_list.create_task(),
-        CliSubCommand::CompleteTask(i) => task_list
-            .tasks
-            .get_mut(i)
-            .ok_or("Out of Bounds Index")?
+        CliSubCommand::CompleteTask(id) => task_list
+            .select_task_by_id(id)?
             .mark_complete(),
         CliSubCommand::RemoveTask(i) => task_list.remove_task(i),
         CliSubCommand::RenameTask { index, new_name } => task_list
@@ -249,10 +247,10 @@ mod tests {
     #[test]
     fn cli_complete_task_successful_parse_test() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "1"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::CompleteTask(0));
+        assert_eq!(result, CliSubCommand::CompleteTask(1));
     }
 
     #[test]
@@ -260,7 +258,7 @@ mod tests {
         let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
-        let result = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
+        let result = run_subcommand(CliSubCommand::CompleteTask(1), &mut test_task_list);
         assert_eq!(result.unwrap(), "completed Task: Test Task");
         assert!(test_task_list.tasks[0].completed == true);
     }
@@ -268,18 +266,18 @@ mod tests {
     #[test]
     fn cli_complete_task_alias_test() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "0"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "1"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::CompleteTask(0));
+        assert_eq!(result, CliSubCommand::CompleteTask(1));
     }
 
     #[test]
     fn cli_complete_task_failing_invalid_index_test() {
         let mut test_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "Out of Bounds Index");
+        let error = run_subcommand(CliSubCommand::CompleteTask(1), &mut test_task_list);
+        assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
     }
 
     #[test]
@@ -288,7 +286,7 @@ mod tests {
         test_task_list.create_task().unwrap();
         test_task_list.tasks[0].mark_complete().unwrap();
 
-        let error = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
+        let error = run_subcommand(CliSubCommand::CompleteTask(1), &mut test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "Task is already completed");
         assert!(test_task_list.tasks[0].completed == true);
     }
@@ -296,10 +294,10 @@ mod tests {
     #[test]
     fn cli_remove_task_successful_parse_test() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove_task", "0"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove_task", "1"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::RemoveTask(0));
+        assert_eq!(result, CliSubCommand::RemoveTask(1));
     }
 
     #[test]
@@ -307,26 +305,26 @@ mod tests {
         let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
-        let result = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
-        assert_eq!(result.unwrap(), "Successfully Removed Task Test Task");
+        let result = run_subcommand(CliSubCommand::RemoveTask(1), &mut test_task_list);
+        assert_eq!(result.unwrap(), "Removed Task named Test Task");
         assert!(test_task_list.tasks.is_empty());
     }
 
     #[test]
     fn cli_remove_task_alias_test() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "0"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "1"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::RemoveTask(0));
+        assert_eq!(result, CliSubCommand::RemoveTask(1));
     }
 
     #[test]
     fn cli_remove_task_failing_invalid_index_test() {
         let mut test_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "Invalid Index for Deletion");
+        let error = run_subcommand(CliSubCommand::RemoveTask(1), &mut test_task_list);
+        assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
     }
 
     #[test]
