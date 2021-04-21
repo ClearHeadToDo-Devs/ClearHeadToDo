@@ -8,7 +8,7 @@ use clear_head_todo::TaskList;
 
 fn main() {
     let mut task_list: TaskList = create_task_list();
-    task_list.load_tasks("tasks.csv").unwrap();
+    task_list.load_tasks_from_csv("tasks.csv").unwrap();
 
     let app = create_app();
     let matches = app.get_matches();

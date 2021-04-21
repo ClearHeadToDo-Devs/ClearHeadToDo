@@ -104,7 +104,7 @@ impl TaskList {
     pub fn remove_task(&mut self, id: usize) -> Result<String, Box<dyn Error>> {
         let removal_task_index = self.tasks.iter_mut().position(|task|task.id == id);
         match removal_task_index {
-            Some(task) => {
+            Some(_task_index) => {
                 let removal_task_name = self.tasks[removal_task_index.unwrap()].name.clone();
                 self.tasks.remove(removal_task_index.unwrap());
                 return Ok(format!("Removed Task named {}", removal_task_name).to_string());

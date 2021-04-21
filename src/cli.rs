@@ -17,23 +17,23 @@ pub fn create_app<'a>() -> App<'a, 'a> {
         .subcommand(
             SubCommand::with_name("complete_task")
                 .alias("complete")
-                .arg(Arg::with_name("index").required(true)),
+                .arg(Arg::with_name("id").required(true)),
         )
         .subcommand(
             SubCommand::with_name("remove_task")
                 .alias("remove")
-                .arg(Arg::with_name("index").required(true)),
+                .arg(Arg::with_name("id").required(true)),
         )
         .subcommand(
             SubCommand::with_name("rename_task")
                 .alias("rename")
-                .arg(Arg::with_name("index").required(true))
+                .arg(Arg::with_name("id").required(true))
                 .arg(Arg::with_name("new_name").required(true).multiple(true)),
         )
         .subcommand(
             SubCommand::with_name("reprioritize")
                 .alias("rp")
-                .arg(Arg::with_name("index").required(true))
+                .arg(Arg::with_name("id").required(true))
                 .arg(Arg::with_name("new_priority").required(true)),
         )
 }
@@ -44,35 +44,8 @@ pub enum CliSubCommand {
     CreateTask,
     CompleteTask(usize),
     RemoveTask(usize),
-    RenameTask { index: usize, new_name: String },
-    Reprioritize { index: usize, new_priority: String },
-}
-
-pub fn run_subcommand(
-    command: CliSubCommand,
-    task_list: &mut TaskList,
-) -> Result<String, Box<dyn Error>> {
-    match command {
-        CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
-        CliSubCommand::CreateTask => task_list.create_task(),
-        CliSubCommand::CompleteTask(id) => task_list
-            .select_task_by_id(id)?
-            .mark_complete(),
-        CliSubCommand::RemoveTask(i) => task_list.remove_task(i),
-        CliSubCommand::RenameTask { index, new_name } => task_list
-            .tasks
-            .get_mut(index)
-            .ok_or("Out of Bounds Index")?
-            .rename_task(&new_name),
-        CliSubCommand::Reprioritize {
-            index,
-            new_priority,
-        } => task_list
-            .tasks
-            .get_mut(index)
-            .ok_or("Out of Bounds Index")?
-            .change_priority(&new_priority[..]),
-    }
+    RenameTask { id: usize, new_name: String },
+    Reprioritize { id: usize, new_priority: String },
 }
 
 pub fn run(matches: ArgMatches) -> CliSubCommand {
@@ -83,7 +56,7 @@ pub fn run(matches: ArgMatches) -> CliSubCommand {
             matches
                 .subcommand_matches("complete_task")
                 .unwrap()
-                .value_of("index")
+                .value_of("id")
                 .unwrap()
                 .parse::<usize>()
                 .unwrap(),
@@ -92,16 +65,16 @@ pub fn run(matches: ArgMatches) -> CliSubCommand {
             matches
                 .subcommand_matches("remove_task")
                 .unwrap()
-                .value_of("index")
+                .value_of("id")
                 .unwrap()
                 .parse::<usize>()
                 .unwrap(),
         ),
         Some("rename_task") => CliSubCommand::RenameTask {
-            index: matches
+            id: matches
                 .subcommand_matches("rename_task")
                 .unwrap()
-                .value_of("index")
+                .value_of("id")
                 .unwrap()
                 .parse::<usize>()
                 .unwrap(),
@@ -115,10 +88,10 @@ pub fn run(matches: ArgMatches) -> CliSubCommand {
                 .to_string(),
         },
         Some("reprioritize") => CliSubCommand::Reprioritize {
-            index: matches
+            id: matches
                 .subcommand_matches("reprioritize")
                 .unwrap()
-                .value_of("index")
+                .value_of("id")
                 .unwrap()
                 .parse::<usize>()
                 .unwrap(),
@@ -133,6 +106,30 @@ pub fn run(matches: ArgMatches) -> CliSubCommand {
     };
     return outcome;
 }
+
+pub fn run_subcommand(
+    command: CliSubCommand,
+    task_list: &mut TaskList,
+) -> Result<String, Box<dyn Error>> {
+    match command {
+        CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
+        CliSubCommand::CreateTask => task_list.create_task(),
+        CliSubCommand::CompleteTask(id) => task_list
+            .select_task_by_id(id)?
+            .mark_complete(),
+        CliSubCommand::RemoveTask(id) => task_list.remove_task(id),
+        CliSubCommand::RenameTask { id, new_name } => task_list
+            .select_task_by_id(id)?
+            .rename_task(&new_name),
+        CliSubCommand::Reprioritize {
+            id,
+            new_priority,
+        } => task_list
+            .select_task_by_id(id)?
+            .change_priority(&new_priority[..]),
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -273,7 +270,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_complete_task_failing_invalid_index_test() {
+    fn cli_complete_task_failing_invalid_id_test() {
         let mut test_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::CompleteTask(1), &mut test_task_list);
@@ -320,7 +317,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_remove_task_failing_invalid_index_test() {
+    fn cli_remove_task_failing_invalid_id_test() {
         let mut test_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::RemoveTask(1), &mut test_task_list);
@@ -331,13 +328,13 @@ mod tests {
     fn cli_rename_task_successful_parse_test() {
         let app = create_app();
         let test_matches =
-            app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test", "Rename"]);
+            app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "1", "Test", "Rename"]);
 
         let result = run(test_matches);
         assert_eq!(
             result,
             CliSubCommand::RenameTask {
-                index: 0,
+                id: 1,
                 new_name: "Test Rename".to_string()
             }
         );
@@ -350,7 +347,7 @@ mod tests {
 
         let result = run_subcommand(
             CliSubCommand::RenameTask {
-                index: 0,
+                id: 1,
                 new_name: "Test Rename".to_string(),
             },
             &mut test_task_list,
@@ -370,36 +367,36 @@ mod tests {
         assert_eq!(
             result,
             CliSubCommand::RenameTask {
-                index: 0,
+                id: 0,
                 new_name: "Test Rename".to_string()
             }
         );
     }
 
     #[test]
-    fn cli_rename_task_failing_invalid_index_test() {
+    fn cli_rename_task_failing_invalid_id_test() {
         let mut test_task_list = create_task_list();
 
         let error = run_subcommand(
             CliSubCommand::RenameTask {
-                index: 0,
+                id: 0,
                 new_name: "Test Rename".to_string(),
             },
             &mut test_task_list,
         );
-        assert_eq!(error.unwrap_err().to_string(), "Out of Bounds Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
     }
 
     #[test]
     fn cli_change_priority_successful_parse_test() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "reprioritize", "0", "High"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "reprioritize", "1", "High"]);
 
         let result = run(test_matches);
         assert_eq!(
             result,
             CliSubCommand::Reprioritize {
-                index: 0,
+                id: 1,
                 new_priority: "High".to_string()
             }
         );
@@ -412,7 +409,7 @@ mod tests {
 
         let result = run_subcommand(
             CliSubCommand::Reprioritize {
-                index: 0,
+                id: 1,
                 new_priority: "High".to_string(),
             },
             &mut test_task_list,
@@ -427,30 +424,30 @@ mod tests {
     #[test]
     fn cli_reprioritize_task_alias_test() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rp", "0", "High"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rp", "1", "High"]);
 
         let result = run(test_matches);
         assert_eq!(
             result,
             CliSubCommand::Reprioritize {
-                index: 0,
+                id: 1,
                 new_priority: "High".to_string()
             }
         );
     }
 
     #[test]
-    fn cli_reprioritize_failing_invalid_index_test() {
+    fn cli_reprioritize_failing_invalid_id_test() {
         let mut test_task_list = create_task_list();
 
         let error = run_subcommand(
             CliSubCommand::Reprioritize {
-                index: 0,
+                id: 1,
                 new_priority: "High".to_string(),
             },
             &mut test_task_list,
         );
-        assert_eq!(error.unwrap_err().to_string(), "Out of Bounds Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
     }
 
     #[test]
@@ -460,7 +457,7 @@ mod tests {
 
         let error = run_subcommand(
             CliSubCommand::Reprioritize {
-                index: 0,
+                id: 1,
                 new_priority: "Optional".to_string(),
             },
             &mut test_task_list,
