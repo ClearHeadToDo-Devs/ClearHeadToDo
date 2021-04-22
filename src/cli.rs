@@ -48,59 +48,21 @@ pub enum CliSubCommand {
     Reprioritize { id: usize, new_priority: String },
 }
 
-pub fn run(matches: ArgMatches) -> CliSubCommand {
+pub fn run(matches: ArgMatches<'static>) -> CliSubCommand {
     let outcome = match matches.subcommand_name() {
         Some("list_tasks") => CliSubCommand::ListTasks,
         Some("create_task") => CliSubCommand::CreateTask,
         Some("complete_task") => CliSubCommand::CompleteTask(
-            matches
-                .subcommand_matches("complete_task")
-                .unwrap()
-                .value_of("id")
-                .unwrap()
-                .parse::<usize>()
-                .unwrap(),
-        ),
+            matches.parse_id_for_subcommand("complete_task".to_string())),
         Some("remove_task") => CliSubCommand::RemoveTask(
-            matches
-                .subcommand_matches("remove_task")
-                .unwrap()
-                .value_of("id")
-                .unwrap()
-                .parse::<usize>()
-                .unwrap(),
-        ),
+            matches.parse_id_for_subcommand("remove_task".to_string())),
         Some("rename_task") => CliSubCommand::RenameTask {
-            id: matches
-                .subcommand_matches("rename_task")
-                .unwrap()
-                .value_of("id")
-                .unwrap()
-                .parse::<usize>()
-                .unwrap(),
-            new_name: matches
-                .subcommand_matches("rename_task")
-                .unwrap()
-                .values_of("new_name")
-                .unwrap()
-                .collect::<Vec<&str>>()
-                .join(" ")
-                .to_string(),
+            id: matches.parse_id_for_subcommand("rename_task".to_string()),
+            new_name: matches.parse_desired_name_for_rename()
         },
         Some("reprioritize") => CliSubCommand::Reprioritize {
-            id: matches
-                .subcommand_matches("reprioritize")
-                .unwrap()
-                .value_of("id")
-                .unwrap()
-                .parse::<usize>()
-                .unwrap(),
-            new_priority: matches
-                .subcommand_matches("reprioritize")
-                .unwrap()
-                .value_of("new_priority")
-                .unwrap()
-                .to_string(),
+            id: matches.parse_id_for_subcommand("reprioritize".to_string()),
+            new_priority: matches.parse_desired_priority_for_reprioritization()
         },
         _ => unreachable!(),
     };
@@ -130,6 +92,40 @@ pub fn run_subcommand(
     }
 }
 
+pub trait SubcommandArgumentParser {
+    fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize;
+    fn parse_desired_name_for_rename(&self) -> String;
+    fn parse_desired_priority_for_reprioritization(&self) -> String;
+}
+
+impl SubcommandArgumentParser for ArgMatches<'static> {
+    fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize {
+        self.subcommand_matches(subcommand_name)
+        .unwrap()
+        .value_of("id")
+        .unwrap()
+        .parse::<usize>()
+        .unwrap()
+    }
+
+    fn parse_desired_name_for_rename(&self) -> String {
+        self.subcommand_matches("rename_task")
+            .unwrap()
+            .values_of("new_name")
+            .unwrap()
+            .collect::<Vec<&str>>()
+            .join(" ")
+            .to_string()
+    }
+
+    fn parse_desired_priority_for_reprioritization(&self) -> String {
+        self.subcommand_matches("reprioritize")
+            .unwrap()
+            .value_of("new_priority")
+            .unwrap()
+            .to_string()
+    }
+}
 
 #[cfg(test)]
 mod tests {
