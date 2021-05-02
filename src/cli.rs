@@ -92,7 +92,7 @@ pub fn run_subcommand(
     }
 }
 
-pub trait SubcommandArgumentParser {
+trait SubcommandArgumentParser {
     fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize;
     fn parse_desired_name_for_rename(&self) -> String;
     fn parse_desired_priority_for_reprioritization(&self) -> String;
