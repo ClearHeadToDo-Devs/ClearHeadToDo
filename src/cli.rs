@@ -445,19 +445,4 @@ mod tests {
         );
         assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
     }
-
-    #[test]
-    fn cli_reprioritize_duplicate_failing_test() {
-        let mut test_task_list = create_task_list();
-        test_task_list.create_task().unwrap();
-
-        let error = run_subcommand(
-            CliSubCommand::Reprioritize {
-                id: 1,
-                new_priority: "Optional".to_string(),
-            },
-            &mut test_task_list,
-        );
-        assert_eq!(error.unwrap_err().to_string(), "duplicate priority");
-    }
 }

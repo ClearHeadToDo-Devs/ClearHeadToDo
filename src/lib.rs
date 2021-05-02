@@ -14,7 +14,7 @@ pub struct TaskList {
     pub tasks: Vec<Task>,
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Default)]
 pub struct Task {
     pub id: usize,
     pub name: String,
@@ -150,19 +150,12 @@ impl Task {
 
     pub fn change_priority(&mut self, new_priority: &str) -> Result<String, Box<dyn Error>> {
         let new_pri: PriEnum = parse_priority(new_priority)?;
-        if self.priority == new_pri {
-            return Err(Box::new(OtherError::new(
-                ErrorKind::Other,
-                "duplicate priority",
-            )));
-        } else {
-            self.priority = new_pri.clone();
-            return Ok(format!(
-                "changed Task: {name} priority changed to {new}",
-                name = self.name,
-                new = self.priority
-            ));
-        }
+        self.priority = new_pri.clone();
+        return Ok(format!(
+            "changed Task: {name} priority changed to {new}",
+            name = self.name,
+            new = self.priority
+        ));
     }
 }
 
@@ -205,6 +198,10 @@ impl fmt::Display for PriEnum {
         };
         write!(f, "{}", printable)
     }
+}
+
+impl Default for PriEnum {
+    fn default() -> Self { PriEnum::Optional}
 }
 
 #[cfg(test)]
@@ -405,16 +402,6 @@ mod tests {
             test_task.mark_complete()?;
             let failure = test_task.mark_complete().unwrap_err();
             assert_eq!(failure.to_string(), "Task is already completed");
-            return Ok(());
-        }
-
-        #[test]
-        fn task_reprioritize_duplicate_test() -> Result<(), Box<dyn Error>> {
-            let mut test_task_list = create_task_list();
-            test_task_list.create_task()?;
-            let test_task = &mut test_task_list.tasks[0];
-            let error = test_task.change_priority("5").unwrap_err();
-            assert_eq!(error.to_string(), "duplicate priority");
             return Ok(());
         }
 
