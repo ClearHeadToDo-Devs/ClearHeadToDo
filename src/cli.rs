@@ -58,11 +58,11 @@ pub fn run(matches: ArgMatches<'static>) -> CliSubCommand {
             matches.parse_id_for_subcommand("remove_task".to_string())),
         Some("rename_task") => CliSubCommand::RenameTask {
             id: matches.parse_id_for_subcommand("rename_task".to_string()),
-            new_name: matches.parse_desired_name_for_rename()
+            new_name: matches.parse_desired_name("rename_task".to_string())
         },
         Some("reprioritize") => CliSubCommand::Reprioritize {
             id: matches.parse_id_for_subcommand("reprioritize".to_string()),
-            new_priority: matches.parse_desired_priority_for_reprioritization()
+            new_priority: matches.parse_desired_priority("reprioritize".to_string())
         },
         _ => unreachable!(),
     };
@@ -94,8 +94,8 @@ pub fn run_subcommand(
 
 trait SubcommandArgumentParser {
     fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize;
-    fn parse_desired_name_for_rename(&self) -> String;
-    fn parse_desired_priority_for_reprioritization(&self) -> String;
+    fn parse_desired_name(&self, subcommand_name: String) -> String;
+    fn parse_desired_priority(&self, subcommand_name: String) -> String;
 }
 
 impl SubcommandArgumentParser for ArgMatches<'static> {
@@ -108,8 +108,8 @@ impl SubcommandArgumentParser for ArgMatches<'static> {
         .unwrap()
     }
 
-    fn parse_desired_name_for_rename(&self) -> String {
-        self.subcommand_matches("rename_task")
+    fn parse_desired_name(&self, subcommand_name: String) -> String {
+        self.subcommand_matches(subcommand_name)
             .unwrap()
             .values_of("new_name")
             .unwrap()
@@ -118,8 +118,8 @@ impl SubcommandArgumentParser for ArgMatches<'static> {
             .to_string()
     }
 
-    fn parse_desired_priority_for_reprioritization(&self) -> String {
-        self.subcommand_matches("reprioritize")
+    fn parse_desired_priority(&self, subcommand_name: String) -> String {
+        self.subcommand_matches(subcommand_name)
             .unwrap()
             .value_of("new_priority")
             .unwrap()
