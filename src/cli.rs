@@ -53,16 +53,18 @@ pub fn run(matches: ArgMatches<'static>) -> CliSubCommand {
         Some("list_tasks") => CliSubCommand::ListTasks,
         Some("create_task") => CliSubCommand::CreateTask,
         Some("complete_task") => CliSubCommand::CompleteTask(
-            matches.parse_id_for_subcommand("complete_task".to_string())),
-        Some("remove_task") => CliSubCommand::RemoveTask(
-            matches.parse_id_for_subcommand("remove_task".to_string())),
+            matches.parse_id_for_subcommand("complete_task".to_string()),
+        ),
+        Some("remove_task") => {
+            CliSubCommand::RemoveTask(matches.parse_id_for_subcommand("remove_task".to_string()))
+        }
         Some("rename_task") => CliSubCommand::RenameTask {
             id: matches.parse_id_for_subcommand("rename_task".to_string()),
-            new_name: matches.parse_desired_name("rename_task".to_string())
+            new_name: matches.parse_desired_name("rename_task".to_string()),
         },
         Some("reprioritize") => CliSubCommand::Reprioritize {
             id: matches.parse_id_for_subcommand("reprioritize".to_string()),
-            new_priority: matches.parse_desired_priority("reprioritize".to_string())
+            new_priority: matches.parse_desired_priority("reprioritize".to_string()),
         },
         _ => unreachable!(),
     };
@@ -76,17 +78,12 @@ pub fn run_subcommand(
     match command {
         CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
         CliSubCommand::CreateTask => task_list.create_task(),
-        CliSubCommand::CompleteTask(id) => task_list
-            .select_task_by_id(id)?
-            .mark_complete(),
+        CliSubCommand::CompleteTask(id) => task_list.select_task_by_id(id)?.mark_complete(),
         CliSubCommand::RemoveTask(id) => task_list.remove_task(id),
-        CliSubCommand::RenameTask { id, new_name } => task_list
-            .select_task_by_id(id)?
-            .rename_task(&new_name),
-        CliSubCommand::Reprioritize {
-            id,
-            new_priority,
-        } => task_list
+        CliSubCommand::RenameTask { id, new_name } => {
+            task_list.select_task_by_id(id)?.rename_task(&new_name)
+        }
+        CliSubCommand::Reprioritize { id, new_priority } => task_list
             .select_task_by_id(id)?
             .change_priority(&new_priority[..]),
     }
@@ -101,11 +98,11 @@ trait SubcommandArgumentParser {
 impl SubcommandArgumentParser for ArgMatches<'static> {
     fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize {
         self.subcommand_matches(subcommand_name)
-        .unwrap()
-        .value_of("id")
-        .unwrap()
-        .parse::<usize>()
-        .unwrap()
+            .unwrap()
+            .value_of("id")
+            .unwrap()
+            .parse::<usize>()
+            .unwrap()
     }
 
     fn parse_desired_name(&self, subcommand_name: String) -> String {

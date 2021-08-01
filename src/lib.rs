@@ -86,15 +86,15 @@ impl TaskList {
         if self.tasks.is_empty() == true {
             return Err(Box::new(OtherError::new(ErrorKind::Other, "list is empty")));
         } else {
-            writeln!(writer, "ID,name,priority,completed")?;
+            writeln!(writer, "name,priority,completed,ID")?;
             for task in &self.tasks{
                 writeln!(
                     writer,
-                    "{id},{name},{priority},{completed}",
-                    id = task.id,
+                    "{name},{priority},{completed},{id}",
                     name = task.name,
                     priority = task.priority,
-                    completed = task.completed
+                    completed = task.completed,
+                    id = task.id
                 )?;
             }
         }
@@ -340,12 +340,23 @@ mod tests {
         #[test]
         fn task_print_successful_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = create_task_list();
-            let mut good_result = Vec::new();
             test_task_list.create_task()?;
+
+            let mut good_result = Vec::new();
             let success = test_task_list.print_task_list(&mut good_result).unwrap();
+
+            let good_result_lines: Vec<&str> = std::str::from_utf8(&good_result).unwrap().split_inclusive('\n').collect();
+            let mut good_result_without_id: Vec<String> = Vec::new();
+            for line in good_result_lines {
+                let mut words: Vec<&str> = line.split(",").collect();
+                words.remove(words.len()-1);
+                let joined: String = words.join(",").to_string();
+                good_result_without_id.push(joined);
+            }
+
             assert_eq!(
-                &good_result[..],
-                "ID,name,priority,completed\n1,Test Task,Optional,false\n".as_bytes()
+                format!("{}{}", good_result_without_id.join("\n"), "\n"),
+                "name,priority,completed\nTest Task,Optional,false\n"
             );
             assert_eq!(success, "End of List");
             return Ok(());
