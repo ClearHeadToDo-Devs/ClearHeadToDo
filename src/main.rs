@@ -23,4 +23,3 @@ fn main() {
 
     task_list.load_csv("tasks.csv").unwrap();
 }
-

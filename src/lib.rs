@@ -8,6 +8,7 @@ use std::io::{Error as OtherError, ErrorKind};
 use std::{env, path::PathBuf};
 //use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use uuid::Uuid;
 
 #[derive(Debug, PartialEq)]
 pub struct TaskList {
@@ -21,7 +22,6 @@ pub struct Task {
     pub completed: bool,
     pub priority: PriEnum,
 }
-
 pub fn create_task_list() -> TaskList {
     return TaskList { tasks: vec![] };
 }
