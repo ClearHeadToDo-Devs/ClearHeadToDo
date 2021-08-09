@@ -17,7 +17,7 @@ pub struct TaskList {
 
 #[derive(PartialEq, Debug, Clone, Default)]
 pub struct Task {
-    pub id: usize,
+    pub id: Uuid,
     pub name: String,
     pub completed: bool,
     pub priority: PriEnum,
@@ -46,7 +46,7 @@ impl TaskList {
         for result in rdr.records() {
             let record: csv::StringRecord = result?;
             let new_task: Task = Task {
-                id: self.tasks.len()+1,
+                id: Uuid::parse_str(&record[3]).unwrap(),
                 name: record[0].to_string(),
                 completed: FromStr::from_str(&record[2])?,
                 priority: parse_priority(&record[1])?,
@@ -69,7 +69,7 @@ impl TaskList {
 
     pub fn create_task(&mut self) -> Result<String, Box<dyn Error>> {
         let new_task: Task = Task {
-            id: self.tasks.len()+1,
+            id: Uuid::new_v4(),
             name: String::from("Test Task"),
             completed: false,
             priority: PriEnum::Optional,
@@ -101,26 +101,31 @@ impl TaskList {
         Ok("End of List".to_string())
     }
 
-    pub fn remove_task(&mut self, id: usize) -> Result<String, Box<dyn Error>> {
-        let removal_task_index = self.tasks.iter_mut().position(|task|task.id == id);
-        match removal_task_index {
-            Some(_task_index) => {
-                let removal_task_name = self.tasks[removal_task_index.unwrap()].name.clone();
-                self.tasks.remove(removal_task_index.unwrap());
-                return Ok(format!("Removed Task named {}", removal_task_name).to_string());
-            }
-            None => return Err(Box::new(OtherError::new(
-            ErrorKind::Other, "No Task with given ID")))
+    pub fn remove_task(&mut self, index: usize) -> Result<String, Box<dyn Error>> {
+        if index < self.tasks.len() {
+            let removal_task = self.tasks.remove(index);
+            return Ok(format!("Successfully Removed {}", &removal_task.name));
+        } else {
+            return Err(Box::new(OtherError::new(ErrorKind::Other, "No Task in that position")));
         }
     }
 
-    pub fn select_task_by_id(&mut self, id: usize) -> Result<&mut Task, Box<dyn Error>>{
+    pub fn select_task_by_id(&mut self, id: Uuid) -> Result<&mut Task, Box<dyn Error>>{
         let search_task = self.tasks.iter_mut()
         .find(|tasks|tasks.id == id);
         match search_task {
             Some(task) => return Ok(task),
             None => return Err(Box::new(OtherError::new(
             ErrorKind::Other, "No Task with given ID")))
+        }
+    }
+
+    pub fn select_task_by_index(&mut self, index: usize) -> Result<&mut Task, Box<dyn Error>>{
+        let search_task = self.tasks.get_mut(index);
+        match search_task {
+            Some(task) => return Ok(task),
+            None => return Err(Box::new(OtherError::new(
+            ErrorKind::Other, "No Task at given Index")))
         }
     }
 }
@@ -201,12 +206,25 @@ impl fmt::Display for PriEnum {
 }
 
 impl Default for PriEnum {
-    fn default() -> Self { PriEnum::Optional}
+    fn default() -> Self { PriEnum::Optional }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    impl TaskList {
+        fn create_nil_task(&mut self) {
+            let new_task: Task = Task {
+                id: Uuid::nil(),
+            name: String::from("Test Task"),
+            completed: false,
+            priority: PriEnum::Optional,
+        };
+        let new_task_name: String = new_task.name.clone();
+        self.tasks.push(new_task);
+        }
+    }
 
     mod task_list_tests {
         use super::*;
@@ -252,7 +270,7 @@ mod tests {
                 .load_tasks_from_csv("successful_import_test.csv")
                 .unwrap();
             let test_task = &test_task_list.tasks[0];
-            assert!(test_task.id == 1);
+            assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
             assert!(test_task.name == "test csv task");
             assert!(test_task.completed == false);
             assert!(test_task.priority == PriEnum::Optional);
@@ -287,7 +305,6 @@ mod tests {
             let creation_result = test_task_list.create_task()?;
             assert!(creation_result == "Created new task named Test Task");
             let test_task = &test_task_list.tasks[0];
-            assert!(test_task.id == 1);
             assert!(test_task.name == "Test Task");
             assert!(test_task.completed == false);
             assert!(test_task.priority == PriEnum::Optional);
@@ -301,17 +318,40 @@ mod tests {
             test_task_list.create_task()?;
             test_task_list.create_task()?;
             let new_id_test_task = &test_task_list.tasks[1];
-            assert!(new_id_test_task.id == 2);
+            assert!(new_id_test_task.id != test_task_list.tasks[0].id);
+            return Ok(());
+        }
+
+        #[test]
+        fn task_successful_search_by_index_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = create_task_list();
+            test_task_list.create_nil_task();
+            let test_search_task = test_task_list.select_task_by_index(0);
+            assert!(test_search_task.unwrap() == &mut Task {
+                id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap(),
+                name: String::from("Test Task"),
+                completed: false,
+                priority: PriEnum::Optional
+            });
+
+            return Ok(());
+        }
+
+        #[test]
+        fn task_failed_search_by_index_test() -> Result<(), Box<dyn Error>> {
+            let mut test_task_list = create_task_list();
+            let test_search_task = test_task_list.select_task_by_index(0);
+            assert!(test_search_task.unwrap_err().to_string() == "No Task at given Index");
             return Ok(());
         }
 
         #[test]
         fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = create_task_list();
-            test_task_list.create_task()?;
-            let test_search_task = test_task_list.select_task_by_id(1);
+            test_task_list.create_nil_task();
+            let test_search_task = test_task_list.select_task_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
             assert!(test_search_task.unwrap() == &mut Task {
-                id: 1,
+                id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap(),
                 name: String::from("Test Task"),
                 completed: false,
                 priority: PriEnum::Optional
@@ -323,7 +363,7 @@ mod tests {
         #[test]
         fn task_failed_search_by_id_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = create_task_list();
-            let test_search_task = test_task_list.select_task_by_id(1);
+            let test_search_task = test_task_list.select_task_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
             assert!(test_search_task.unwrap_err().to_string() == "No Task with given ID");
             return Ok(());
         }
@@ -366,17 +406,17 @@ mod tests {
         fn task_removal_fail_test() {
             let mut test_task_list = create_task_list();
             let error = test_task_list.remove_task(1).unwrap_err();
-            assert_eq!(error.to_string(), "No Task with given ID");
+            assert_eq!(error.to_string(), "No Task in that position");
         }
 
         #[test]
         fn task_removal_successful_test() {
             let mut test_task_list = create_task_list();
             test_task_list.create_task().unwrap();
-            let good_result = test_task_list.remove_task(1).unwrap();
+            let good_result = test_task_list.remove_task(0).unwrap();
             assert_eq!(
                 good_result.to_string(),
-                "Removed Task named Test Task"
+                "Successfully Removed Test Task"
             );
         }
     }

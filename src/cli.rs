@@ -17,23 +17,23 @@ pub fn create_app<'a>() -> App<'a, 'a> {
         .subcommand(
             SubCommand::with_name("complete_task")
                 .alias("complete")
-                .arg(Arg::with_name("id").required(true)),
+                .arg(Arg::with_name("index").required(true)),
         )
         .subcommand(
             SubCommand::with_name("remove_task")
                 .alias("remove")
-                .arg(Arg::with_name("id").required(true)),
+                .arg(Arg::with_name("index").required(true)),
         )
         .subcommand(
             SubCommand::with_name("rename_task")
                 .alias("rename")
-                .arg(Arg::with_name("id").required(true))
+                .arg(Arg::with_name("index").required(true))
                 .arg(Arg::with_name("new_name").required(true).multiple(true)),
         )
         .subcommand(
             SubCommand::with_name("reprioritize")
                 .alias("rp")
-                .arg(Arg::with_name("id").required(true))
+                .arg(Arg::with_name("index").required(true))
                 .arg(Arg::with_name("new_priority").required(true)),
         )
 }
@@ -44,8 +44,8 @@ pub enum CliSubCommand {
     CreateTask,
     CompleteTask(usize),
     RemoveTask(usize),
-    RenameTask { id: usize, new_name: String },
-    Reprioritize { id: usize, new_priority: String },
+    RenameTask { index: usize, new_name: String },
+    Reprioritize { index: usize, new_priority: String },
 }
 
 pub fn run(matches: ArgMatches<'static>) -> CliSubCommand {
@@ -59,11 +59,11 @@ pub fn run(matches: ArgMatches<'static>) -> CliSubCommand {
             CliSubCommand::RemoveTask(matches.parse_id_for_subcommand("remove_task".to_string()))
         }
         Some("rename_task") => CliSubCommand::RenameTask {
-            id: matches.parse_id_for_subcommand("rename_task".to_string()),
+            index: matches.parse_id_for_subcommand("rename_task".to_string()),
             new_name: matches.parse_desired_name("rename_task".to_string()),
         },
         Some("reprioritize") => CliSubCommand::Reprioritize {
-            id: matches.parse_id_for_subcommand("reprioritize".to_string()),
+            index: matches.parse_id_for_subcommand("reprioritize".to_string()),
             new_priority: matches.parse_desired_priority("reprioritize".to_string()),
         },
         _ => unreachable!(),
@@ -78,13 +78,13 @@ pub fn run_subcommand(
     match command {
         CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
         CliSubCommand::CreateTask => task_list.create_task(),
-        CliSubCommand::CompleteTask(id) => task_list.select_task_by_id(id)?.mark_complete(),
-        CliSubCommand::RemoveTask(id) => task_list.remove_task(id),
-        CliSubCommand::RenameTask { id, new_name } => {
-            task_list.select_task_by_id(id)?.rename_task(&new_name)
+        CliSubCommand::CompleteTask(index) => task_list.select_task_by_index(index-1)?.mark_complete(),
+        CliSubCommand::RemoveTask(index) => task_list.remove_task(index),
+        CliSubCommand::RenameTask { index, new_name } => {
+            task_list.select_task_by_index(index)?.rename_task(&new_name)
         }
-        CliSubCommand::Reprioritize { id, new_priority } => task_list
-            .select_task_by_id(id)?
+        CliSubCommand::Reprioritize { index, new_priority } => task_list
+            .select_task_by_index(index)?
             .change_priority(&new_priority[..]),
     }
 }
@@ -99,7 +99,7 @@ impl SubcommandArgumentParser for ArgMatches<'static> {
     fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize {
         self.subcommand_matches(subcommand_name)
             .unwrap()
-            .value_of("id")
+            .value_of("index")
             .unwrap()
             .parse::<usize>()
             .unwrap()
@@ -267,7 +267,7 @@ mod tests {
         let mut test_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::CompleteTask(1), &mut test_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
+        assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
     }
 
     #[test]
@@ -295,8 +295,8 @@ mod tests {
         let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
-        let result = run_subcommand(CliSubCommand::RemoveTask(1), &mut test_task_list);
-        assert_eq!(result.unwrap(), "Removed Task named Test Task");
+        let result = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
+        assert_eq!(result.unwrap(), "Successfully Removed Test Task");
         assert!(test_task_list.tasks.is_empty());
     }
 
@@ -313,21 +313,21 @@ mod tests {
     fn cli_remove_task_failing_invalid_id_test() {
         let mut test_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::RemoveTask(1), &mut test_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
+        let error = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
+        assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 
     #[test]
     fn cli_rename_task_successful_parse_test() {
         let app = create_app();
         let test_matches =
-            app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "1", "Test", "Rename"]);
+            app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test", "Rename"]);
 
         let result = run(test_matches);
         assert_eq!(
             result,
             CliSubCommand::RenameTask {
-                id: 1,
+                index: 0,
                 new_name: "Test Rename".to_string()
             }
         );
@@ -340,7 +340,7 @@ mod tests {
 
         let result = run_subcommand(
             CliSubCommand::RenameTask {
-                id: 1,
+                index: 0,
                 new_name: "Test Rename".to_string(),
             },
             &mut test_task_list,
@@ -360,7 +360,7 @@ mod tests {
         assert_eq!(
             result,
             CliSubCommand::RenameTask {
-                id: 0,
+                index: 0,
                 new_name: "Test Rename".to_string()
             }
         );
@@ -372,12 +372,12 @@ mod tests {
 
         let error = run_subcommand(
             CliSubCommand::RenameTask {
-                id: 0,
+                index: 0,
                 new_name: "Test Rename".to_string(),
             },
             &mut test_task_list,
         );
-        assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
+        assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
     }
 
     #[test]
@@ -389,7 +389,7 @@ mod tests {
         assert_eq!(
             result,
             CliSubCommand::Reprioritize {
-                id: 1,
+                index: 1,
                 new_priority: "High".to_string()
             }
         );
@@ -402,7 +402,7 @@ mod tests {
 
         let result = run_subcommand(
             CliSubCommand::Reprioritize {
-                id: 1,
+                index: 0,
                 new_priority: "High".to_string(),
             },
             &mut test_task_list,
@@ -423,7 +423,7 @@ mod tests {
         assert_eq!(
             result,
             CliSubCommand::Reprioritize {
-                id: 1,
+                index: 1,
                 new_priority: "High".to_string()
             }
         );
@@ -435,11 +435,11 @@ mod tests {
 
         let error = run_subcommand(
             CliSubCommand::Reprioritize {
-                id: 1,
+                index: 1,
                 new_priority: "High".to_string(),
             },
             &mut test_task_list,
         );
-        assert_eq!(error.unwrap_err().to_string(), "No Task with given ID");
+        assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
     }
 }
