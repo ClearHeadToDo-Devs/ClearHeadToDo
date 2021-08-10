@@ -78,7 +78,7 @@ pub fn run_subcommand(
     match command {
         CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
         CliSubCommand::CreateTask => task_list.create_task(),
-        CliSubCommand::CompleteTask(index) => task_list.select_task_by_index(index-1)?.mark_complete(),
+        CliSubCommand::CompleteTask(index) => task_list.select_task_by_index(index)?.mark_complete(),
         CliSubCommand::RemoveTask(index) => task_list.remove_task(index),
         CliSubCommand::RenameTask { index, new_name } => {
             task_list.select_task_by_index(index)?.rename_task(&new_name)
@@ -248,7 +248,7 @@ mod tests {
         let mut test_task_list = create_task_list();
         test_task_list.create_task().unwrap();
 
-        let result = run_subcommand(CliSubCommand::CompleteTask(1), &mut test_task_list);
+        let result = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
         assert_eq!(result.unwrap(), "completed Task: Test Task");
         assert!(test_task_list.tasks[0].completed == true);
     }
@@ -276,7 +276,7 @@ mod tests {
         test_task_list.create_task().unwrap();
         test_task_list.tasks[0].mark_complete().unwrap();
 
-        let error = run_subcommand(CliSubCommand::CompleteTask(1), &mut test_task_list);
+        let error = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "Task is already completed");
         assert!(test_task_list.tasks[0].completed == true);
     }

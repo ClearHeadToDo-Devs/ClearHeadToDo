@@ -22,6 +22,7 @@ pub struct Task {
     pub completed: bool,
     pub priority: PriEnum,
 }
+
 pub fn create_task_list() -> TaskList {
     return TaskList { tasks: vec![] };
 }
@@ -184,10 +185,11 @@ impl Serialize for Task {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("Task", 3)?;
+        let mut s = serializer.serialize_struct("Task", 4)?;
         s.serialize_field("name", &self.name)?;
         s.serialize_field("priority", &self.priority)?;
         s.serialize_field("completed", &self.completed)?;
+        s.serialize_field("id", &self.id)?;
         s.end()
     }
 }
@@ -279,8 +281,7 @@ mod tests {
         #[test]
         fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = create_task_list();
-            let creation_result = test_task_list.create_task()?;
-            assert!(creation_result == "Created new task named Test Task");
+            test_task_list.create_nil_task();
             test_task_list.tasks[0].rename_task(&"test csv task".to_string())?;
             test_task_list.load_csv("successful_export_test.csv")?;
             let rdr = Reader::from_path(
@@ -292,7 +293,7 @@ mod tests {
             let mut iter = rdr.into_records();
             if let Some(result) = iter.next() {
                 let record = result?;
-                assert_eq!(record, vec!["test csv task", "Optional", "false"]);
+                assert_eq!(record, vec!["test csv task", "Optional", "false", "00000000-0000-0000-0000-000000000000"]);
             } else {
                 return Ok(());
             }
