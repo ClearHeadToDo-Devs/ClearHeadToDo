@@ -73,24 +73,32 @@ pub fn run(matches: ArgMatches<'static>) -> CliSubCommand {
 
 pub fn run_subcommand(
     command: CliSubCommand,
-    task_list: &mut TaskList,
+    task_list: TaskList,
 ) -> Result<String, Box<dyn Error>> {
     match command {
         CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
-        CliSubCommand::CreateTask => task_list.create_task(),
+        CliSubCommand::CreateTask => {
+            task_list.create_task();
+            Ok("Created New Default Task".to_string())
+        }
         CliSubCommand::CompleteTask(index) => {
-            task_list.select_task_by_index(index)?.mark_complete()
+            task_list.check_index_bounds(&index)?;
+            task_list.tasks[index].mark_complete()?;
+            Ok("Succesfully Completed Task".to_string())
         }
         CliSubCommand::RemoveTask(index) => task_list.remove_task(index),
-        CliSubCommand::RenameTask { index, new_name } => task_list
-            .select_task_by_index(index)?
-            .rename_task(&new_name),
+        CliSubCommand::RenameTask { index, new_name } => {
+            task_list.rename_task(index, new_name);
+            Ok("renamed successfully".to_string())
+        }
         CliSubCommand::Reprioritize {
             index,
             new_priority,
-        } => task_list
-            .select_task_by_index(index)?
-            .change_priority(&new_priority[..]),
+        } => {
+            task_list.check_index_bounds(&index)?;
+            task_list.tasks[index].change_priority(&new_priority[..]);
+            Ok("Changed Priority".to_string())
+        }
     }
 }
 
@@ -189,7 +197,7 @@ mod tests {
     #[test]
     fn cli_list_task_successful_run_test() {
         let mut test_task_list = create_task_list();
-        test_task_list.create_task().unwrap();
+        test_task_list.create_task();
 
         let result = run_subcommand(CliSubCommand::ListTasks, &mut test_task_list);
         assert_eq!(result.unwrap(), "End of List");
@@ -251,7 +259,7 @@ mod tests {
     #[test]
     fn cli_complete_task_successful_run_test() {
         let mut test_task_list = create_task_list();
-        test_task_list.create_task().unwrap();
+        test_task_list.create_task();
 
         let result = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
         assert_eq!(result.unwrap(), "completed Task: Default Task");
@@ -278,7 +286,7 @@ mod tests {
     #[test]
     fn cli_complete_task_failing_already_complete_test() {
         let mut test_task_list = create_task_list();
-        test_task_list.create_task().unwrap();
+        test_task_list.create_task();
         test_task_list.tasks[0].mark_complete().unwrap();
 
         let error = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
@@ -298,7 +306,7 @@ mod tests {
     #[test]
     fn cli_remove_task_successful_run_test() {
         let mut test_task_list = create_task_list();
-        test_task_list.create_task().unwrap();
+        test_task_list.create_task();
 
         let result = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
         assert_eq!(result.unwrap(), "Successfully Removed Default Task");
@@ -341,7 +349,7 @@ mod tests {
     #[test]
     fn cli_rename_task_successful_run_test() {
         let mut test_task_list = create_task_list();
-        test_task_list.create_task().unwrap();
+        test_task_list.create_task();
 
         let result = run_subcommand(
             CliSubCommand::RenameTask {
@@ -403,7 +411,7 @@ mod tests {
     #[test]
     fn cli_change_priority_successful_run_test() {
         let mut test_task_list = create_task_list();
-        test_task_list.create_task().unwrap();
+        test_task_list.create_task();
 
         let result = run_subcommand(
             CliSubCommand::Reprioritize {
