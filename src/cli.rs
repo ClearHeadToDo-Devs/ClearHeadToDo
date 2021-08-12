@@ -78,12 +78,17 @@ pub fn run_subcommand(
     match command {
         CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
         CliSubCommand::CreateTask => task_list.create_task(),
-        CliSubCommand::CompleteTask(index) => task_list.select_task_by_index(index)?.mark_complete(),
-        CliSubCommand::RemoveTask(index) => task_list.remove_task(index),
-        CliSubCommand::RenameTask { index, new_name } => {
-            task_list.select_task_by_index(index)?.rename_task(&new_name)
+        CliSubCommand::CompleteTask(index) => {
+            task_list.select_task_by_index(index)?.mark_complete()
         }
-        CliSubCommand::Reprioritize { index, new_priority } => task_list
+        CliSubCommand::RemoveTask(index) => task_list.remove_task(index),
+        CliSubCommand::RenameTask { index, new_name } => task_list
+            .select_task_by_index(index)?
+            .rename_task(&new_name),
+        CliSubCommand::Reprioritize {
+            index,
+            new_priority,
+        } => task_list
             .select_task_by_index(index)?
             .change_priority(&new_priority[..]),
     }
@@ -221,7 +226,7 @@ mod tests {
         let mut test_task_list = create_task_list();
         let result = run_subcommand(CliSubCommand::CreateTask, &mut test_task_list);
 
-        assert_eq!(result.unwrap(), "Created new task named Test Task");
+        assert_eq!(result.unwrap(), "Created new task named Default Task");
         assert!(test_task_list.tasks.is_empty() == false)
     }
 
@@ -249,7 +254,7 @@ mod tests {
         test_task_list.create_task().unwrap();
 
         let result = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
-        assert_eq!(result.unwrap(), "completed Task: Test Task");
+        assert_eq!(result.unwrap(), "completed Task: Default Task");
         assert!(test_task_list.tasks[0].completed == true);
     }
 
@@ -296,7 +301,7 @@ mod tests {
         test_task_list.create_task().unwrap();
 
         let result = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
-        assert_eq!(result.unwrap(), "Successfully Removed Test Task");
+        assert_eq!(result.unwrap(), "Successfully Removed Default Task");
         assert!(test_task_list.tasks.is_empty());
     }
 
@@ -346,7 +351,7 @@ mod tests {
             &mut test_task_list,
         );
 
-        assert_eq!(result.unwrap(), "Task Test Task renamed to Test Rename");
+        assert_eq!(result.unwrap(), "Task Default Task renamed to Test Rename");
         assert!(test_task_list.tasks[0].name == "Test Rename");
     }
 
@@ -409,7 +414,7 @@ mod tests {
         );
         assert_eq!(
             result.unwrap(),
-            "changed Task: Test Task priority changed to High"
+            "changed Task: Default Task priority changed to High"
         );
         assert!(test_task_list.tasks[0].priority == PriEnum::High);
     }

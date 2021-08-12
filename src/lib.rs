@@ -9,13 +9,14 @@ use std::{env, path::PathBuf};
 //use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use uuid::Uuid;
+use im::vector;
 
 #[derive(Debug, PartialEq)]
 pub struct TaskList {
-    pub tasks: Vec<Task>,
+    pub tasks: im::Vector<Task>,
 }
 
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Task {
     pub id: Uuid,
     pub name: String,
@@ -24,12 +25,34 @@ pub struct Task {
 }
 
 pub fn create_task_list() -> TaskList {
-    return TaskList { tasks: vec![] };
+    return TaskList { tasks: vector![] };
 }
 
-#[derive(PartialEq, Debug)]
+pub fn create_default_task() -> Task {
+    Task {..Default::default()}
+}
+
+pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
+let mut import_list = create_task_list();
+let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("data")
+        .join(file_name);
+    let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
+    for result in rdr.records() {
+        let record: csv::StringRecord = result?;
+        let new_task: Task = Task {
+            id: Uuid::parse_str(&record[3]).unwrap(),
+            name: record[0].to_string(),
+            completed: FromStr::from_str(&record[2])?,
+            priority: parse_priority(&record[1])?,
+        };
+        import_list.tasks.push_back(new_task);
+    }
+    Ok(import_list)
+}
+
 #[repr(u8)]
-#[derive(AltSerialize, Copy, Clone)]
+#[derive(AltSerialize, Copy, Clone, PartialEq, Debug)]
 pub enum PriEnum {
     Critical = 1,
     High = 2,
@@ -39,23 +62,6 @@ pub enum PriEnum {
 }
 
 impl TaskList {
-    pub fn load_tasks_from_csv(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
-        let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("data")
-            .join(file_name);
-        let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
-        for result in rdr.records() {
-            let record: csv::StringRecord = result?;
-            let new_task: Task = Task {
-                id: Uuid::parse_str(&record[3]).unwrap(),
-                name: record[0].to_string(),
-                completed: FromStr::from_str(&record[2])?,
-                priority: parse_priority(&record[1])?,
-            };
-            self.tasks.push(new_task);
-        }
-        Ok("Successfully Loaded Tasks into List".to_string())
-    }
 
     pub fn load_csv(&mut self, file_name: &str) -> Result<String, Box<dyn Error>> {
         let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -69,14 +75,9 @@ impl TaskList {
     }
 
     pub fn create_task(&mut self) -> Result<String, Box<dyn Error>> {
-        let new_task: Task = Task {
-            id: Uuid::new_v4(),
-            name: String::from("Test Task"),
-            completed: false,
-            priority: PriEnum::Optional,
-        };
+        let new_task = create_default_task(); 
         let new_task_name: String = new_task.name.clone();
-        self.tasks.push(new_task);
+        self.tasks.push_back(new_task);
         return Ok(format!("Created new task named {}", new_task_name).to_string());
     }
 
@@ -111,8 +112,16 @@ impl TaskList {
         }
     }
 
-    pub fn select_task_by_id(&mut self, id: Uuid) -> Result<&mut Task, Box<dyn Error>>{
-        let search_task = self.tasks.iter_mut()
+    pub fn rename_task(self, index: usize, new_name: String) -> Result<TaskList, Box<dyn Error>> {
+           let renaming_target = self.check_index_bounds(&index); 
+            match renaming_target {
+                Ok(()) => Ok(TaskList { tasks: self.tasks.update(index, self.tasks[index].clone().rename(&new_name))}),
+                Err(error) => Err(error)
+            }
+        }
+
+    pub fn select_task_by_id(self, id: Uuid) -> Result<Task, Box<dyn Error>>{
+        let search_task = self.tasks.into_iter()
         .find(|tasks|tasks.id == id);
         match search_task {
             Some(task) => return Ok(task),
@@ -121,25 +130,23 @@ impl TaskList {
         }
     }
 
-    pub fn select_task_by_index(&mut self, index: usize) -> Result<&mut Task, Box<dyn Error>>{
-        let search_task = self.tasks.get_mut(index);
-        match search_task {
-            Some(task) => return Ok(task),
-            None => return Err(Box::new(OtherError::new(
-            ErrorKind::Other, "No Task at given Index")))
+    pub fn check_index_bounds(&self, index: &usize) -> Result<(), Box<dyn Error>>{
+        if index < &self.tasks.len() {
+            Ok(())
+        } else {
+            Err(Box::new(OtherError::new(ErrorKind::Other, "No Task in that position")))
         }
     }
 }
 
-impl Task {
-    pub fn rename_task(&mut self, new_task_name: &String) -> Result<String, Box<dyn Error>> {
-        let old_name: String = self.name.clone();
-        self.name = new_task_name.to_owned();
-        return Ok(format!(
-            "Task {old} renamed to {new}",
-            old = old_name,
-            new = self.name
-        ));
+impl Task  {
+    pub fn rename(self, new_task_name: &String) -> Task {
+        return Task {
+                    name: new_task_name.to_owned(), 
+                    id: self.id,
+                    priority: self.priority,
+                    completed: self.completed
+        }
     }
 
     pub fn mark_complete(&mut self) -> Result<String, Box<dyn Error>> {
@@ -211,20 +218,25 @@ impl Default for PriEnum {
     fn default() -> Self { PriEnum::Optional }
 }
 
+impl Default for Task {
+    fn default() -> Task  {
+        Task {
+            id: Uuid::new_v4(),
+            name: "Default Task".to_string(),
+            completed: false,
+            priority: Default::default()
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     impl TaskList {
         fn create_nil_task(&mut self) {
-            let new_task: Task = Task {
-                id: Uuid::nil(),
-            name: String::from("Test Task"),
-            completed: false,
-            priority: PriEnum::Optional,
-        };
-        let new_task_name: String = new_task.name.clone();
-        self.tasks.push(new_task);
+            let new_task: Task = Task {id: Uuid::nil(), ..Default::default()};
+        self.tasks.push_back(new_task);
         }
     }
 
@@ -234,7 +246,7 @@ mod tests {
         #[test]
         fn create_task_list_test() {
             let test_task_list = create_task_list();
-            assert_eq!(test_task_list, TaskList { tasks: vec![] });
+            assert_eq!(test_task_list, TaskList { tasks: vector![] });
         }
 
         #[test]
@@ -282,7 +294,7 @@ mod tests {
         fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = create_task_list();
             test_task_list.create_nil_task();
-            test_task_list.tasks[0].rename_task(&"test csv task".to_string())?;
+            test_task_list.tasks[0].rename(&"test csv task".to_string())?;
             test_task_list.load_csv("successful_export_test.csv")?;
             let rdr = Reader::from_path(
                 env::current_dir()?
@@ -304,9 +316,9 @@ mod tests {
         fn task_creation_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = create_task_list();
             let creation_result = test_task_list.create_task()?;
-            assert!(creation_result == "Created new task named Test Task");
+            assert!(creation_result == "Created new task named Default Task");
             let test_task = &test_task_list.tasks[0];
-            assert!(test_task.name == "Test Task");
+            assert!(test_task.name == "Default Task");
             assert!(test_task.completed == false);
             assert!(test_task.priority == PriEnum::Optional);
             assert!(&test_task_list.tasks[0] == test_task);
@@ -330,7 +342,7 @@ mod tests {
             let test_search_task = test_task_list.select_task_by_index(0);
             assert!(test_search_task.unwrap() == &mut Task {
                 id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap(),
-                name: String::from("Test Task"),
+                name: String::from("Default Task"),
                 completed: false,
                 priority: PriEnum::Optional
             });
@@ -353,7 +365,7 @@ mod tests {
             let test_search_task = test_task_list.select_task_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
             assert!(test_search_task.unwrap() == &mut Task {
                 id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap(),
-                name: String::from("Test Task"),
+                name: String::from("Default Task"),
                 completed: false,
                 priority: PriEnum::Optional
             });
@@ -397,7 +409,7 @@ mod tests {
 
             assert_eq!(
                 format!("{}{}", good_result_without_id.join("\n"), "\n"),
-                "name,priority,completed\nTest Task,Optional,false\n"
+                "name,priority,completed\nDefault Task,Optional,false\n"
             );
             assert_eq!(success, "End of List");
             return Ok(());
@@ -417,7 +429,7 @@ mod tests {
             let good_result = test_task_list.remove_task(0).unwrap();
             assert_eq!(
                 good_result.to_string(),
-                "Successfully Removed Test Task"
+                "Successfully Removed Default Task"
             );
         }
     }
@@ -426,12 +438,21 @@ mod tests {
         use super::*;
 
         #[test]
+        fn task_default_creation_test() -> Result<(), Box<dyn Error>> {
+            let test_task = create_default_task();
+            assert!(test_task.name == "Default Task".to_string());
+            assert!(test_task.priority == PriEnum::Optional);
+            assert!(test_task.completed == false);
+            return Ok(());
+        }
+
+        #[test]
         fn task_rename_test() -> Result<(), Box<dyn Error>> {
             let mut test_task_list = create_task_list();
             let creation_result = test_task_list.create_task()?;
-            assert!(creation_result == "Created new task named Test Task");
+            assert!(creation_result == "Created new task named Default Task");
             let test_task = &mut test_task_list.tasks[0];
-            test_task.rename_task(&"Changed Name".to_string())?;
+            test_task.rename(&"Changed Name".to_string())?;
             assert!(test_task.name == "Changed Name");
             return Ok(());
         }
