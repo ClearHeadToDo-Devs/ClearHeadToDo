@@ -6,7 +6,7 @@ use std::error::Error;
 extern crate clap;
 use clap::{App, AppSettings, Arg, ArgMatches, ErrorKind, SubCommand};
 
-pub fn create_app<'a>() -> App<'a, 'a> {
+pub fn create_app() -> App<'static, 'static> {
     App::new("Clear Head Todo")
         .author("Darrion Burgess <darrionburgess@gmail.com>")
         .version("0.1.0")
@@ -48,7 +48,7 @@ pub enum CliSubCommand {
     Reprioritize { index: usize, new_priority: String },
 }
 
-pub fn run(matches: ArgMatches<'static>) -> CliSubCommand {
+pub fn run(matches: ArgMatches<'_>) -> CliSubCommand {
     let outcome = match matches.subcommand_name() {
         Some("list_tasks") => CliSubCommand::ListTasks,
         Some("create_task") => CliSubCommand::CreateTask,
@@ -82,11 +82,14 @@ pub fn run_subcommand(
             Ok("Created New Default Task".to_string())
         }
         CliSubCommand::CompleteTask(index) => {
-            task_list.check_index_bounds(&index)?;
+            task_list.check_index_bounds(index)?;
             task_list.tasks[index].mark_complete()?;
             Ok("Succesfully Completed Task".to_string())
         }
-        CliSubCommand::RemoveTask(index) => task_list.remove_task(index),
+        CliSubCommand::RemoveTask(index) => {
+            task_list.remove_task(index);
+            Ok("Removed Task".to_string())
+        }
         CliSubCommand::RenameTask { index, new_name } => {
             task_list.rename_task(index, new_name);
             Ok("renamed successfully".to_string())
@@ -95,7 +98,7 @@ pub fn run_subcommand(
             index,
             new_priority,
         } => {
-            task_list.check_index_bounds(&index)?;
+            task_list.check_index_bounds(index)?;
             task_list.tasks[index].change_priority(&new_priority[..]);
             Ok("Changed Priority".to_string())
         }
@@ -108,7 +111,7 @@ trait SubcommandArgumentParser {
     fn parse_desired_priority(&self, subcommand_name: String) -> String;
 }
 
-impl SubcommandArgumentParser for ArgMatches<'static> {
+impl SubcommandArgumentParser for ArgMatches<'_> {
     fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize {
         self.subcommand_matches(subcommand_name)
             .unwrap()
@@ -199,7 +202,7 @@ mod tests {
         let mut test_task_list = create_task_list();
         test_task_list.create_task();
 
-        let result = run_subcommand(CliSubCommand::ListTasks, &mut test_task_list);
+        let result = run_subcommand(CliSubCommand::ListTasks, test_task_list);
         assert_eq!(result.unwrap(), "End of List");
     }
 
@@ -216,7 +219,7 @@ mod tests {
     fn cli_list_task_failure_empty_list_test() {
         let mut test_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::ListTasks, &mut test_task_list);
+        let error = run_subcommand(CliSubCommand::ListTasks, test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "list is empty");
     }
 
@@ -232,7 +235,7 @@ mod tests {
     #[test]
     fn cli_create_task_successful_run_test() {
         let mut test_task_list = create_task_list();
-        let result = run_subcommand(CliSubCommand::CreateTask, &mut test_task_list);
+        let result = run_subcommand(CliSubCommand::CreateTask, test_task_list);
 
         assert_eq!(result.unwrap(), "Created new task named Default Task");
         assert!(test_task_list.tasks.is_empty() == false)
@@ -261,7 +264,7 @@ mod tests {
         let mut test_task_list = create_task_list();
         test_task_list.create_task();
 
-        let result = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
+        let result = run_subcommand(CliSubCommand::CompleteTask(0), test_task_list);
         assert_eq!(result.unwrap(), "completed Task: Default Task");
         assert!(test_task_list.tasks[0].completed == true);
     }
@@ -279,7 +282,7 @@ mod tests {
     fn cli_complete_task_failing_invalid_id_test() {
         let mut test_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::CompleteTask(1), &mut test_task_list);
+        let error = run_subcommand(CliSubCommand::CompleteTask(1), test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
     }
 
@@ -289,7 +292,7 @@ mod tests {
         test_task_list.create_task();
         test_task_list.tasks[0].mark_complete().unwrap();
 
-        let error = run_subcommand(CliSubCommand::CompleteTask(0), &mut test_task_list);
+        let error = run_subcommand(CliSubCommand::CompleteTask(0), test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "Task is already completed");
         assert!(test_task_list.tasks[0].completed == true);
     }
@@ -308,7 +311,7 @@ mod tests {
         let mut test_task_list = create_task_list();
         test_task_list.create_task();
 
-        let result = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
+        let result = run_subcommand(CliSubCommand::RemoveTask(0), test_task_list);
         assert_eq!(result.unwrap(), "Successfully Removed Default Task");
         assert!(test_task_list.tasks.is_empty());
     }
@@ -326,7 +329,7 @@ mod tests {
     fn cli_remove_task_failing_invalid_id_test() {
         let mut test_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::RemoveTask(0), &mut test_task_list);
+        let error = run_subcommand(CliSubCommand::RemoveTask(0), test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 
@@ -356,7 +359,7 @@ mod tests {
                 index: 0,
                 new_name: "Test Rename".to_string(),
             },
-            &mut test_task_list,
+            test_task_list,
         );
 
         assert_eq!(result.unwrap(), "Task Default Task renamed to Test Rename");
@@ -388,7 +391,7 @@ mod tests {
                 index: 0,
                 new_name: "Test Rename".to_string(),
             },
-            &mut test_task_list,
+            test_task_list,
         );
         assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
     }
@@ -418,7 +421,7 @@ mod tests {
                 index: 0,
                 new_priority: "High".to_string(),
             },
-            &mut test_task_list,
+            test_task_list,
         );
         assert_eq!(
             result.unwrap(),
@@ -451,7 +454,7 @@ mod tests {
                 index: 1,
                 new_priority: "High".to_string(),
             },
-            &mut test_task_list,
+            test_task_list,
         );
         assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
     }

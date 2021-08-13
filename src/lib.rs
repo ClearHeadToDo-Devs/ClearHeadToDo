@@ -491,20 +491,18 @@ mod tests {
         #[test]
         fn task_completion_successful_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
-            let mut single_task_list = empty_task_list.create_task();
-            let test_task = &mut single_task_list.tasks[0];
-            test_task.mark_complete()?;
-            assert!(test_task.completed == true);
+            let single_task_list = empty_task_list.create_task();
+            let test_successful_completion_task = single_task_list.tasks[0].clone().mark_complete()?;
+            assert!(test_successful_completion_task.completed == true);
             return Ok(());
         }
 
         #[test]
         fn task_completion_fail_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
-            let mut single_task_list = empty_task_list.create_task();
-            let test_task = &mut single_task_list.tasks[0];
-            test_task.mark_complete()?;
-            let failure = test_task.mark_complete().unwrap_err();
+            let single_task_list = empty_task_list.create_task();
+            let test_first_completion_task = single_task_list.tasks[0].clone().mark_complete()?;
+            let failure = test_first_completion_task.mark_complete().unwrap_err();
             assert_eq!(failure.to_string(), "Task is already completed");
             return Ok(());
         }
@@ -512,26 +510,29 @@ mod tests {
         #[test]
         fn task_reprioritize_failure_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
-            let mut single_task_list = empty_task_list.create_task();
-            let test_task = &mut single_task_list.tasks[0];
-            let error = test_task.change_priority("6").unwrap_err();
+            let single_task_list = empty_task_list.create_task();
+            let test_reprioritize_task_failure = single_task_list.tasks[0].clone();
+            let error = test_reprioritize_task_failure.change_priority("6").unwrap_err();
             assert_eq!(error.to_string(), "invalid priority");
             return Ok(());
         }
 
         #[test]
         fn task_successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
-            let empty_task_list = create_task_list();
-            let mut single_task_list = empty_task_list.create_task();
-            let test_task = &mut single_task_list.tasks[0];
-            test_task.change_priority("4")?;
-            assert!(test_task.priority == PriEnum::Low);
-            test_task.change_priority("3")?;
-            assert!(test_task.priority == PriEnum::Medium);
-            test_task.change_priority("2")?;
-            assert!(test_task.priority == PriEnum::High);
-            test_task.change_priority("1")?;
-            assert!(test_task.priority == PriEnum::Critical);
+            let priority_5_test_task = create_default_task();
+
+            let priority_4_test_task = priority_5_test_task.change_priority("4")?;
+            assert!(priority_4_test_task.priority == PriEnum::Low);
+
+            let priority_3_test_task = priority_4_test_task.change_priority("3")?;
+            assert!(priority_3_test_task.priority == PriEnum::Medium);
+
+            let priority_2_test_task = priority_3_test_task.change_priority("2")?;
+            assert!(priority_2_test_task.priority == PriEnum::High);
+
+            let priority_1_test_task = priority_2_test_task.change_priority("1")?;
+            assert!(priority_1_test_task.priority == PriEnum::Critical);
+
             return Ok(());
         }
     }
