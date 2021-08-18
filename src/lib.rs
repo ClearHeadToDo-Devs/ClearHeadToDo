@@ -130,6 +130,32 @@ impl TaskList {
         }
     }
 
+    pub fn complete_task(self, index: usize) -> Result<TaskList, Box<dyn Error>> {
+        let index_bounds_result = self.check_index_bounds(index);
+        match index_bounds_result {
+            Ok(checked_index) => Ok(TaskList {
+                tasks: self.tasks.update(
+                    checked_index,
+                    self.tasks[checked_index].clone().mark_complete()?,
+                )
+            }),
+            Err(error) => Err(error),
+        }
+    }
+
+    pub fn change_task_priority(self, index: usize, new_priority: String) -> Result<TaskList, Box<dyn Error>> {
+        let index_bounds_result = self.check_index_bounds(index);
+        match index_bounds_result {
+            Ok(checked_index) => Ok(TaskList {
+                tasks: self.tasks.update(
+                checked_index,
+                self.tasks[checked_index].clone().change_priority(&new_priority)?,
+            )
+        }),
+            Err(error) => Err(error),
+        }
+    }
+
     pub fn select_task_by_id(self, id: Uuid) -> Result<Task, Box<dyn Error>> {
         let search_task = self.tasks.into_iter().find(|tasks| tasks.id == id);
         match search_task {
