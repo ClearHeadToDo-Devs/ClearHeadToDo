@@ -402,8 +402,8 @@ mod tests {
         #[test]
         fn task_failed_search_by_index_test() -> Result<(), Box<dyn Error>> {
             let test_task_list = create_task_list();
-            let failed_bounds_check = test_task_list.check_index_bounds(0);
-            assert!(failed_bounds_check.unwrap_err().to_string() == "No Task at given Index");
+            let failed_bounds_check = test_task_list.check_index_bounds(0).unwrap_err().to_string();
+            assert_eq!(failed_bounds_check,"No Task in that position".to_string());
             return Ok(());
         }
 
@@ -412,7 +412,7 @@ mod tests {
             let empty_list = create_task_list();
             let single_nil_task_list = empty_list.create_task();
             let test_search_task = single_nil_task_list
-                .select_task_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
+                .select_task_by_id(Uuid::nil());
             assert!(
                 test_search_task.unwrap()
                     == Task {
