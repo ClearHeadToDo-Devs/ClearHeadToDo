@@ -137,21 +137,27 @@ impl TaskList {
                 tasks: self.tasks.update(
                     checked_index,
                     self.tasks[checked_index].clone().mark_complete()?,
-                )
+                ),
             }),
             Err(error) => Err(error),
         }
     }
 
-    pub fn change_task_priority(self, index: usize, new_priority: String) -> Result<TaskList, Box<dyn Error>> {
+    pub fn change_task_priority(
+        self,
+        index: usize,
+        new_priority: String,
+    ) -> Result<TaskList, Box<dyn Error>> {
         let index_bounds_result = self.check_index_bounds(index);
         match index_bounds_result {
             Ok(checked_index) => Ok(TaskList {
                 tasks: self.tasks.update(
-                checked_index,
-                self.tasks[checked_index].clone().change_priority(&new_priority)?,
-            )
-        }),
+                    checked_index,
+                    self.tasks[checked_index]
+                        .clone()
+                        .change_priority(&new_priority)?,
+                ),
+            }),
             Err(error) => Err(error),
         }
     }
@@ -355,7 +361,7 @@ mod tests {
                 assert_eq!(
                     record,
                     vec![
-                        "test csv task",
+                        "Default Task",
                         "Optional",
                         "false",
                         "00000000-0000-0000-0000-000000000000"
@@ -402,17 +408,19 @@ mod tests {
         #[test]
         fn task_failed_search_by_index_test() -> Result<(), Box<dyn Error>> {
             let test_task_list = create_task_list();
-            let failed_bounds_check = test_task_list.check_index_bounds(0).unwrap_err().to_string();
-            assert_eq!(failed_bounds_check,"No Task in that position".to_string());
+            let failed_bounds_check = test_task_list
+                .check_index_bounds(0)
+                .unwrap_err()
+                .to_string();
+            assert_eq!(failed_bounds_check, "No Task in that position".to_string());
             return Ok(());
         }
 
         #[test]
         fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
             let empty_list = create_task_list();
-            let single_nil_task_list = empty_list.create_task();
-            let test_search_task = single_nil_task_list
-                .select_task_by_id(Uuid::nil());
+            let single_nil_task_list = empty_list.create_nil_task();
+            let test_search_task = single_nil_task_list.select_task_by_id(Uuid::nil());
             assert!(
                 test_search_task.unwrap()
                     == Task {
@@ -451,25 +459,9 @@ mod tests {
             let mut good_result = Vec::new();
             let success = single_task_list.print_task_list(&mut good_result).unwrap();
 
-            let good_result_lines: Vec<&str> = std::str::from_utf8(&good_result)
-                .unwrap()
-                .split_inclusive('\n')
-                .collect();
-            let mut good_result_without_id: Vec<String> = Vec::new();
-            for line in good_result_lines {
-                let mut words: Vec<&str> = line.split(",").collect();
-                words.remove(words.len() - 1);
-                let joined: String = words.join(",").to_string();
-                good_result_without_id.push(joined);
-            }
-
             assert_eq!(
-                format!(
-                    "{}{}",
-                    std::str::from_utf8(&good_result).unwrap().to_string(),
-                    "\n"
-                ),
-                "name,priority,completed\nDefault Task,Optional,false\n"
+                format!("{}", std::str::from_utf8(&good_result).unwrap().to_string()),
+                "name,priority,completed,ID\nDefault Task,Optional,false,00000000-0000-0000-0000-000000000000\n"
             );
             assert_eq!(success, "End of List");
             return Ok(());
@@ -518,7 +510,8 @@ mod tests {
         fn task_completion_successful_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
             let single_task_list = empty_task_list.create_task();
-            let test_successful_completion_task = single_task_list.tasks[0].clone().mark_complete()?;
+            let test_successful_completion_task =
+                single_task_list.tasks[0].clone().mark_complete()?;
             assert!(test_successful_completion_task.completed == true);
             return Ok(());
         }
@@ -538,7 +531,9 @@ mod tests {
             let empty_task_list = create_task_list();
             let single_task_list = empty_task_list.create_task();
             let test_reprioritize_task_failure = single_task_list.tasks[0].clone();
-            let error = test_reprioritize_task_failure.change_priority("6").unwrap_err();
+            let error = test_reprioritize_task_failure
+                .change_priority("6")
+                .unwrap_err();
             assert_eq!(error.to_string(), "invalid priority");
             return Ok(());
         }

@@ -1,6 +1,2 @@
-name,priority,completed
-paper towels,High,true
-test rename,Optional,true
-Test Task,Optional,true
-Test Task,High,false
-Test Task,Optional,false
+name,priority,completed,id
+paper towels,High,true,00000000-0000-0000-0000-000000000000

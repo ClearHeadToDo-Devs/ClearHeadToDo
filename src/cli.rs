@@ -235,7 +235,7 @@ mod tests {
         let empty_task_list = create_task_list();
         let result = run_subcommand(CliSubCommand::CreateTask, empty_task_list);
 
-        assert_eq!(result.unwrap(), "Created new task named Default Task");
+        assert_eq!(result.unwrap(), "Created New Default Task");
         //commenting this because i still haven't decided how to handle this function
         //assert!(empty_task_list.tasks.is_empty() == false)
     }
@@ -264,7 +264,7 @@ mod tests {
         let single_task_list = empty_task_list.create_task();
 
         let result = run_subcommand(CliSubCommand::CompleteTask(0), single_task_list);
-        assert_eq!(result.unwrap(), "completed Task: Default Task");
+        assert_eq!(result.unwrap(), "Succesfully Completed Task");
         //assert!(single_task_list.tasks[0].completed == true);
     }
 
@@ -282,7 +282,7 @@ mod tests {
         let empty_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::CompleteTask(1), empty_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 
     #[test]
@@ -310,7 +310,7 @@ mod tests {
         let single_task_list = empty_task_list.create_task();
 
         let result = run_subcommand(CliSubCommand::RemoveTask(0), single_task_list);
-        assert_eq!(result.unwrap(), "Successfully Removed Default Task");
+        assert_eq!(result.unwrap(), "Removed Task");
         //assert!(test_task_list.tasks.is_empty());
     }
 
@@ -360,7 +360,7 @@ mod tests {
             single_task_list,
         );
 
-        assert_eq!(result.unwrap(), "Task Default Task renamed to Test Rename");
+        assert_eq!(result.unwrap(), "renamed successfully");
         //assert!(single_task_list.tasks[0].name == "Test Rename");
     }
 
@@ -391,7 +391,7 @@ mod tests {
             },
             test_task_list,
         );
-        assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 
     #[test]
@@ -423,7 +423,7 @@ mod tests {
         );
         assert_eq!(
             result.unwrap(),
-            "changed Task: Default Task priority changed to High"
+            "Changed Priority"
         );
         //assert!(test_task_list.tasks[0].priority == PriEnum::High);
     }
@@ -454,6 +454,6 @@ mod tests {
             },
             empty_task_list,
         );
-        assert_eq!(error.unwrap_err().to_string(), "No Task at given Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 }
