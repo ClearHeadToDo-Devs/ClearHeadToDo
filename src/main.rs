@@ -1,15 +1,15 @@
 mod cli;
 
-use cli::create_app;
-use cli::run_subcommand;
-use cli::run;
 use clear_head_todo::create_task_list;
-use clear_head_todo::TaskList;
-use clear_head_todo::load_tasks_from_csv;
 use clear_head_todo::load_csv;
+use clear_head_todo::load_tasks_from_csv;
+use clear_head_todo::TaskList;
+use cli::create_app;
+use cli::run;
+use cli::run_subcommand;
 
 fn main() {
-    let mut task_list: TaskList = load_tasks_from_csv("tasks.csv").unwrap();
+    let task_list: TaskList = load_tasks_from_csv("tasks.csv").unwrap();
 
     let app = create_app();
     let matches = app.get_matches();

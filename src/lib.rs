@@ -254,7 +254,7 @@ impl Serialize for Task {
 }
 
 impl fmt::Display for PriEnum {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         let printable: &str = match *self {
             PriEnum::Critical => "Critical",
             PriEnum::High => "High",
@@ -262,7 +262,7 @@ impl fmt::Display for PriEnum {
             PriEnum::Low => "Low",
             PriEnum::Optional => "Optional",
         };
-        write!(f, "{}", printable)
+        write!(formatter, "{}", printable)
     }
 }
 
@@ -393,11 +393,14 @@ mod tests {
         #[test]
         fn child_task_creation_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
+            let single_task_list = empty_task_list.create_nil_task();
             let test_task = &single_task_list.tasks[0];
             assert!(test_task.name == "Default Task");
             assert!(test_task.completed == false);
             assert!(test_task.priority == PriEnum::Optional);
+            assert!(
+                test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap()
+            );
             assert!(&single_task_list.tasks[0] == test_task);
             return Ok(());
         }
@@ -474,18 +477,92 @@ mod tests {
         }
 
         #[test]
-        fn task_removal_fail_test() {
+        fn failing_task_removal_test() {
             let test_task_list = create_task_list();
-            let error = test_task_list.remove_task(1).unwrap_err();
+            let error = test_task_list.remove_task(0).unwrap_err();
             assert_eq!(error.to_string(), "No Task in that position");
         }
 
         #[test]
-        fn task_removal_successful_test() {
+        fn successful_task_removal_test() {
             let empty_task_list = create_task_list();
             let single_task_list = empty_task_list.create_task();
             let good_result = single_task_list.remove_task(0).unwrap();
             assert!(good_result.tasks.is_empty());
+        }
+
+        #[test]
+        fn failing_task_completion_bad_index_test() {
+            let test_task_list = create_task_list();
+            let error = test_task_list.complete_task(0).unwrap_err();
+            assert_eq!(error.to_string(), "No Task in that position");
+        }
+
+        #[test]
+        fn failing_task_completion_already_complete_test() {
+            let mut test_task_list = create_task_list();
+            test_task_list.tasks.push_front(Task {
+                completed: true,
+                ..Default::default()
+            });
+            let error = test_task_list.complete_task(0).unwrap_err();
+            assert_eq!(error.to_string(), "Task is already completed");
+        }
+
+        #[test]
+        fn successful_task_completion_test() {
+            let empty_task_list = create_task_list();
+            let single_task_list = empty_task_list.create_task();
+            let good_result = single_task_list.complete_task(0).unwrap();
+            assert!(good_result.tasks[0].completed == true);
+        }
+
+        #[test]
+        fn failing_task_rename_bad_index_test() {
+            let test_task_list = create_task_list();
+            let error = test_task_list
+                .rename_task(0, "Change Test".to_string())
+                .unwrap_err();
+            assert_eq!(error.to_string(), "No Task in that position");
+        }
+
+        #[test]
+        fn successful_task_rename_test() {
+            let empty_task_list = create_task_list();
+            let single_task_list = empty_task_list.create_task();
+            let good_result = single_task_list
+                .rename_task(0, "Changed Task".to_string())
+                .unwrap();
+            assert!(good_result.tasks[0].name == "Changed Task".to_string());
+        }
+
+        #[test]
+        fn failing_task_reprioritize_bad_index_test() {
+            let test_task_list = create_task_list();
+            let error = test_task_list
+                .change_task_priority(0, "Optional".to_string())
+                .unwrap_err();
+            assert_eq!(error.to_string(), "No Task in that position");
+        }
+
+        #[test]
+        fn failing_task_reprioritize_bad_priority_test() {
+            let empty_task_list = create_task_list();
+            let single_task_list = empty_task_list.create_task();
+            let error = single_task_list
+                .change_task_priority(0, "bad priority".to_string())
+                .unwrap_err();
+            assert_eq!(error.to_string(), "invalid priority".to_string());
+        }
+
+        #[test]
+        fn successful_task_reprioritize_test() {
+            let empty_task_list = create_task_list();
+            let single_task_list = empty_task_list.create_task();
+            let changed_task_list = single_task_list
+                .change_task_priority(0, "low".to_string())
+                .unwrap();
+            assert_eq!(changed_task_list.tasks[0].priority, PriEnum::Low);
         }
     }
 

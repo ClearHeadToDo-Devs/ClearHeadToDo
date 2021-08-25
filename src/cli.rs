@@ -421,10 +421,7 @@ mod tests {
             },
             single_task_list,
         );
-        assert_eq!(
-            result.unwrap(),
-            "Changed Priority"
-        );
+        assert_eq!(result.unwrap(), "Changed Priority");
         //assert!(test_task_list.tasks[0].priority == PriEnum::High);
     }
 
