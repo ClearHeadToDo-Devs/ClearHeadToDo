@@ -287,13 +287,17 @@ impl Default for Task {
 mod tests {
     use super::*;
 
+    fn create_nil_task() -> Task {
+        Task {
+            id: Uuid::nil(),
+            ..Default::default()
+        }
+    }
+
     impl TaskList {
         fn create_nil_task(self) -> Self {
             let mut new_list = self.clone();
-            let new_task: Task = Task {
-                id: Uuid::nil(),
-                ..Default::default()
-            };
+            let new_task: Task = create_nil_task();
             new_list.tasks.push_back(new_task);
             return new_list;
         }
@@ -370,22 +374,24 @@ mod tests {
         #[test]
         fn load_from_csv_bad_id_test() {
             let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();
-            assert_eq!(error.to_string(), "invalid length: expected one of [36, 32], found 24");
+            assert_eq!(
+                error.to_string(),
+                "invalid length: expected one of [36, 32], found 24"
+            );
         }
-
     }
 
     mod task_list {
         use super::*;
 
         #[test]
-        fn create_task_list_test() {
+        fn task_list_creation_test() {
             let test_task_list = create_task_list();
             assert_eq!(test_task_list, TaskList { tasks: vector![] });
         }
 
         #[test]
-        fn task_creation_test() -> Result<(), Box<dyn Error>> {
+        fn child_task_creation_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
             let single_task_list = empty_task_list.create_task();
             let test_task = &single_task_list.tasks[0];
@@ -397,18 +403,7 @@ mod tests {
         }
 
         #[test]
-        fn task_creation_new_id_test() -> Result<(), Box<dyn Error>> {
-            let empty_list = create_task_list();
-            let single_task_list = empty_list.create_task();
-            let double_task_list = single_task_list.create_task();
-
-            let new_id_test_task = &double_task_list.tasks[1];
-            assert!(new_id_test_task.id != double_task_list.tasks[0].id);
-            return Ok(());
-        }
-
-        #[test]
-        fn task_successful_search_by_index_test() -> Result<(), Box<dyn Error>> {
+        fn successful_search_tasks_by_index_test() -> Result<(), Box<dyn Error>> {
             let empty_list = create_task_list();
             let single_nil_task_list = empty_list.create_task();
             let successful_bounds_check = single_nil_task_list.check_index_bounds(0).unwrap();
@@ -498,40 +493,43 @@ mod tests {
         use super::*;
 
         #[test]
-        fn default_creation_test() -> Result<(), Box<dyn Error>> {
-            let test_task = create_default_task();
+        fn default_creation_test() {
+            let test_task = create_nil_task();
             assert!(test_task.name == "Default Task".to_string());
             assert!(test_task.priority == PriEnum::Optional);
             assert!(test_task.completed == false);
-            return Ok(());
+            assert!(test_task.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
         }
 
         #[test]
-        fn successful_rename_test() -> Result<(), Box<dyn Error>> {
-            let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let test_task = single_task_list.tasks[0]
-                .clone()
-                .rename(&"Changed Name".to_string());
-            assert!(test_task.name == "Changed Name");
-            return Ok(());
+        fn task_creation_unique_id_test() {
+            let first_test_task = create_default_task();
+            let second_test_task = create_default_task();
+
+            assert!(first_test_task.id != second_test_task.id);
+        }
+
+        #[test]
+        fn rename_test() {
+            let test_task = create_default_task();
+            let renamed_task = test_task.rename(&"Changed Name".to_string());
+
+            assert!(renamed_task.name == "Changed Name");
         }
 
         #[test]
         fn successful_completion_test() -> Result<(), Box<dyn Error>> {
-            let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let test_successful_completion_task =
-                single_task_list.tasks[0].clone().mark_complete()?;
+            let test_task = create_default_task();
+            let test_successful_completion_task = test_task.mark_complete()?;
+
             assert!(test_successful_completion_task.completed == true);
             return Ok(());
         }
 
         #[test]
         fn failing_completion_test() -> Result<(), Box<dyn Error>> {
-            let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let test_first_completion_task = single_task_list.tasks[0].clone().mark_complete()?;
+            let test_task = create_default_task();
+            let test_first_completion_task = test_task.mark_complete()?;
             let failure = test_first_completion_task.mark_complete().unwrap_err();
             assert_eq!(failure.to_string(), "Task is already completed");
             return Ok(());
@@ -539,12 +537,8 @@ mod tests {
 
         #[test]
         fn failing_reprioritize_test() -> Result<(), Box<dyn Error>> {
-            let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let test_reprioritize_task_failure = single_task_list.tasks[0].clone();
-            let error = test_reprioritize_task_failure
-                .change_priority("6")
-                .unwrap_err();
+            let test_task = create_default_task();
+            let error = test_task.change_priority("6").unwrap_err();
             assert_eq!(error.to_string(), "invalid priority");
             return Ok(());
         }
