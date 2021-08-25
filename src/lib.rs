@@ -43,7 +43,7 @@ pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> 
     for result in rdr.records() {
         let record: csv::StringRecord = result?;
         let new_task: Task = Task {
-            id: Uuid::parse_str(&record[3]).unwrap(),
+            id: Uuid::parse_str(&record[3])?,
             name: record[0].to_string(),
             completed: FromStr::from_str(&record[2])?,
             priority: parse_priority(&record[1])?,
@@ -299,35 +299,8 @@ mod tests {
         }
     }
 
-    mod task_list_tests {
+    mod storage {
         use super::*;
-
-        #[test]
-        fn create_task_list_test() {
-            let test_task_list = create_task_list();
-            assert_eq!(test_task_list, TaskList { tasks: vector![] });
-        }
-
-        #[test]
-        fn load_from_csv_bad_file_test() {
-            let error = load_tasks_from_csv("bad_file").unwrap_err();
-            assert_eq!(error.to_string(), "No such file or directory (os error 2)");
-        }
-
-        #[test]
-        fn load_from_csv_bad_completion_status_test() {
-            let error = load_tasks_from_csv("bad_completion_status.csv").unwrap_err();
-            assert_eq!(
-                error.to_string(),
-                "provided string was not `true` or `false`"
-            );
-        }
-
-        #[test]
-        fn load_from_csv_bad_priority_test() {
-            let error = load_tasks_from_csv("bad_priority_test.csv").unwrap_err();
-            assert_eq!(error.to_string(), "invalid priority");
-        }
 
         #[test]
         fn load_from_csv_sucessful_test() {
@@ -371,6 +344,44 @@ mod tests {
                 return Ok(());
             }
             return Ok(());
+        }
+
+        #[test]
+        fn load_from_csv_bad_file_test() {
+            let error = load_tasks_from_csv("bad_file").unwrap_err();
+            assert_eq!(error.to_string(), "No such file or directory (os error 2)");
+        }
+
+        #[test]
+        fn load_from_csv_bad_completion_status_test() {
+            let error = load_tasks_from_csv("bad_completion_status.csv").unwrap_err();
+            assert_eq!(
+                error.to_string(),
+                "provided string was not `true` or `false`"
+            );
+        }
+
+        #[test]
+        fn load_from_csv_bad_priority_test() {
+            let error = load_tasks_from_csv("bad_priority_test.csv").unwrap_err();
+            assert_eq!(error.to_string(), "invalid priority");
+        }
+
+        #[test]
+        fn load_from_csv_bad_id_test() {
+            let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();
+            assert_eq!(error.to_string(), "invalid length: expected one of [36, 32], found 24");
+        }
+
+    }
+
+    mod task_list {
+        use super::*;
+
+        #[test]
+        fn create_task_list_test() {
+            let test_task_list = create_task_list();
+            assert_eq!(test_task_list, TaskList { tasks: vector![] });
         }
 
         #[test]
@@ -483,11 +494,11 @@ mod tests {
         }
     }
 
-    mod task_tests {
+    mod task {
         use super::*;
 
         #[test]
-        fn task_default_creation_test() -> Result<(), Box<dyn Error>> {
+        fn default_creation_test() -> Result<(), Box<dyn Error>> {
             let test_task = create_default_task();
             assert!(test_task.name == "Default Task".to_string());
             assert!(test_task.priority == PriEnum::Optional);
@@ -496,7 +507,7 @@ mod tests {
         }
 
         #[test]
-        fn task_rename_test() -> Result<(), Box<dyn Error>> {
+        fn successful_rename_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
             let single_task_list = empty_task_list.create_task();
             let test_task = single_task_list.tasks[0]
@@ -507,7 +518,7 @@ mod tests {
         }
 
         #[test]
-        fn task_completion_successful_test() -> Result<(), Box<dyn Error>> {
+        fn successful_completion_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
             let single_task_list = empty_task_list.create_task();
             let test_successful_completion_task =
@@ -517,7 +528,7 @@ mod tests {
         }
 
         #[test]
-        fn task_completion_fail_test() -> Result<(), Box<dyn Error>> {
+        fn failing_completion_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
             let single_task_list = empty_task_list.create_task();
             let test_first_completion_task = single_task_list.tasks[0].clone().mark_complete()?;
@@ -527,7 +538,7 @@ mod tests {
         }
 
         #[test]
-        fn task_reprioritize_failure_test() -> Result<(), Box<dyn Error>> {
+        fn failing_reprioritize_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
             let single_task_list = empty_task_list.create_task();
             let test_reprioritize_task_failure = single_task_list.tasks[0].clone();
@@ -539,7 +550,7 @@ mod tests {
         }
 
         #[test]
-        fn task_successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
+        fn successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
             let priority_5_test_task = create_default_task();
 
             let priority_4_test_task = priority_5_test_task.change_priority("4")?;
