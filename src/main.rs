@@ -2,7 +2,6 @@ mod cli;
 mod storage;
 mod task;
 
-use clear_head_todo::create_task_list;
 use storage::load_csv;
 use storage::load_tasks_from_csv;
 use clear_head_todo::TaskList;

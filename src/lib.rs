@@ -1,25 +1,18 @@
-use csv::Reader;
-use csv::Writer;
-use serde::ser::{Serialize, SerializeStruct, Serializer};
-use serde::Serialize as AltSerialize;
-use std::error::Error;
-use std::fmt;
-use std::io::{Error as OtherError, ErrorKind};
-use std::{env, path::PathBuf};
-//use std::path::{Path, PathBuf};
-use im::vector;
-use std::str::FromStr;
-use uuid::Uuid;
 pub mod task;
 pub use task::*;
+
 mod helper;
 pub use helper::*;
+
+use std::error::Error;
+use std::io::{Error as OtherError, ErrorKind};
+use im::vector;
+use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TaskList {
     pub tasks: im::Vector<Task>,
 }
-
 
 pub fn create_task_list() -> TaskList {
     return TaskList { tasks: vector![] };
@@ -141,6 +134,7 @@ impl TaskList {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::str::FromStr;
 
 
     mod task_list {

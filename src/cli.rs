@@ -1,10 +1,8 @@
-use clear_head_todo::create_task_list;
-//use core::task;
 use clear_head_todo::TaskList;
 use std::error::Error;
 
 extern crate clap;
-use clap::{App, AppSettings, Arg, ArgMatches, ErrorKind, SubCommand};
+use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 
 pub fn create_app() -> App<'static, 'static> {
     App::new("Clear Head Todo")
@@ -141,6 +139,8 @@ impl SubcommandArgumentParser for ArgMatches<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use clear_head_todo::create_task_list;
+    use clap::ErrorKind;
 
     #[test]
     fn cli_creation_name_test() {

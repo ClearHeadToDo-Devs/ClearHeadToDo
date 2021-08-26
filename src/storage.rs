@@ -1,20 +1,14 @@
-use csv::Reader;
-use csv::Writer;
-use serde::ser::{Serialize, SerializeStruct, Serializer};
-use serde::Serialize as AltSerialize;
-use std::error::Error;
-use std::fmt;
-use std::io::{Error as OtherError, ErrorKind};
-use std::{env, path::PathBuf};
-//use std::path::{Path, PathBuf};
-use im::vector;
-use std::str::FromStr;
-use uuid::Uuid;
 use clear_head_todo::TaskList;
 use clear_head_todo::create_task_list;
 use clear_head_todo::Task;
-use clear_head_todo::PriEnum;
 use clear_head_todo::parse_priority;
+
+use csv::Reader;
+use csv::Writer;
+use std::error::Error;
+use std::{env, path::PathBuf};
+use std::str::FromStr;
+use uuid::Uuid;
 
 pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
     let mut import_list = create_task_list();
@@ -49,6 +43,7 @@ pub fn load_csv(task_list: &TaskList, file_name: &str) -> Result<String, Box<dyn
 #[cfg(test)]
 mod tests {
     use super::*;
+    use clear_head_todo::PriEnum;
 
     #[test]
     fn load_from_csv_sucessful_test() {
