@@ -12,9 +12,9 @@ use std::str::FromStr;
 use uuid::Uuid;
 use clear_head_todo::TaskList;
 use clear_head_todo::create_task_list;
-use super::task::Task;
-use super::task::PriEnum;
-use super::task::parse_priority;
+use clear_head_todo::Task;
+use clear_head_todo::PriEnum;
+use clear_head_todo::parse_priority;
 
 pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
     let mut import_list = create_task_list();
@@ -45,10 +45,10 @@ pub fn load_csv(task_list: &TaskList, file_name: &str) -> Result<String, Box<dyn
     }
     Ok("Successfully Saved Tasks Into CSV".to_string())
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use clear_head_todo::tests::add_nil_task;
 
     #[test]
     fn load_from_csv_sucessful_test() {

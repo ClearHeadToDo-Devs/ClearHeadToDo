@@ -10,8 +10,10 @@ use std::{env, path::PathBuf};
 use im::vector;
 use std::str::FromStr;
 use uuid::Uuid;
-mod task;
-use task::*;
+pub mod task;
+pub use task::*;
+mod helper;
+pub use helper::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TaskList {
@@ -139,18 +141,6 @@ impl TaskList {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    impl TaskList {
-        fn add_nil_task(self) -> Self {
-            let mut new_list = self.clone();
-            let new_task: Task = Task {
-                id: Uuid::nil(),
-                ..Default::default()
-            };
-            new_list.tasks.push_back(new_task);
-            return new_list;
-        }
-    }
 
 
     mod task_list {
