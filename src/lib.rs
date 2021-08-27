@@ -1,21 +1,17 @@
 pub mod task;
 pub use task::*;
 
-mod helper;
+pub mod helper;
 pub use helper::*;
 
+use im::vector;
 use std::error::Error;
 use std::io::{Error as OtherError, ErrorKind};
-use im::vector;
 use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TaskList {
     pub tasks: im::Vector<Task>,
-}
-
-pub fn create_task_list() -> TaskList {
-    return TaskList { tasks: vector![] };
 }
 
 impl TaskList {
@@ -131,11 +127,14 @@ impl TaskList {
     }
 }
 
+pub fn create_task_list() -> TaskList {
+    return TaskList { tasks: vector![] };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::str::FromStr;
-
 
     mod task_list {
         use super::*;
