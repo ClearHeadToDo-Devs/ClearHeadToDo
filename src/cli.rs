@@ -139,8 +139,8 @@ impl SubcommandArgumentParser for ArgMatches<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use clear_head_todo::create_task_list;
     use clap::ErrorKind;
+    use clear_head_todo::create_task_list;
 
     #[test]
     fn cli_creation_name_test() {
@@ -252,10 +252,10 @@ mod tests {
     #[test]
     fn cli_complete_task_successful_parse_test() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "1"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::CompleteTask(1));
+        assert_eq!(result, CliSubCommand::CompleteTask(0));
     }
 
     #[test]
@@ -317,14 +317,14 @@ mod tests {
     #[test]
     fn cli_remove_task_alias_test() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "1"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "0"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::RemoveTask(1));
+        assert_eq!(result, CliSubCommand::RemoveTask(0));
     }
 
     #[test]
-    fn cli_remove_task_failing_invalid_id_test() {
+    fn failing_cli_remove_task_invalid_index_test() {
         let test_task_list = create_task_list();
 
         let error = run_subcommand(CliSubCommand::RemoveTask(0), test_task_list);
@@ -332,7 +332,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_rename_task_successful_parse_test() {
+    fn successful_cli_rename_task_parse_test() {
         let app = create_app();
         let test_matches =
             app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test", "Rename"]);
@@ -454,5 +454,3 @@ mod tests {
         assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 }
-
-
