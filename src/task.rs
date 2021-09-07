@@ -30,7 +30,7 @@ pub fn create_default_task() -> Task {
 }
 
 impl Task {
-    pub fn rename(self, new_task_name: &String) -> Task {
+    pub fn rename(&self, new_task_name: &String) -> Task {
         return Task {
             name: new_task_name.to_owned(),
             id: self.id,
@@ -39,12 +39,12 @@ impl Task {
         };
     }
 
-    pub fn mark_complete(self) -> Result<Task, Box<dyn Error>> {
+    pub fn mark_complete(&self) -> Result<Task, Box<dyn Error>> {
         if self.completed == false {
             return Ok(Task {
-                id: self.id,
-                name: self.name,
-                priority: self.priority,
+                id: self.id.clone(),
+                name: self.name.clone(),
+                priority: self.priority.clone(),
                 completed: true,
             });
         } else {
@@ -55,13 +55,13 @@ impl Task {
         }
     }
 
-    pub fn change_priority(self, new_priority: &str) -> Result<Task, Box<dyn Error>> {
+    pub fn change_priority(&self, new_priority: &str) -> Result<Task, Box<dyn Error>> {
         let new_pri: PriEnum = parse_priority(new_priority)?;
         return Ok(Task {
-            name: self.name,
-            priority: new_pri,
-            id: self.id,
-            completed: self.completed,
+            name: self.name.clone(),
+            priority: new_pri.clone(),
+            id: self.id.clone(),
+            completed: self.completed.clone(),
         });
     }
 }
@@ -156,7 +156,7 @@ mod test {
     #[test]
     fn rename_test() {
         let test_task = create_default_task();
-        let renamed_task = test_task.rename(&"Changed Name".to_string());
+        let renamed_task = &test_task.rename(&"Changed Name".to_string());
 
         assert!(renamed_task.name == "Changed Name");
     }
@@ -164,7 +164,7 @@ mod test {
     #[test]
     fn successful_completion_test() -> Result<(), Box<dyn Error>> {
         let test_task = create_default_task();
-        let test_successful_completion_task = test_task.mark_complete()?;
+        let test_successful_completion_task = &test_task.mark_complete()?;
 
         assert!(test_successful_completion_task.completed == true);
         return Ok(());
@@ -173,8 +173,8 @@ mod test {
     #[test]
     fn failing_completion_test() -> Result<(), Box<dyn Error>> {
         let test_task = create_default_task();
-        let test_first_completion_task = test_task.mark_complete()?;
-        let failure = test_first_completion_task.mark_complete().unwrap_err();
+        let test_first_completion_task = &test_task.mark_complete()?;
+        let failure = &test_first_completion_task.mark_complete().unwrap_err();
         assert_eq!(failure.to_string(), "Task is already completed");
         return Ok(());
     }
@@ -182,7 +182,7 @@ mod test {
     #[test]
     fn failing_reprioritize_test() -> Result<(), Box<dyn Error>> {
         let test_task = create_default_task();
-        let error = test_task.change_priority("6").unwrap_err();
+        let error = &test_task.change_priority("6").unwrap_err();
         assert_eq!(error.to_string(), "invalid priority");
         return Ok(());
     }
@@ -191,16 +191,16 @@ mod test {
     fn successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
         let priority_5_test_task = create_default_task();
 
-        let priority_4_test_task = priority_5_test_task.change_priority("4")?;
+        let priority_4_test_task = &priority_5_test_task.change_priority("4")?;
         assert!(priority_4_test_task.priority == PriEnum::Low);
 
-        let priority_3_test_task = priority_4_test_task.change_priority("3")?;
+        let priority_3_test_task = &priority_4_test_task.change_priority("3")?;
         assert!(priority_3_test_task.priority == PriEnum::Medium);
 
-        let priority_2_test_task = priority_3_test_task.change_priority("2")?;
+        let priority_2_test_task = &priority_3_test_task.change_priority("2")?;
         assert!(priority_2_test_task.priority == PriEnum::High);
 
-        let priority_1_test_task = priority_2_test_task.change_priority("1")?;
+        let priority_1_test_task = &priority_2_test_task.change_priority("1")?;
         assert!(priority_1_test_task.priority == PriEnum::Critical);
 
         return Ok(());

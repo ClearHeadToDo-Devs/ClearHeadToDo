@@ -2,12 +2,12 @@ mod cli;
 mod storage;
 mod task;
 
-use storage::load_csv;
-use storage::load_tasks_from_csv;
 use clear_head_todo::TaskList;
 use cli::create_app;
 use cli::run;
 use cli::run_subcommand;
+use storage::load_csv;
+use storage::load_tasks_from_csv;
 
 fn main() {
     let task_list: TaskList = load_tasks_from_csv("tasks.csv").unwrap();
