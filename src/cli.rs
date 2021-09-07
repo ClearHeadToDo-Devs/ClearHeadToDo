@@ -71,7 +71,7 @@ pub fn run(matches: ArgMatches<'_>) -> CliSubCommand {
 
 pub fn run_subcommand(
     command: CliSubCommand,
-    task_list: TaskList,
+    task_list: &TaskList,
 ) -> Result<String, Box<dyn Error>> {
     match command {
         CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
@@ -200,7 +200,7 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.create_task();
 
-        let result = run_subcommand(CliSubCommand::ListTasks, single_task_list);
+        let result = run_subcommand(CliSubCommand::ListTasks, &single_task_list);
         assert_eq!(result.unwrap(), "End of List");
     }
 
@@ -217,7 +217,7 @@ mod tests {
     fn cli_list_task_failure_empty_list_test() {
         let empty_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::ListTasks, empty_task_list);
+        let error = run_subcommand(CliSubCommand::ListTasks, &empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "list is empty");
     }
 
@@ -233,7 +233,7 @@ mod tests {
     #[test]
     fn cli_create_task_successful_run_test() {
         let empty_task_list = create_task_list();
-        let result = run_subcommand(CliSubCommand::CreateTask, empty_task_list);
+        let result = run_subcommand(CliSubCommand::CreateTask, &empty_task_list);
 
         assert_eq!(result.unwrap(), "Created New Default Task");
         //commenting this because i still haven't decided how to handle this function
@@ -263,7 +263,7 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.create_task();
 
-        let result = run_subcommand(CliSubCommand::CompleteTask(0), single_task_list);
+        let result = run_subcommand(CliSubCommand::CompleteTask(0), &single_task_list);
         assert_eq!(result.unwrap(), "Succesfully Completed Task");
         //assert!(single_task_list.tasks[0].completed == true);
     }
@@ -281,7 +281,7 @@ mod tests {
     fn cli_complete_task_failing_invalid_id_test() {
         let empty_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::CompleteTask(1), empty_task_list);
+        let error = run_subcommand(CliSubCommand::CompleteTask(1), &empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 
@@ -291,7 +291,7 @@ mod tests {
         let single_task_list = empty_task_list.create_task();
         let single_completed_task_list = single_task_list.complete_task(0).unwrap();
 
-        let error = run_subcommand(CliSubCommand::CompleteTask(0), single_completed_task_list);
+        let error = run_subcommand(CliSubCommand::CompleteTask(0), &single_completed_task_list);
         assert_eq!(error.unwrap_err().to_string(), "Task is already completed");
     }
 
@@ -309,7 +309,7 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.create_task();
 
-        let result = run_subcommand(CliSubCommand::RemoveTask(0), single_task_list);
+        let result = run_subcommand(CliSubCommand::RemoveTask(0), &single_task_list);
         assert_eq!(result.unwrap(), "Removed Task");
         //assert!(test_task_list.tasks.is_empty());
     }
@@ -327,7 +327,7 @@ mod tests {
     fn failing_cli_remove_task_invalid_index_test() {
         let test_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::RemoveTask(0), test_task_list);
+        let error = run_subcommand(CliSubCommand::RemoveTask(0), &test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 
@@ -357,7 +357,7 @@ mod tests {
                 index: 0,
                 new_name: "Test Rename".to_string(),
             },
-            single_task_list,
+            &single_task_list,
         );
 
         assert_eq!(result.unwrap(), "renamed successfully");
@@ -389,7 +389,7 @@ mod tests {
                 index: 0,
                 new_name: "Test Rename".to_string(),
             },
-            test_task_list,
+            &test_task_list,
         );
         assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
@@ -419,7 +419,7 @@ mod tests {
                 index: 0,
                 new_priority: "High".to_string(),
             },
-            single_task_list,
+            &single_task_list,
         );
         assert_eq!(result.unwrap(), "Changed Priority");
         //assert!(test_task_list.tasks[0].priority == PriEnum::High);
@@ -449,7 +449,7 @@ mod tests {
                 index: 1,
                 new_priority: "High".to_string(),
             },
-            empty_task_list,
+            &empty_task_list,
         );
         assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }

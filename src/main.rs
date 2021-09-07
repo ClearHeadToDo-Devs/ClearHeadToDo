@@ -16,7 +16,7 @@ fn main() {
     let matches = app.get_matches();
 
     let subcommand = run(matches);
-    let result = run_subcommand(subcommand, task_list);
+    let result = run_subcommand(subcommand, &task_list);
 
     match result {
         Ok(s) => println!("{}", s),

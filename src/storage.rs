@@ -1,13 +1,13 @@
-use clear_head_todo::TaskList;
 use clear_head_todo::create_task_list;
-use clear_head_todo::Task;
 use clear_head_todo::parse_priority;
+use clear_head_todo::Task;
+use clear_head_todo::TaskList;
 
 use csv::Reader;
 use csv::Writer;
 use std::error::Error;
-use std::{env, path::PathBuf};
 use std::str::FromStr;
+use std::{env, path::PathBuf};
 use uuid::Uuid;
 
 pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
@@ -49,9 +49,7 @@ mod tests {
     fn load_from_csv_sucessful_test() {
         let test_task_list = load_tasks_from_csv("successful_import_test.csv").unwrap();
         let test_task = &test_task_list.tasks[0];
-        assert!(
-            test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap()
-        );
+        assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
         assert!(test_task.name == "test csv task");
         assert!(test_task.completed == false);
         assert!(test_task.priority == PriEnum::Optional);
@@ -60,8 +58,8 @@ mod tests {
     #[test]
     fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
         let empty_task_list = create_task_list();
-        let single_nil_task_list = empty_task_list.add_nil_task();
-        single_nil_task_list.tasks[0]
+        let single_nil_task_list = &empty_task_list.add_nil_task();
+        &single_nil_task_list.tasks[0]
             .clone()
             .rename(&"test csv task".to_string());
         load_csv(&single_nil_task_list, "successful_export_test.csv")?;
