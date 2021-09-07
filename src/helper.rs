@@ -1,10 +1,9 @@
-use super::TaskList;
 use super::task::Task;
+use super::TaskList;
 use uuid::Uuid;
 
-
 impl TaskList {
-    pub fn add_nil_task(self) -> Self {
+    pub fn add_nil_task(&self) -> Self {
         let mut new_list = self.clone();
         let new_task: Task = Task {
             id: Uuid::nil(),

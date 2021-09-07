@@ -15,7 +15,7 @@ pub struct TaskList {
 }
 
 impl TaskList {
-    pub fn create_task(self) -> Self {
+    pub fn create_task(&self) -> Self {
         let new_task = create_default_task();
         let mut new_list = self.clone();
         new_list.tasks.push_back(new_task);
@@ -44,11 +44,11 @@ impl TaskList {
         Ok("End of List".to_string())
     }
 
-    pub fn remove_task(self, index: usize) -> Result<TaskList, Box<dyn Error>> {
+    pub fn remove_task(&self, index: usize) -> Result<TaskList, Box<dyn Error>> {
         let index_check_result = self.check_index_bounds(index);
         match index_check_result {
             Ok(checked_index) => {
-                let (mut left_side, mut right_side) = self.tasks.split_at(checked_index);
+                let (mut left_side, mut right_side) = self.tasks.clone().split_at(checked_index);
                 right_side.pop_front().unwrap();
                 left_side.append(right_side);
                 Ok(TaskList { tasks: left_side })
@@ -57,7 +57,7 @@ impl TaskList {
         }
     }
 
-    pub fn rename_task(self, index: usize, new_name: String) -> Result<TaskList, Box<dyn Error>> {
+    pub fn rename_task(&self, index: usize, new_name: String) -> Result<TaskList, Box<dyn Error>> {
         let index_bounds_result = self.check_index_bounds(index);
         match index_bounds_result {
             Ok(checked_index) => Ok(TaskList {
@@ -70,7 +70,7 @@ impl TaskList {
         }
     }
 
-    pub fn complete_task(self, index: usize) -> Result<TaskList, Box<dyn Error>> {
+    pub fn complete_task(&self, index: usize) -> Result<TaskList, Box<dyn Error>> {
         let index_bounds_result = self.check_index_bounds(index);
         match index_bounds_result {
             Ok(checked_index) => Ok(TaskList {
@@ -84,7 +84,7 @@ impl TaskList {
     }
 
     pub fn change_task_priority(
-        self,
+        &self,
         index: usize,
         new_priority: String,
     ) -> Result<TaskList, Box<dyn Error>> {
@@ -102,10 +102,10 @@ impl TaskList {
         }
     }
 
-    pub fn select_task_by_id(self, id: Uuid) -> Result<Task, Box<dyn Error>> {
-        let search_task = self.tasks.into_iter().find(|tasks| tasks.id == id);
+    pub fn select_task_by_id(&self, id: Uuid) -> Result<Task, Box<dyn Error>> {
+        let search_task = self.clone().tasks.into_iter().find(|tasks| tasks.id == id);
         match search_task {
-            Some(task) => return Ok(task),
+            Some(task) => return Ok(task.clone().to_owned()),
             None => {
                 return Err(Box::new(OtherError::new(
                     ErrorKind::Other,
@@ -148,7 +148,7 @@ mod tests {
         #[test]
         fn child_task_creation_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.add_nil_task();
+            let single_task_list = &empty_task_list.add_nil_task();
             let test_task = &single_task_list.tasks[0];
             assert!(test_task.name == "Default Task");
             assert!(test_task.completed == false);
@@ -163,27 +163,27 @@ mod tests {
         #[test]
         fn successful_search_tasks_by_index_test() -> Result<(), Box<dyn Error>> {
             let empty_list = create_task_list();
-            let single_nil_task_list = empty_list.create_task();
-            let successful_bounds_check = single_nil_task_list.check_index_bounds(0).unwrap();
-            assert!(successful_bounds_check == 0);
+            let single_nil_task_list = &empty_list.create_task();
+            let successful_bounds_check = &single_nil_task_list.check_index_bounds(0).unwrap();
+            assert!(successful_bounds_check == &0);
             return Ok(());
         }
 
         #[test]
         fn task_failed_search_by_index_test() -> Result<(), Box<dyn Error>> {
             let test_task_list = create_task_list();
-            let failed_bounds_check = test_task_list
+            let failed_bounds_check = &test_task_list
                 .check_index_bounds(0)
                 .unwrap_err()
                 .to_string();
-            assert_eq!(failed_bounds_check, "No Task in that position".to_string());
+            assert_eq!(failed_bounds_check, &"No Task in that position".to_string());
             return Ok(());
         }
 
         #[test]
         fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
             let empty_list = create_task_list();
-            let single_nil_task_list = empty_list.add_nil_task();
+            let single_nil_task_list = &empty_list.add_nil_task();
             let test_search_task = single_nil_task_list.select_task_by_id(Uuid::nil());
             assert!(
                 test_search_task.unwrap()
@@ -211,17 +211,17 @@ mod tests {
         fn task_print_fail_test() {
             let test_task_list = create_task_list();
             let mut bad_result = Vec::new();
-            let error = test_task_list.print_task_list(&mut bad_result).unwrap_err();
+            let error = &test_task_list.print_task_list(&mut bad_result).unwrap_err();
             assert_eq!(error.to_string(), "list is empty");
         }
 
         #[test]
         fn task_print_successful_test() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.add_nil_task();
+            let single_task_list = &empty_task_list.add_nil_task();
 
             let mut good_result = Vec::new();
-            let success = single_task_list.print_task_list(&mut good_result).unwrap();
+            let success = &single_task_list.print_task_list(&mut good_result).unwrap();
 
             assert_eq!(
                 format!("{}", std::str::from_utf8(&good_result).unwrap().to_string()),
@@ -234,22 +234,22 @@ mod tests {
         #[test]
         fn failing_task_removal_test() {
             let test_task_list = create_task_list();
-            let error = test_task_list.remove_task(0).unwrap_err();
+            let error = &test_task_list.remove_task(0).unwrap_err();
             assert_eq!(error.to_string(), "No Task in that position");
         }
 
         #[test]
         fn successful_task_removal_test() {
             let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let good_result = single_task_list.remove_task(0).unwrap();
+            let single_task_list = &empty_task_list.create_task();
+            let good_result = &single_task_list.remove_task(0).unwrap();
             assert!(good_result.tasks.is_empty());
         }
 
         #[test]
         fn failing_task_completion_bad_index_test() {
             let test_task_list = create_task_list();
-            let error = test_task_list.complete_task(0).unwrap_err();
+            let error = &test_task_list.complete_task(0).unwrap_err();
             assert_eq!(error.to_string(), "No Task in that position");
         }
 
@@ -260,22 +260,22 @@ mod tests {
                 completed: true,
                 ..Default::default()
             });
-            let error = test_task_list.complete_task(0).unwrap_err();
+            let error = &test_task_list.complete_task(0).unwrap_err();
             assert_eq!(error.to_string(), "Task is already completed");
         }
 
         #[test]
         fn successful_task_completion_test() {
             let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let good_result = single_task_list.complete_task(0).unwrap();
+            let single_task_list = &empty_task_list.create_task();
+            let good_result = &single_task_list.complete_task(0).unwrap();
             assert!(good_result.tasks[0].completed == true);
         }
 
         #[test]
         fn failing_task_rename_bad_index_test() {
             let test_task_list = create_task_list();
-            let error = test_task_list
+            let error = &test_task_list
                 .rename_task(0, "Change Test".to_string())
                 .unwrap_err();
             assert_eq!(error.to_string(), "No Task in that position");
@@ -284,8 +284,8 @@ mod tests {
         #[test]
         fn successful_task_rename_test() {
             let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let good_result = single_task_list
+            let single_task_list = &empty_task_list.create_task();
+            let good_result = &single_task_list
                 .rename_task(0, "Changed Task".to_string())
                 .unwrap();
             assert!(good_result.tasks[0].name == "Changed Task".to_string());
@@ -294,7 +294,7 @@ mod tests {
         #[test]
         fn failing_task_reprioritize_bad_index_test() {
             let test_task_list = create_task_list();
-            let error = test_task_list
+            let error = &test_task_list
                 .change_task_priority(0, "Optional".to_string())
                 .unwrap_err();
             assert_eq!(error.to_string(), "No Task in that position");
@@ -303,8 +303,8 @@ mod tests {
         #[test]
         fn failing_task_reprioritize_bad_priority_test() {
             let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let error = single_task_list
+            let single_task_list = &empty_task_list.create_task();
+            let error = &single_task_list
                 .change_task_priority(0, "bad priority".to_string())
                 .unwrap_err();
             assert_eq!(error.to_string(), "invalid priority".to_string());
@@ -313,8 +313,8 @@ mod tests {
         #[test]
         fn successful_task_reprioritize_test() {
             let empty_task_list = create_task_list();
-            let single_task_list = empty_task_list.create_task();
-            let changed_task_list = single_task_list
+            let single_task_list = &empty_task_list.create_task();
+            let changed_task_list = &single_task_list
                 .change_task_priority(0, "low".to_string())
                 .unwrap();
             assert_eq!(changed_task_list.tasks[0].priority, PriEnum::Low);
