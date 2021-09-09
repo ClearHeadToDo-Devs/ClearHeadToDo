@@ -39,19 +39,12 @@ impl Task {
         };
     }
 
-    pub fn mark_complete(&self) -> Result<Task, Box<dyn Error>> {
-        if self.completed == false {
-            return Ok(Task {
-                id: self.id.clone(),
-                name: self.name.clone(),
-                priority: self.priority.clone(),
-                completed: true,
-            });
-        } else {
-            return Err(Box::new(OtherError::new(
-                ErrorKind::Other,
-                "Task is already completed",
-            )));
+    pub fn toggle_completion_status(&self) -> Task {
+        Task {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            priority: self.priority.clone(),
+            completed: !self.completed,
         }
     }
 
@@ -162,21 +155,20 @@ mod test {
     }
 
     #[test]
-    fn successful_completion_test() -> Result<(), Box<dyn Error>> {
+    fn completion_test() -> Result<(), Box<dyn Error>> {
         let test_task = create_default_task();
-        let test_successful_completion_task = &test_task.mark_complete()?;
+        let test_successful_completion_task = &test_task.toggle_completion_status();
 
         assert!(test_successful_completion_task.completed == true);
         return Ok(());
     }
 
     #[test]
-    fn failing_completion_test() -> Result<(), Box<dyn Error>> {
+    fn reopen_test() -> () {
         let test_task = create_default_task();
-        let test_first_completion_task = &test_task.mark_complete()?;
-        let failure = &test_first_completion_task.mark_complete().unwrap_err();
-        assert_eq!(failure.to_string(), "Task is already completed");
-        return Ok(());
+        let test_first_completion_task = &test_task.toggle_completion_status();
+        let reopened_task = &test_first_completion_task.toggle_completion_status();
+        assert_eq!(reopened_task.completed, false);
     }
 
     #[test]

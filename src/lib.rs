@@ -70,13 +70,13 @@ impl TaskList {
         }
     }
 
-    pub fn complete_task(&self, index: usize) -> Result<TaskList, Box<dyn Error>> {
+    pub fn toggle_task_completion_status(&self, index: usize) -> Result<TaskList, Box<dyn Error>> {
         let index_bounds_result = self.check_index_bounds(index);
         match index_bounds_result {
             Ok(checked_index) => Ok(TaskList {
                 tasks: self.tasks.update(
                     checked_index,
-                    self.tasks[checked_index].clone().mark_complete()?,
+                    self.tasks[checked_index].clone().toggle_completion_status(),
                 ),
             }),
             Err(error) => Err(error),
@@ -249,27 +249,27 @@ mod tests {
         #[test]
         fn failing_task_completion_bad_index_test() {
             let test_task_list = create_task_list();
-            let error = &test_task_list.complete_task(0).unwrap_err();
+            let error = &test_task_list.toggle_task_completion_status(0).unwrap_err();
             assert_eq!(error.to_string(), "No Task in that position");
-        }
-
-        #[test]
-        fn failing_task_completion_already_complete_test() {
-            let mut test_task_list = create_task_list();
-            test_task_list.tasks.push_front(Task {
-                completed: true,
-                ..Default::default()
-            });
-            let error = &test_task_list.complete_task(0).unwrap_err();
-            assert_eq!(error.to_string(), "Task is already completed");
         }
 
         #[test]
         fn successful_task_completion_test() {
             let empty_task_list = create_task_list();
             let single_task_list = &empty_task_list.create_task();
-            let good_result = &single_task_list.complete_task(0).unwrap();
+            let good_result = &single_task_list.toggle_task_completion_status(0).unwrap();
             assert!(good_result.tasks[0].completed == true);
+        }
+
+        #[test]
+        fn successful_task_reopen_test() {
+            let mut test_task_list = create_task_list();
+            test_task_list.tasks.push_front(Task {
+                completed: true,
+                ..Default::default()
+            });
+            let updated_task_list = &test_task_list.toggle_task_completion_status(0).unwrap();
+            assert_eq!(updated_task_list.tasks[0].completed, false);
         }
 
         #[test]

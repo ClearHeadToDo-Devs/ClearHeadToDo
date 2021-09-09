@@ -80,7 +80,7 @@ pub fn run_subcommand(
             Ok("Created New Default Task".to_string())
         }
         CliSubCommand::CompleteTask(index) => {
-            task_list.complete_task(index)?;
+            task_list.toggle_task_completion_status(index)?;
             Ok("Succesfully Completed Task".to_string())
         }
         CliSubCommand::RemoveTask(index) => {
@@ -269,6 +269,17 @@ mod tests {
     }
 
     #[test]
+    fn cli_reopen_task_test() {
+        let empty_task_list = create_task_list();
+        let single_task_list = empty_task_list.create_task();
+        let single_completed_task_list = single_task_list.toggle_task_completion_status(0).unwrap();
+
+        let updated_task_list =
+            run_subcommand(CliSubCommand::CompleteTask(0), &single_completed_task_list);
+        assert_eq!(updated_task_list.unwrap(), "Succesfully Completed Task");
+    }
+
+    #[test]
     fn cli_complete_task_alias_test() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "1"]);
@@ -283,16 +294,6 @@ mod tests {
 
         let error = run_subcommand(CliSubCommand::CompleteTask(1), &empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
-    }
-
-    #[test]
-    fn cli_complete_task_failing_already_complete_test() {
-        let empty_task_list = create_task_list();
-        let single_task_list = empty_task_list.create_task();
-        let single_completed_task_list = single_task_list.complete_task(0).unwrap();
-
-        let error = run_subcommand(CliSubCommand::CompleteTask(0), &single_completed_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "Task is already completed");
     }
 
     #[test]
