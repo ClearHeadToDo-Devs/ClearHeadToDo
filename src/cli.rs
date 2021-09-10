@@ -40,7 +40,7 @@ pub fn create_app() -> App<'static, 'static> {
 pub enum CliSubCommand {
     ListTasks,
     CreateTask,
-    CompleteTask(usize),
+    ToggleTaskCompletion(usize),
     RemoveTask(usize),
     RenameTask { index: usize, new_name: String },
     Reprioritize { index: usize, new_priority: String },
@@ -50,7 +50,7 @@ pub fn run(matches: ArgMatches<'_>) -> CliSubCommand {
     let outcome = match matches.subcommand_name() {
         Some("list_tasks") => CliSubCommand::ListTasks,
         Some("create_task") => CliSubCommand::CreateTask,
-        Some("complete_task") => CliSubCommand::CompleteTask(
+        Some("complete_task") => CliSubCommand::ToggleTaskCompletion(
             matches.parse_id_for_subcommand("complete_task".to_string()),
         ),
         Some("remove_task") => {
@@ -79,7 +79,7 @@ pub fn run_subcommand(
             task_list.create_task();
             Ok("Created New Default Task".to_string())
         }
-        CliSubCommand::CompleteTask(index) => {
+        CliSubCommand::ToggleTaskCompletion(index) => {
             task_list.toggle_task_completion_status(index)?;
             Ok("Succesfully Completed Task".to_string())
         }
@@ -255,7 +255,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::CompleteTask(0));
+        assert_eq!(result, CliSubCommand::ToggleTaskCompletion(0));
     }
 
     #[test]
@@ -263,7 +263,7 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.create_task();
 
-        let result = run_subcommand(CliSubCommand::CompleteTask(0), &single_task_list);
+        let result = run_subcommand(CliSubCommand::ToggleTaskCompletion(0), &single_task_list);
         assert_eq!(result.unwrap(), "Succesfully Completed Task");
         //assert!(single_task_list.tasks[0].completed == true);
     }
@@ -274,8 +274,10 @@ mod tests {
         let single_task_list = empty_task_list.create_task();
         let single_completed_task_list = single_task_list.toggle_task_completion_status(0).unwrap();
 
-        let updated_task_list =
-            run_subcommand(CliSubCommand::CompleteTask(0), &single_completed_task_list);
+        let updated_task_list = run_subcommand(
+            CliSubCommand::ToggleTaskCompletion(0),
+            &single_completed_task_list,
+        );
         assert_eq!(updated_task_list.unwrap(), "Succesfully Completed Task");
     }
 
@@ -285,14 +287,14 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "1"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::CompleteTask(1));
+        assert_eq!(result, CliSubCommand::ToggleTaskCompletion(1));
     }
 
     #[test]
     fn cli_complete_task_failing_invalid_id_test() {
         let empty_task_list = create_task_list();
 
-        let error = run_subcommand(CliSubCommand::CompleteTask(1), &empty_task_list);
+        let error = run_subcommand(CliSubCommand::ToggleTaskCompletion(1), &empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
     }
 
