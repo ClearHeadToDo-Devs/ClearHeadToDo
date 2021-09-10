@@ -72,31 +72,34 @@ pub fn run(matches: ArgMatches<'_>) -> CliSubCommand {
 pub fn run_subcommand(
     command: CliSubCommand,
     task_list: &TaskList,
-) -> Result<String, Box<dyn Error>> {
+) -> Result<TaskList, Box<dyn Error>> {
     match command {
-        CliSubCommand::ListTasks => task_list.print_task_list(std::io::stdout()),
+        CliSubCommand::ListTasks => {
+            task_list.print_task_list(std::io::stdout())?;
+            return Ok(task_list.clone());
+        }
         CliSubCommand::CreateTask => {
-            task_list.create_task();
-            Ok("Created New Default Task".to_string())
+            let updated_task_list = task_list.create_task();
+            Ok(updated_task_list)
         }
         CliSubCommand::ToggleTaskCompletion(index) => {
-            task_list.toggle_task_completion_status(index)?;
-            Ok("Succesfully Completed Task".to_string())
+            let updated_task_list = task_list.toggle_task_completion_status(index)?;
+            Ok(updated_task_list)
         }
         CliSubCommand::RemoveTask(index) => {
-            task_list.remove_task(index)?;
-            Ok("Removed Task".to_string())
+            let updated_task_list = task_list.remove_task(index)?;
+            Ok(updated_task_list)
         }
         CliSubCommand::RenameTask { index, new_name } => {
-            task_list.rename_task(index, new_name)?;
-            Ok("renamed successfully".to_string())
+            let updated_task_list = task_list.rename_task(index, new_name)?;
+            Ok(updated_task_list)
         }
         CliSubCommand::Reprioritize {
             index,
             new_priority,
         } => {
-            task_list.change_task_priority(index, new_priority)?;
-            Ok("Changed Priority".to_string())
+            let updated_task_list = task_list.change_task_priority(index, new_priority)?;
+            Ok(updated_task_list)
         }
     }
 }
@@ -141,6 +144,10 @@ mod tests {
     use super::*;
     use clap::ErrorKind;
     use clear_head_todo::create_task_list;
+    use clear_head_todo::PriEnum;
+    use clear_head_todo::Task;
+    use im::vector;
+    use uuid::Uuid;
 
     #[test]
     fn cli_creation_name_test() {
@@ -198,10 +205,18 @@ mod tests {
     #[test]
     fn cli_list_task_successful_run_test() {
         let empty_task_list = create_task_list();
-        let single_task_list = empty_task_list.create_task();
+        let single_task_list = empty_task_list.add_nil_task();
 
         let result = run_subcommand(CliSubCommand::ListTasks, &single_task_list);
-        assert_eq!(result.unwrap(), "End of List");
+        assert_eq!(
+            result.unwrap(),
+            TaskList {
+                tasks: vector![clear_head_todo::Task {
+                    id: Uuid::nil(),
+                    ..Default::default()
+                }]
+            }
+        );
     }
 
     #[test]
@@ -233,11 +248,11 @@ mod tests {
     #[test]
     fn cli_create_task_successful_run_test() {
         let empty_task_list = create_task_list();
-        let result = run_subcommand(CliSubCommand::CreateTask, &empty_task_list);
+        let result = run_subcommand(CliSubCommand::CreateTask, &empty_task_list).unwrap();
 
-        assert_eq!(result.unwrap(), "Created New Default Task");
-        //commenting this because i still haven't decided how to handle this function
-        //assert!(empty_task_list.tasks.is_empty() == false)
+        assert_eq!(result.tasks[0].name, "Default Task".to_string());
+        assert_eq!(result.tasks[0].priority, PriEnum::Optional);
+        assert_eq!(result.tasks[0].completed, false);
     }
 
     #[test]
@@ -261,24 +276,44 @@ mod tests {
     #[test]
     fn cli_complete_task_successful_run_test() {
         let empty_task_list = create_task_list();
-        let single_task_list = empty_task_list.create_task();
+        let single_task_list = empty_task_list.add_nil_task();
 
         let result = run_subcommand(CliSubCommand::ToggleTaskCompletion(0), &single_task_list);
-        assert_eq!(result.unwrap(), "Succesfully Completed Task");
-        //assert!(single_task_list.tasks[0].completed == true);
+        assert_eq!(
+            result.unwrap(),
+            TaskList {
+                tasks: vector![Task {
+                    completed: true,
+                    id: Uuid::nil(),
+                    ..Default::default()
+                }]
+            }
+        );
     }
 
     #[test]
     fn cli_reopen_task_test() {
-        let empty_task_list = create_task_list();
-        let single_task_list = empty_task_list.create_task();
-        let single_completed_task_list = single_task_list.toggle_task_completion_status(0).unwrap();
+        let single_completed_task_list = TaskList {
+            tasks: vector![Task {
+                completed: true,
+                id: Uuid::nil(),
+                ..Default::default()
+            }],
+        };
 
         let updated_task_list = run_subcommand(
             CliSubCommand::ToggleTaskCompletion(0),
             &single_completed_task_list,
         );
-        assert_eq!(updated_task_list.unwrap(), "Succesfully Completed Task");
+        assert_eq!(
+            updated_task_list.unwrap(),
+            TaskList {
+                tasks: vector![Task {
+                    id: Uuid::nil(),
+                    ..Default::default()
+                }]
+            }
+        )
     }
 
     #[test]
@@ -313,8 +348,7 @@ mod tests {
         let single_task_list = empty_task_list.create_task();
 
         let result = run_subcommand(CliSubCommand::RemoveTask(0), &single_task_list);
-        assert_eq!(result.unwrap(), "Removed Task");
-        //assert!(test_task_list.tasks.is_empty());
+        assert_eq!(result.unwrap(), TaskList { tasks: vector![] });
     }
 
     #[test]
@@ -353,7 +387,7 @@ mod tests {
     #[test]
     fn cli_rename_task_successful_run_test() {
         let empty_task_list = create_task_list();
-        let single_task_list = empty_task_list.create_task();
+        let single_task_list = empty_task_list.add_nil_task();
 
         let result = run_subcommand(
             CliSubCommand::RenameTask {
@@ -363,8 +397,16 @@ mod tests {
             &single_task_list,
         );
 
-        assert_eq!(result.unwrap(), "renamed successfully");
-        //assert!(single_task_list.tasks[0].name == "Test Rename");
+        assert_eq!(
+            result.unwrap(),
+            TaskList {
+                tasks: vector![Task {
+                    name: "Test Rename".to_string(),
+                    id: Uuid::nil(),
+                    ..Default::default()
+                }]
+            }
+        );
     }
 
     #[test]
@@ -415,7 +457,7 @@ mod tests {
     #[test]
     fn cli_change_priority_successful_run_test() {
         let empty_task_list = create_task_list();
-        let single_task_list = empty_task_list.create_task();
+        let single_task_list = empty_task_list.add_nil_task();
 
         let result = run_subcommand(
             CliSubCommand::Reprioritize {
@@ -424,8 +466,16 @@ mod tests {
             },
             &single_task_list,
         );
-        assert_eq!(result.unwrap(), "Changed Priority");
-        //assert!(test_task_list.tasks[0].priority == PriEnum::High);
+        assert_eq!(
+            result.unwrap(),
+            TaskList {
+                tasks: vector![Task {
+                    priority: PriEnum::High,
+                    id: Uuid::nil(),
+                    ..Default::default()
+                }]
+            }
+        );
     }
 
     #[test]

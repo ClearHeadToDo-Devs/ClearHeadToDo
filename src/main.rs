@@ -18,10 +18,10 @@ fn main() {
     let subcommand = run(matches);
     let result = run_subcommand(subcommand, &task_list);
 
-    match result {
+    /* match result {
         Ok(s) => println!("{}", s),
         Err(e) => eprintln!("{}", e),
-    }
+    } */
 
     //load_csv(&task_list, "tasks.csv").unwrap();
 }
