@@ -75,7 +75,7 @@ pub fn run_subcommand(
 ) -> Result<TaskList, Box<dyn Error>> {
     match command {
         CliSubCommand::ListTasks => {
-            task_list.print_task_list(std::io::stdout())?;
+            task_list.print_task_list()?;
             return Ok(task_list.clone());
         }
         CliSubCommand::CreateTask => {

@@ -29,15 +29,16 @@ pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> 
     Ok(import_list)
 }
 
-pub fn load_csv(task_list: &TaskList, file_name: &str) -> Result<String, Box<dyn Error>> {
+pub fn load_csv(task_list: &TaskList, file_name: &str) -> Result<(), Box<dyn Error>> {
     let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("data")
         .join(file_name);
     let mut wtr: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
-    for index in 0..=task_list.tasks.len() - 1 {
-        wtr.serialize::<_>(&task_list.tasks[index])?;
+
+    for task in &task_list.tasks {
+        wtr.serialize::<_>(task)?;
     }
-    Ok("Successfully Saved Tasks Into CSV".to_string())
+    Ok(())
 }
 
 #[cfg(test)]

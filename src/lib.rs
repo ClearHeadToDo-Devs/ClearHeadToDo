@@ -22,26 +22,18 @@ impl TaskList {
         return new_list;
     }
 
-    pub fn print_task_list(
-        &self,
-        mut writer: impl std::io::Write,
-    ) -> Result<String, Box<dyn Error>> {
+    pub fn print_task_list(&self) -> Result<String, Box<dyn Error>> {
+        let mut task_list_string = "name,priority,completed,ID\n".to_string();
+
         if self.tasks.is_empty() == true {
             return Err(Box::new(OtherError::new(ErrorKind::Other, "list is empty")));
         } else {
-            writeln!(writer, "name,priority,completed,ID")?;
             for task in &self.tasks {
-                writeln!(
-                    writer,
-                    "{name},{priority},{completed},{id}",
-                    name = task.name,
-                    priority = task.priority,
-                    completed = task.completed,
-                    id = task.id
-                )?;
+                task_list_string.push_str(&task.export_fields_as_string());
             }
         }
-        Ok("End of List".to_string())
+
+        Ok(task_list_string.to_owned())
     }
 
     pub fn remove_task(&self, index: usize) -> Result<TaskList, Box<dyn Error>> {
@@ -210,25 +202,21 @@ mod tests {
         #[test]
         fn task_print_fail_test() {
             let test_task_list = create_task_list();
-            let mut bad_result = Vec::new();
-            let error = &test_task_list.print_task_list(&mut bad_result).unwrap_err();
+            let error = &test_task_list.print_task_list().unwrap_err();
             assert_eq!(error.to_string(), "list is empty");
         }
 
         #[test]
-        fn task_print_successful_test() -> Result<(), Box<dyn Error>> {
+        fn task_print_successful_test() {
             let empty_task_list = create_task_list();
             let single_task_list = &empty_task_list.add_nil_task();
 
-            let mut good_result = Vec::new();
-            let success = &single_task_list.print_task_list(&mut good_result).unwrap();
+            let success = &single_task_list.print_task_list().unwrap();
 
             assert_eq!(
-                format!("{}", std::str::from_utf8(&good_result).unwrap().to_string()),
+                format!("{}", success.to_string()),
                 "name,priority,completed,ID\nDefault Task,Optional,false,00000000-0000-0000-0000-000000000000\n"
             );
-            assert_eq!(success, "End of List");
-            return Ok(());
         }
 
         #[test]

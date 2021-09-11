@@ -57,6 +57,16 @@ impl Task {
             completed: self.completed.clone(),
         });
     }
+
+    pub fn export_fields_as_string(&self) -> String {
+        format!(
+            "{name},{priority},{completed},{ID}\n",
+            name = self.name,
+            priority = self.priority.to_string(),
+            completed = self.completed,
+            ID = self.id
+        )
+    }
 }
 
 impl fmt::Display for PriEnum {
@@ -136,6 +146,16 @@ mod test {
         assert!(test_task.priority == PriEnum::Optional);
         assert!(test_task.completed == false);
         assert!(test_task.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
+    }
+
+    #[test]
+    fn print_task_content_test() {
+        let test_task = create_nil_task();
+        let test_task_string = test_task.export_fields_as_string();
+        assert_eq!(
+            test_task_string,
+            "Default Task,Optional,false,00000000-0000-0000-0000-000000000000\n",
+        );
     }
 
     #[test]
