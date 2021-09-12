@@ -10,12 +10,31 @@ use std::str::FromStr;
 use std::{env, path::PathBuf};
 use uuid::Uuid;
 
-pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
-    let mut import_list = create_task_list();
-    let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+fn create_file_reader_from_data_folder(
+    file_name: &str,
+) -> Result<Reader<std::fs::File>, Box<dyn Error>> {
+    let file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("data")
         .join(file_name);
-    let mut rdr: Reader<std::fs::File> = Reader::from_path(pathbuf)?;
+
+    let file_reader = Reader::from_path(file_path)?;
+    Ok(file_reader)
+}
+
+fn create_file_writer_from_data_folder(
+    file_name: &str,
+) -> Result<Writer<std::fs::File>, Box<dyn Error>> {
+    let file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("data")
+        .join(file_name);
+
+    let file_writer = Writer::from_path(file_path)?;
+    Ok(file_writer)
+}
+
+pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
+    let mut import_list = create_task_list();
+    let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
     for result in rdr.records() {
         let record: csv::StringRecord = result?;
         let new_task: Task = Task {
@@ -30,11 +49,7 @@ pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> 
 }
 
 pub fn load_csv(task_list: &TaskList, file_name: &str) -> Result<(), Box<dyn Error>> {
-    let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("data")
-        .join(file_name);
-
-    let mut csv_writer: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
+    let mut csv_writer: Writer<std::fs::File> = create_file_writer_from_data_folder(file_name)?;
 
     for task in &task_list.tasks {
         csv_writer.serialize(task)?;
