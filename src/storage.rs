@@ -33,10 +33,11 @@ pub fn load_csv(task_list: &TaskList, file_name: &str) -> Result<(), Box<dyn Err
     let pathbuf: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("data")
         .join(file_name);
-    let mut wtr: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
+
+    let mut csv_writer: Writer<std::fs::File> = Writer::from_path(pathbuf)?;
 
     for task in &task_list.tasks {
-        wtr.serialize::<_>(task)?;
+        csv_writer.serialize(task)?;
     }
     Ok(())
 }
@@ -60,9 +61,7 @@ mod tests {
     fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
         let empty_task_list = create_task_list();
         let single_nil_task_list = &empty_task_list.add_nil_task();
-        &single_nil_task_list.tasks[0]
-            .clone()
-            .rename(&"test csv task".to_string());
+
         load_csv(&single_nil_task_list, "successful_export_test.csv")?;
         let rdr = Reader::from_path(
             env::current_dir()?
@@ -70,6 +69,7 @@ mod tests {
                 .join("successful_export_test.csv")
                 .as_path(),
         )?;
+
         let mut iter = rdr.into_records();
         if let Some(result) = iter.next() {
             let record = result?;

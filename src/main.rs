@@ -8,10 +8,11 @@ use cli::create_app;
 use cli::run;
 use cli::run_subcommand;
 use cli::CliSubCommand;
+use std::error::Error;
 use storage::load_csv;
 use storage::load_tasks_from_csv;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     let task_list: TaskList = load_tasks_from_csv("tasks.csv").unwrap();
 
     let mut _updated_task_list = create_task_list();
@@ -28,8 +29,8 @@ fn main() {
             Err(e) => eprintln!("{}", e),
         }
     } else {
-        let _updated_task_list = run_subcommand(subcommand, &task_list);
+        load_csv(&run_subcommand(subcommand, &task_list)?, "tasks.csv").unwrap();
     }
 
-    load_csv(&_updated_task_list, "tasks.csv").unwrap();
+    Ok(())
 }
