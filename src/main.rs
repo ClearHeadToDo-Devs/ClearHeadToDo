@@ -5,6 +5,7 @@ mod task;
 use clear_head_todo::create_task_list;
 use clear_head_todo::TaskList;
 use cli::create_app;
+use cli::create_end_user_message;
 use cli::run;
 use cli::run_subcommand;
 use cli::CliSubCommand;
@@ -29,7 +30,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             Err(e) => eprintln!("{}", e),
         }
     } else {
-        load_csv(&run_subcommand(subcommand, &task_list)?, "tasks.csv").unwrap();
+        let updated_task_list = run_subcommand(&subcommand, &task_list)?;
+        load_csv(&updated_task_list, "tasks.csv")?;
+        println!(
+            "{}",
+            create_end_user_message(&updated_task_list, &task_list, &subcommand)
+        );
     }
 
     Ok(())
