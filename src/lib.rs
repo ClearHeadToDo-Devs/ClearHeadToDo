@@ -52,28 +52,30 @@ impl TaskList {
     }
 
     pub fn rename_task(&self, index: usize, new_name: String) -> Result<TaskList, Box<dyn Error>> {
-        let index_bounds_result = self.check_index_bounds(index);
-        match index_bounds_result {
-            Ok(checked_index) => Ok(TaskList {
-                tasks: self.tasks.update(
-                    checked_index,
-                    self.tasks[checked_index].clone().rename(&new_name),
-                ),
+        match self.tasks.iter().nth(index) {
+            Some(task_ref) => Ok(TaskList {
+                tasks: self
+                    .tasks
+                    .update(index, self.tasks[index].rename(&new_name)),
             }),
-            Err(error) => Err(error),
+            None => Err(Box::new(OtherError::new(
+                ErrorKind::Other,
+                "No Task at Given Index",
+            ))),
         }
     }
 
     pub fn toggle_task_completion_status(&self, index: usize) -> Result<TaskList, Box<dyn Error>> {
-        let index_bounds_result = self.check_index_bounds(index);
-        match index_bounds_result {
-            Ok(checked_index) => Ok(TaskList {
-                tasks: self.tasks.update(
-                    checked_index,
-                    self.tasks[checked_index].clone().toggle_completion_status(),
-                ),
+        match self.tasks.iter().nth(index) {
+            Some(task_ref) => Ok(TaskList {
+                tasks: self
+                    .tasks
+                    .update(index, self.tasks[index].clone().toggle_completion_status()),
             }),
-            Err(error) => Err(error),
+            None => Err(Box::new(OtherError::new(
+                ErrorKind::Other,
+                "No Task at Given Index",
+            ))),
         }
     }
 
@@ -82,17 +84,17 @@ impl TaskList {
         index: usize,
         new_priority: String,
     ) -> Result<TaskList, Box<dyn Error>> {
-        let index_bounds_result = self.check_index_bounds(index);
-        match index_bounds_result {
-            Ok(checked_index) => Ok(TaskList {
+        match self.tasks.iter().nth(index) {
+            Some(task_ref) => Ok(TaskList {
                 tasks: self.tasks.update(
-                    checked_index,
-                    self.tasks[checked_index]
-                        .clone()
-                        .change_priority(&new_priority)?,
+                    index,
+                    self.tasks[index].clone().change_priority(&new_priority)?,
                 ),
             }),
-            Err(error) => Err(error),
+            None => Err(Box::new(OtherError::new(
+                ErrorKind::Other,
+                "No Task at Given Index",
+            ))),
         }
     }
 
@@ -240,7 +242,7 @@ mod tests {
         fn failing_task_completion_bad_index_test() {
             let test_task_list = create_task_list();
             let error = &test_task_list.toggle_task_completion_status(0).unwrap_err();
-            assert_eq!(error.to_string(), "No Task in that position");
+            assert_eq!(error.to_string(), "No Task at Given Index");
         }
 
         #[test]
@@ -268,7 +270,7 @@ mod tests {
             let error = &test_task_list
                 .rename_task(0, "Change Test".to_string())
                 .unwrap_err();
-            assert_eq!(error.to_string(), "No Task in that position");
+            assert_eq!(error.to_string(), "No Task at Given Index");
         }
 
         #[test]
@@ -287,7 +289,7 @@ mod tests {
             let error = &test_task_list
                 .change_task_priority(0, "Optional".to_string())
                 .unwrap_err();
-            assert_eq!(error.to_string(), "No Task in that position");
+            assert_eq!(error.to_string(), "No Task at Given Index");
         }
 
         #[test]
