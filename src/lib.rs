@@ -37,15 +37,17 @@ impl TaskList {
     }
 
     pub fn remove_task(&self, index: usize) -> Result<TaskList, Box<dyn Error>> {
-        let index_check_result = self.check_index_bounds(index);
-        match index_check_result {
-            Ok(checked_index) => {
-                let (mut left_side, mut right_side) = self.tasks.clone().split_at(checked_index);
+        match self.tasks.iter().nth(index) {
+            Some(task_ref) => {
+                let (mut left_side, mut right_side) = self.tasks.clone().split_at(index);
                 right_side.pop_front().unwrap();
                 left_side.append(right_side);
                 Ok(TaskList { tasks: left_side })
             }
-            Err(error) => Err(error),
+            None => Err(Box::new(OtherError::new(
+                ErrorKind::Other,
+                "No Task at Given Index",
+            ))),
         }
     }
 
@@ -223,7 +225,7 @@ mod tests {
         fn failing_task_removal_test() {
             let test_task_list = create_task_list();
             let error = &test_task_list.remove_task(0).unwrap_err();
-            assert_eq!(error.to_string(), "No Task in that position");
+            assert_eq!(error.to_string(), "No Task at Given Index");
         }
 
         #[test]

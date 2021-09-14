@@ -411,7 +411,7 @@ mod tests {
         let test_task_list = create_task_list();
 
         let error = run_subcommand(&CliSubCommand::RemoveTask(0), &test_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Task in that position");
+        assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
     }
 
     #[test]
