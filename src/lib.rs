@@ -110,17 +110,6 @@ impl TaskList {
             }
         }
     }
-
-    pub fn check_index_bounds(&self, index: usize) -> Result<usize, Box<dyn Error>> {
-        if index < self.tasks.len() {
-            Ok(index)
-        } else {
-            Err(Box::new(OtherError::new(
-                ErrorKind::Other,
-                "No Task in that position",
-            )))
-        }
-    }
 }
 
 pub fn create_task_list() -> TaskList {
@@ -159,20 +148,23 @@ mod tests {
         #[test]
         fn successful_search_tasks_by_index_test() -> Result<(), Box<dyn Error>> {
             let empty_list = create_task_list();
-            let single_nil_task_list = &empty_list.create_task();
-            let successful_bounds_check = &single_nil_task_list.check_index_bounds(0).unwrap();
-            assert!(successful_bounds_check == &0);
+            let single_nil_task_list = &empty_list.add_nil_task();
+            let task_reference = &single_nil_task_list.tasks.iter().nth(0).unwrap();
+            assert!(
+                task_reference
+                    == &&Task {
+                        id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap(),
+                        ..Default::default()
+                    }
+            );
             return Ok(());
         }
 
         #[test]
         fn task_failed_search_by_index_test() -> Result<(), Box<dyn Error>> {
             let test_task_list = create_task_list();
-            let failed_bounds_check = &test_task_list
-                .check_index_bounds(0)
-                .unwrap_err()
-                .to_string();
-            assert_eq!(failed_bounds_check, &"No Task in that position".to_string());
+            let failed_bounds_check = test_task_list.tasks.iter().next();
+            assert_eq!(failed_bounds_check, None);
             return Ok(());
         }
 
