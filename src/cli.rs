@@ -10,27 +10,39 @@ pub fn create_app() -> App<'static, 'static> {
         .version("0.1.0")
         .about("can be used to manage every part of your productive life!")
         .setting(AppSettings::SubcommandRequiredElseHelp)
-        .subcommand(SubCommand::with_name("list_tasks").alias("lt"))
-        .subcommand(SubCommand::with_name("create_task").alias("create"))
+        .subcommand(
+            SubCommand::with_name("list_tasks")
+                .about("list all the current tasks with their attributes also shown")
+                .alias("lt"),
+        )
+        .subcommand(
+            SubCommand::with_name("create_task")
+                .about("create a new task with the default attributes")
+                .alias("create"),
+        )
         .subcommand(
             SubCommand::with_name("complete_task")
                 .alias("complete")
+                .about("given an index, toggles the completion status of the task")
                 .arg(Arg::with_name("index").required(true)),
         )
         .subcommand(
             SubCommand::with_name("remove_task")
                 .alias("remove")
+                .about("given an index, removes the target task from the entire list")
                 .arg(Arg::with_name("index").required(true)),
         )
         .subcommand(
             SubCommand::with_name("rename_task")
                 .alias("rename")
+                .about("given an index and a new name, replaces the target tasks's name with the given name")
                 .arg(Arg::with_name("index").required(true))
                 .arg(Arg::with_name("new_name").required(true).multiple(true)),
         )
         .subcommand(
             SubCommand::with_name("reprioritize")
                 .alias("rp")
+                .about("given an index and a desired task state, changes the target task to the desired priority")
                 .arg(Arg::with_name("index").required(true))
                 .arg(Arg::with_name("new_priority").required(true)),
         )
