@@ -106,9 +106,9 @@ pub fn run_subcommand(
 }
 
 pub fn create_end_user_message(
-    updated_task_list: &TaskList,
-    previous_task_list: &TaskList,
     subcommand: &CliSubCommand,
+    previous_task_list: &TaskList,
+    updated_task_list: &TaskList,
 ) -> String {
     match subcommand {
         CliSubCommand::CreateTask => {

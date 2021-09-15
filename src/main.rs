@@ -34,7 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         load_csv(&updated_task_list, "tasks.csv")?;
         println!(
             "{}",
-            create_end_user_message(&updated_task_list, &task_list, &subcommand)
+            create_end_user_message(&subcommand, &task_list, &updated_task_list)
         );
     }
 
