@@ -1,4 +1,4 @@
-use clear_head_todo::TaskList;
+use clear_head_todo_core::TaskList;
 use std::error::Error;
 
 extern crate clap;
@@ -189,9 +189,9 @@ impl SubcommandArgumentParser for ArgMatches<'_> {
 mod tests {
     use super::*;
     use clap::ErrorKind;
-    use clear_head_todo::create_task_list;
-    use clear_head_todo::PriEnum;
-    use clear_head_todo::Task;
+    use clear_head_todo_core::create_task_list;
+    use clear_head_todo_core::PriEnum;
+    use clear_head_todo_core::Task;
     use im::vector;
     use uuid::Uuid;
 
@@ -257,7 +257,7 @@ mod tests {
         assert_eq!(
             result.unwrap(),
             TaskList {
-                tasks: vector![clear_head_todo::Task {
+                tasks: vector![clear_head_todo_core::Task {
                     id: Uuid::nil(),
                     ..Default::default()
                 }]

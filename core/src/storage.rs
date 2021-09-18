@@ -1,7 +1,7 @@
-use clear_head_todo::create_task_list;
-use clear_head_todo::parse_priority;
-use clear_head_todo::Task;
-use clear_head_todo::TaskList;
+use crate::create_task_list;
+use crate::parse_priority;
+use crate::Task;
+use crate::TaskList;
 
 use csv::Reader;
 use csv::Writer;
@@ -60,7 +60,7 @@ pub fn load_csv(task_list: &TaskList, file_name: &str) -> Result<(), Box<dyn Err
 #[cfg(test)]
 mod tests {
     use super::*;
-    use clear_head_todo::PriEnum;
+    use crate::PriEnum;
 
     #[test]
     fn load_from_csv_sucessful_test() {

@@ -78,7 +78,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "clear_head_todo"
+name = "clear_head_todo_cli"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "clear_head_todo_core",
+ "csv",
+ "im",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "clear_head_todo_core"
 version = "0.1.0"
 dependencies = [
  "clap",
