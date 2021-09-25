@@ -294,6 +294,25 @@ mod tests {
     }
 
     #[test]
+    fn generate_reprioritize_task_message() {
+        let single_task_list = create_task_list().create_task();
+        let updated_task_list = single_task_list
+            .change_task_priority(0, "low".to_string())
+            .unwrap();
+
+        let message = CliSubCommand::Reprioritize {
+            index: 0,
+            new_priority: "low".to_string(),
+        }
+        .create_end_user_message(&single_task_list, &updated_task_list);
+
+        assert_eq!(
+            message,
+            "Default Task was changed from a priority of: Optional\n to a priority of: low"
+        );
+    }
+
+    #[test]
     fn cli_reprioritize_failing_invalid_id_test() {
         let empty_task_list = create_task_list();
 
