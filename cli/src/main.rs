@@ -1,17 +1,16 @@
 mod arg_parser;
-mod cli;
 
 use arg_parser::create_app;
 use arg_parser::run;
 use clear_head_todo_core::create_task_list;
 use clear_head_todo_core::load_csv;
 use clear_head_todo_core::load_tasks_from_csv;
+use clear_head_todo_core::CliSubCommand;
 use clear_head_todo_core::TaskList;
-use cli::CliSubCommand;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let task_list: TaskList = load_tasks_from_csv("tasks.csv").unwrap();
+    let task_list: TaskList = load_tasks_from_csv("tasks.csv")?;
 
     let mut _updated_task_list = create_task_list();
 

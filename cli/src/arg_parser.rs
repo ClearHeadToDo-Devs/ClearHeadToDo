@@ -1,7 +1,7 @@
 extern crate clap;
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 
-use crate::cli::CliSubCommand;
+use clear_head_todo_core::CliSubCommand;
 
 pub fn create_app() -> App<'static, 'static> {
     App::new("Clear Head Todo")
