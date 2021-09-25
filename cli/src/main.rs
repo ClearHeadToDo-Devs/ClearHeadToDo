@@ -7,7 +7,6 @@ use clear_head_todo_core::create_task_list;
 use clear_head_todo_core::load_csv;
 use clear_head_todo_core::load_tasks_from_csv;
 use clear_head_todo_core::TaskList;
-use cli::create_end_user_message;
 use cli::CliSubCommand;
 use std::error::Error;
 
@@ -32,7 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         load_csv(&updated_task_list, "tasks.csv")?;
         println!(
             "{}",
-            create_end_user_message(&subcommand, &task_list, &updated_task_list)
+            &subcommand.create_end_user_message(&task_list, &updated_task_list)
         );
     }
 

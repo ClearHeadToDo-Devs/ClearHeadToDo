@@ -44,50 +44,49 @@ impl CliSubCommand {
             }
         }
     }
-}
-
-pub fn create_end_user_message(
-    subcommand: &CliSubCommand,
-    previous_task_list: &TaskList,
-    updated_task_list: &TaskList,
-) -> String {
-    match subcommand {
-        CliSubCommand::CreateTask => {
-            format!(
-                "Created Task {}",
-                updated_task_list.tasks[updated_task_list.tasks.len() - 1].name
-            )
+    pub fn create_end_user_message(
+        &self,
+        previous_task_list: &TaskList,
+        updated_task_list: &TaskList,
+    ) -> String {
+        match self {
+            CliSubCommand::CreateTask => {
+                format!(
+                    "Created Task {}",
+                    updated_task_list.tasks[updated_task_list.tasks.len() - 1].name
+                )
+            }
+            CliSubCommand::ToggleTaskCompletion(index) => {
+                format!(
+                    "{} had its' completion status toggled to {}",
+                    updated_task_list.tasks[*index].name, updated_task_list.tasks[*index].completed
+                )
+            }
+            CliSubCommand::RemoveTask(index) => {
+                format!(
+                    "{} was removed from your Task List",
+                    previous_task_list.tasks[*index].name
+                )
+            }
+            CliSubCommand::RenameTask { index, new_name } => {
+                format!(
+                    "{} was changed from {}",
+                    updated_task_list.tasks[*index].name, new_name
+                )
+            }
+            CliSubCommand::Reprioritize {
+                index,
+                new_priority,
+            } => {
+                format!(
+                    "{} was changed from a priority of: {}\n to a priority of: {}",
+                    updated_task_list.tasks[*index].name,
+                    previous_task_list.tasks[*index].priority,
+                    new_priority
+                )
+            }
+            CliSubCommand::ListTasks => unreachable!(),
         }
-        CliSubCommand::ToggleTaskCompletion(index) => {
-            format!(
-                "{} had its' completion status toggled to {}",
-                updated_task_list.tasks[*index].name, updated_task_list.tasks[*index].completed
-            )
-        }
-        CliSubCommand::RemoveTask(index) => {
-            format!(
-                "{} was removed from your Task List",
-                previous_task_list.tasks[*index].name
-            )
-        }
-        CliSubCommand::RenameTask { index, new_name } => {
-            format!(
-                "{} was changed from {}",
-                updated_task_list.tasks[*index].name, new_name
-            )
-        }
-        CliSubCommand::Reprioritize {
-            index,
-            new_priority,
-        } => {
-            format!(
-                "{} was changed from a priority of: {}\n to a priority of: {}",
-                updated_task_list.tasks[*index].name,
-                previous_task_list.tasks[*index].priority,
-                new_priority
-            )
-        }
-        CliSubCommand::ListTasks => unreachable!(),
     }
 }
 
