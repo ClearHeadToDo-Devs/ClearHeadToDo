@@ -71,7 +71,7 @@ impl CliSubCommand {
             CliSubCommand::RenameTask { index, new_name } => {
                 format!(
                     "{} was changed from {}",
-                    updated_task_list.tasks[*index].name, new_name
+                    new_name, previous_task_list.tasks[*index].name
                 )
             }
             CliSubCommand::Reprioritize {
@@ -100,7 +100,7 @@ mod tests {
     use uuid::Uuid;
 
     #[test]
-    fn cli_list_task_failure_empty_list_test() {
+    fn list_task_failure_empty_list() {
         let empty_task_list = create_task_list();
 
         let error = CliSubCommand::ListTasks.run_subcommand(&empty_task_list);
@@ -108,7 +108,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_create_task_successful_run_test() {
+    fn create_task_successful_run() {
         let empty_task_list = create_task_list();
         let result = CliSubCommand::CreateTask
             .run_subcommand(&empty_task_list)
@@ -130,9 +130,8 @@ mod tests {
     }
 
     #[test]
-    fn cli_complete_task_successful_run_test() {
-        let empty_task_list = create_task_list();
-        let single_task_list = empty_task_list.add_nil_task();
+    fn complete_task_successful_run() {
+        let single_task_list = create_task_list().add_nil_task();
 
         let result = CliSubCommand::ToggleTaskCompletion(0).run_subcommand(&single_task_list);
 
@@ -149,7 +148,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_reopen_task_test() {
+    fn reopen_task_successful_run() {
         let single_completed_task_list = TaskList {
             tasks: vector![Task {
                 completed: true,
@@ -172,7 +171,21 @@ mod tests {
     }
 
     #[test]
-    fn cli_complete_task_failing_invalid_id_test() {
+    fn generate_complete_task_message() {
+        let single_task_list = create_task_list().create_task();
+        let updated_task_list = single_task_list.toggle_task_completion_status(0).unwrap();
+
+        let message = CliSubCommand::ToggleTaskCompletion(0)
+            .create_end_user_message(&single_task_list, &updated_task_list);
+
+        assert_eq!(
+            message,
+            "Default Task had its\' completion status toggled to true"
+        );
+    }
+
+    #[test]
+    fn complete_task_failing_invalid_id() {
         let empty_task_list = create_task_list();
 
         let error = CliSubCommand::ToggleTaskCompletion(1).run_subcommand(&empty_task_list);
@@ -186,6 +199,17 @@ mod tests {
 
         let result = CliSubCommand::RemoveTask(0).run_subcommand(&single_task_list);
         assert_eq!(result.unwrap(), TaskList { tasks: vector![] });
+    }
+
+    #[test]
+    fn generate_remove_task_message() {
+        let single_task_list = create_task_list().create_task();
+        let updated_task_list = single_task_list.remove_task(0).unwrap();
+
+        let message = CliSubCommand::RemoveTask(0)
+            .create_end_user_message(&single_task_list, &updated_task_list);
+
+        assert_eq!(message, "Default Task was removed from your Task List");
     }
 
     #[test]
@@ -217,6 +241,22 @@ mod tests {
                 }]
             }
         );
+    }
+
+    #[test]
+    fn generate_rename_task_message() {
+        let single_task_list = create_task_list().create_task();
+        let updated_task_list = single_task_list
+            .rename_task(0, "New Name".to_string())
+            .unwrap();
+
+        let message = CliSubCommand::RenameTask {
+            index: 0,
+            new_name: "New Name".to_string(),
+        }
+        .create_end_user_message(&single_task_list, &updated_task_list);
+
+        assert_eq!(message, "New Name was changed from Default Task");
     }
 
     #[test]
