@@ -2,7 +2,6 @@ extern crate clap;
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 
 use crate::cli::CliSubCommand;
-use crate::cli::SubcommandArgumentParser;
 
 pub fn create_app() -> App<'static, 'static> {
     App::new("Clear Head Todo")
@@ -59,6 +58,40 @@ pub fn run(matches: ArgMatches<'_>) -> CliSubCommand {
     return outcome;
 }
 
+pub trait SubcommandArgumentParser {
+    fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize;
+    fn parse_desired_name(&self, subcommand_name: String) -> String;
+    fn parse_desired_priority(&self, subcommand_name: String) -> String;
+}
+
+impl SubcommandArgumentParser for ArgMatches<'_> {
+    fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize {
+        self.subcommand_matches(subcommand_name)
+            .unwrap()
+            .value_of("index")
+            .unwrap()
+            .parse::<usize>()
+            .unwrap()
+    }
+
+    fn parse_desired_name(&self, subcommand_name: String) -> String {
+        self.subcommand_matches(subcommand_name)
+            .unwrap()
+            .values_of("new_name")
+            .unwrap()
+            .collect::<Vec<&str>>()
+            .join(" ")
+            .to_string()
+    }
+
+    fn parse_desired_priority(&self, subcommand_name: String) -> String {
+        self.subcommand_matches(subcommand_name)
+            .unwrap()
+            .value_of("new_priority")
+            .unwrap()
+            .to_string()
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
