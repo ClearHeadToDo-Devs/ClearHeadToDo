@@ -120,6 +120,16 @@ mod tests {
     }
 
     #[test]
+    fn generate_create_task_success_message() {
+        let empty_task_list = create_task_list();
+        let single_task_list = empty_task_list.create_task();
+
+        let message =
+            CliSubCommand::CreateTask.create_end_user_message(&empty_task_list, &single_task_list);
+        assert_eq!(message, "Created Task Default Task");
+    }
+
+    #[test]
     fn cli_complete_task_successful_run_test() {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.add_nil_task();
