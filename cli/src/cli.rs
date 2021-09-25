@@ -150,7 +150,7 @@ pub fn create_end_user_message(
     }
 }
 
-trait SubcommandArgumentParser {
+pub trait SubcommandArgumentParser {
     fn parse_id_for_subcommand(&self, subcommand_name: String) -> usize;
     fn parse_desired_name(&self, subcommand_name: String) -> String;
     fn parse_desired_priority(&self, subcommand_name: String) -> String;

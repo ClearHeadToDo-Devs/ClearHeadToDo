@@ -1,12 +1,13 @@
+mod arg_parser;
 mod cli;
 
+use arg_parser::create_app;
+use arg_parser::run;
 use clear_head_todo_core::create_task_list;
 use clear_head_todo_core::load_csv;
 use clear_head_todo_core::load_tasks_from_csv;
 use clear_head_todo_core::TaskList;
-use cli::create_app;
 use cli::create_end_user_message;
-use cli::run;
 use cli::run_subcommand;
 use cli::CliSubCommand;
 use std::error::Error;
