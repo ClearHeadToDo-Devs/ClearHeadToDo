@@ -1,9 +1,6 @@
 use clear_head_todo_core::TaskList;
 use std::error::Error;
 
-extern crate clap;
-use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-
 #[derive(Debug, PartialEq)]
 pub enum CliSubCommand {
     ListTasks,
@@ -14,38 +11,37 @@ pub enum CliSubCommand {
     Reprioritize { index: usize, new_priority: String },
 }
 
-pub fn run_subcommand(
-    command: &CliSubCommand,
-    task_list: &TaskList,
-) -> Result<TaskList, Box<dyn Error>> {
-    match command {
-        CliSubCommand::ListTasks => {
-            task_list.print_task_list()?;
-            return Ok(task_list.clone());
-        }
-        CliSubCommand::CreateTask => {
-            let updated_task_list = task_list.create_task();
-            Ok(updated_task_list)
-        }
-        CliSubCommand::ToggleTaskCompletion(index) => {
-            let updated_task_list = task_list.toggle_task_completion_status(*index)?;
-            Ok(updated_task_list)
-        }
-        CliSubCommand::RemoveTask(index) => {
-            let updated_task_list = task_list.remove_task(*index)?;
-            Ok(updated_task_list)
-        }
-        CliSubCommand::RenameTask { index, new_name } => {
-            let updated_task_list = task_list.rename_task(*index, new_name.to_string())?;
-            Ok(updated_task_list)
-        }
-        CliSubCommand::Reprioritize {
-            index,
-            new_priority,
-        } => {
-            let updated_task_list =
-                task_list.change_task_priority(*index, new_priority.to_string())?;
-            Ok(updated_task_list)
+impl CliSubCommand {
+    pub fn run_subcommand(&self, task_list: &TaskList) -> Result<TaskList, Box<dyn Error>> {
+        match self {
+            CliSubCommand::ListTasks => {
+                task_list.print_task_list()?;
+                return Ok(task_list.clone());
+            }
+            CliSubCommand::CreateTask => {
+                let updated_task_list = task_list.create_task();
+                Ok(updated_task_list)
+            }
+            CliSubCommand::ToggleTaskCompletion(index) => {
+                let updated_task_list = task_list.toggle_task_completion_status(*index)?;
+                Ok(updated_task_list)
+            }
+            CliSubCommand::RemoveTask(index) => {
+                let updated_task_list = task_list.remove_task(*index)?;
+                Ok(updated_task_list)
+            }
+            CliSubCommand::RenameTask { index, new_name } => {
+                let updated_task_list = task_list.rename_task(*index, new_name.to_string())?;
+                Ok(updated_task_list)
+            }
+            CliSubCommand::Reprioritize {
+                index,
+                new_priority,
+            } => {
+                let updated_task_list =
+                    task_list.change_task_priority(*index, new_priority.to_string())?;
+                Ok(updated_task_list)
+            }
         }
     }
 }
@@ -109,14 +105,16 @@ mod tests {
     fn cli_list_task_failure_empty_list_test() {
         let empty_task_list = create_task_list();
 
-        let error = run_subcommand(&CliSubCommand::ListTasks, &empty_task_list);
+        let error = CliSubCommand::ListTasks.run_subcommand(&empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "list is empty");
     }
 
     #[test]
     fn cli_create_task_successful_run_test() {
         let empty_task_list = create_task_list();
-        let result = run_subcommand(&CliSubCommand::CreateTask, &empty_task_list).unwrap();
+        let result = CliSubCommand::CreateTask
+            .run_subcommand(&empty_task_list)
+            .unwrap();
 
         assert_eq!(result.tasks[0].name, "Default Task".to_string());
         assert_eq!(result.tasks[0].priority, PriEnum::Optional);
@@ -128,7 +126,8 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.add_nil_task();
 
-        let result = run_subcommand(&CliSubCommand::ToggleTaskCompletion(0), &single_task_list);
+        let result = CliSubCommand::ToggleTaskCompletion(0).run_subcommand(&single_task_list);
+
         assert_eq!(
             result.unwrap(),
             TaskList {
@@ -151,10 +150,8 @@ mod tests {
             }],
         };
 
-        let updated_task_list = run_subcommand(
-            &CliSubCommand::ToggleTaskCompletion(0),
-            &single_completed_task_list,
-        );
+        let updated_task_list =
+            CliSubCommand::ToggleTaskCompletion(0).run_subcommand(&single_completed_task_list);
         assert_eq!(
             updated_task_list.unwrap(),
             TaskList {
@@ -170,7 +167,7 @@ mod tests {
     fn cli_complete_task_failing_invalid_id_test() {
         let empty_task_list = create_task_list();
 
-        let error = run_subcommand(&CliSubCommand::ToggleTaskCompletion(1), &empty_task_list);
+        let error = CliSubCommand::ToggleTaskCompletion(1).run_subcommand(&empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
     }
 
@@ -179,7 +176,7 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.create_task();
 
-        let result = run_subcommand(&CliSubCommand::RemoveTask(0), &single_task_list);
+        let result = CliSubCommand::RemoveTask(0).run_subcommand(&single_task_list);
         assert_eq!(result.unwrap(), TaskList { tasks: vector![] });
     }
 
@@ -187,7 +184,7 @@ mod tests {
     fn failing_cli_remove_task_invalid_index_test() {
         let test_task_list = create_task_list();
 
-        let error = run_subcommand(&CliSubCommand::RemoveTask(0), &test_task_list);
+        let error = CliSubCommand::RemoveTask(0).run_subcommand(&test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
     }
 
@@ -196,13 +193,11 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.add_nil_task();
 
-        let result = run_subcommand(
-            &CliSubCommand::RenameTask {
-                index: 0,
-                new_name: "Test Rename".to_string(),
-            },
-            &single_task_list,
-        );
+        let result = CliSubCommand::RenameTask {
+            index: 0,
+            new_name: "Test Rename".to_string(),
+        }
+        .run_subcommand(&single_task_list);
 
         assert_eq!(
             result.unwrap(),
@@ -220,13 +215,11 @@ mod tests {
     fn cli_rename_task_failing_invalid_id_test() {
         let test_task_list = create_task_list();
 
-        let error = run_subcommand(
-            &CliSubCommand::RenameTask {
-                index: 0,
-                new_name: "Test Rename".to_string(),
-            },
-            &test_task_list,
-        );
+        let error = CliSubCommand::RenameTask {
+            index: 0,
+            new_name: "Test Rename".to_string(),
+        }
+        .run_subcommand(&test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
     }
 
@@ -235,16 +228,14 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_task_list = empty_task_list.add_nil_task();
 
-        let result = run_subcommand(
-            &CliSubCommand::Reprioritize {
-                index: 0,
-                new_priority: "High".to_string(),
-            },
-            &single_task_list,
-        );
+        let result = CliSubCommand::Reprioritize {
+            index: 0,
+            new_priority: "High".to_string(),
+        }
+        .run_subcommand(&single_task_list);
         assert_eq!(
-            result.unwrap(),
-            TaskList {
+            result.as_ref().unwrap(),
+            &TaskList {
                 tasks: vector![Task {
                     priority: PriEnum::High,
                     id: Uuid::nil(),
@@ -258,13 +249,11 @@ mod tests {
     fn cli_reprioritize_failing_invalid_id_test() {
         let empty_task_list = create_task_list();
 
-        let error = run_subcommand(
-            &CliSubCommand::Reprioritize {
-                index: 1,
-                new_priority: "High".to_string(),
-            },
-            &empty_task_list,
-        );
+        let error = CliSubCommand::Reprioritize {
+            index: 1,
+            new_priority: "High".to_string(),
+        }
+        .run_subcommand(&empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
     }
 }

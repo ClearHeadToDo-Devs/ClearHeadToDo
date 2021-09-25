@@ -8,7 +8,6 @@ use clear_head_todo_core::load_csv;
 use clear_head_todo_core::load_tasks_from_csv;
 use clear_head_todo_core::TaskList;
 use cli::create_end_user_message;
-use cli::run_subcommand;
 use cli::CliSubCommand;
 use std::error::Error;
 
@@ -29,7 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Err(e) => eprintln!("{}", e),
         }
     } else {
-        let updated_task_list = run_subcommand(&subcommand, &task_list)?;
+        let updated_task_list = &subcommand.run_subcommand(&task_list)?;
         load_csv(&updated_task_list, "tasks.csv")?;
         println!(
             "{}",

@@ -96,11 +96,6 @@ impl SubcommandArgumentParser for ArgMatches<'_> {
 mod tests {
     use super::*;
     use clap::ErrorKind;
-    use clear_head_todo_core::create_task_list;
-    use clear_head_todo_core::PriEnum;
-    use clear_head_todo_core::Task;
-    use im::vector;
-    use uuid::Uuid;
 
     #[test]
     fn cli_creation_name_test() {
