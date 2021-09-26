@@ -1,7 +1,7 @@
 extern crate clap;
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 
-use clear_head_todo_core::CliSubCommand;
+use clear_head_todo_core::Command;
 
 pub fn create_app() -> App<'static, 'static> {
     App::new("Clear Head Todo")
@@ -35,21 +35,21 @@ pub fn create_app() -> App<'static, 'static> {
         )
 }
 
-pub fn run(matches: ArgMatches<'_>) -> CliSubCommand {
+pub fn run(matches: ArgMatches<'_>) -> Command {
     let outcome = match matches.subcommand_name() {
-        Some("list_tasks") => CliSubCommand::ListTasks,
-        Some("create_task") => CliSubCommand::CreateTask,
-        Some("complete_task") => CliSubCommand::ToggleTaskCompletion(
+        Some("list_tasks") => Command::ListTasks,
+        Some("create_task") => Command::CreateTask,
+        Some("complete_task") => Command::ToggleTaskCompletion(
             matches.parse_id_for_subcommand("complete_task".to_string()),
         ),
         Some("remove_task") => {
-            CliSubCommand::RemoveTask(matches.parse_id_for_subcommand("remove_task".to_string()))
+            Command::RemoveTask(matches.parse_id_for_subcommand("remove_task".to_string()))
         }
-        Some("rename_task") => CliSubCommand::RenameTask {
+        Some("rename_task") => Command::RenameTask {
             index: matches.parse_id_for_subcommand("rename_task".to_string()),
             new_name: matches.parse_desired_name("rename_task".to_string()),
         },
-        Some("reprioritize") => CliSubCommand::Reprioritize {
+        Some("reprioritize") => Command::Reprioritize {
             index: matches.parse_id_for_subcommand("reprioritize".to_string()),
             new_priority: matches.parse_desired_priority("reprioritize".to_string()),
         },
@@ -147,7 +147,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::ListTasks);
+        assert_eq!(result, Command::ListTasks);
     }
 
     #[test]
@@ -156,7 +156,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "lt"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::ListTasks);
+        assert_eq!(result, Command::ListTasks);
     }
 
     #[test]
@@ -165,7 +165,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_task"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::CreateTask);
+        assert_eq!(result, Command::CreateTask);
     }
 
     #[test]
@@ -174,7 +174,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::CreateTask);
+        assert_eq!(result, Command::CreateTask);
     }
 
     #[test]
@@ -183,7 +183,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::ToggleTaskCompletion(0));
+        assert_eq!(result, Command::ToggleTaskCompletion(0));
     }
 
     #[test]
@@ -192,7 +192,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "1"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::ToggleTaskCompletion(1));
+        assert_eq!(result, Command::ToggleTaskCompletion(1));
     }
 
     #[test]
@@ -201,7 +201,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove_task", "1"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::RemoveTask(1));
+        assert_eq!(result, Command::RemoveTask(1));
     }
 
     #[test]
@@ -210,7 +210,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "0"]);
 
         let result = run(test_matches);
-        assert_eq!(result, CliSubCommand::RemoveTask(0));
+        assert_eq!(result, Command::RemoveTask(0));
     }
 
     #[test]
@@ -222,7 +222,7 @@ mod tests {
         let result = run(test_matches);
         assert_eq!(
             result,
-            CliSubCommand::RenameTask {
+            Command::RenameTask {
                 index: 0,
                 new_name: "Test Rename".to_string()
             }
@@ -238,7 +238,7 @@ mod tests {
         let result = run(test_matches);
         assert_eq!(
             result,
-            CliSubCommand::RenameTask {
+            Command::RenameTask {
                 index: 0,
                 new_name: "Test Rename".to_string()
             }
@@ -253,7 +253,7 @@ mod tests {
         let result = run(test_matches);
         assert_eq!(
             result,
-            CliSubCommand::Reprioritize {
+            Command::Reprioritize {
                 index: 1,
                 new_priority: "High".to_string()
             }
@@ -268,7 +268,7 @@ mod tests {
         let result = run(test_matches);
         assert_eq!(
             result,
-            CliSubCommand::Reprioritize {
+            Command::Reprioritize {
                 index: 1,
                 new_priority: "High".to_string()
             }

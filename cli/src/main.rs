@@ -5,7 +5,7 @@ use arg_parser::run;
 use clear_head_todo_core::create_task_list;
 use clear_head_todo_core::load_csv;
 use clear_head_todo_core::load_tasks_from_csv;
-use clear_head_todo_core::CliSubCommand;
+use clear_head_todo_core::Command;
 use clear_head_todo_core::TaskList;
 use std::error::Error;
 
@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let subcommand = run(matches);
 
-    if subcommand == CliSubCommand::ListTasks {
+    if subcommand == Command::ListTasks {
         let task_list_string_result = task_list.print_task_list();
         match task_list_string_result {
             Ok(s) => println!("{}", s),
