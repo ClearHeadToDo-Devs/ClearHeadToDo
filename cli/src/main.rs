@@ -3,7 +3,7 @@ use crate::arg_parser::ArgumentParsing;
 
 use arg_parser::create_app;
 use clear_head_todo_core::create_task_list;
-use clear_head_todo_core::load_csv;
+use clear_head_todo_core::load_csv_with_task_data;
 use clear_head_todo_core::load_tasks_from_csv;
 use clear_head_todo_core::Command;
 use clear_head_todo_core::TaskList;
@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     } else {
         let updated_task_list = &subcommand.run_subcommand(&task_list)?;
-        load_csv(&updated_task_list, "tasks.csv")?;
+        load_csv_with_task_data(&updated_task_list, "tasks.csv")?;
         println!(
             "{}",
             &subcommand.create_end_user_message(&task_list, &updated_task_list)

@@ -10,6 +10,34 @@ use std::str::FromStr;
 use std::{env, path::PathBuf};
 use uuid::Uuid;
 
+pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
+    let mut import_list = create_task_list();
+    let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
+    for result in rdr.records() {
+        let record: csv::StringRecord = result?;
+        let new_task: Task = Task {
+            id: Uuid::parse_str(&record[3])?,
+            name: record[0].to_string(),
+            completed: FromStr::from_str(&record[2])?,
+            priority: parse_priority(&record[1])?,
+        };
+        import_list.tasks.push_back(new_task);
+    }
+    Ok(import_list)
+}
+
+pub fn load_csv_with_task_data(
+    task_list: &TaskList,
+    file_name: &str,
+) -> Result<(), Box<dyn Error>> {
+    let mut csv_writer: Writer<std::fs::File> = create_file_writer_from_data_folder(file_name)?;
+
+    for task in &task_list.tasks {
+        csv_writer.serialize(task)?;
+    }
+    Ok(())
+}
+
 fn create_file_reader_from_data_folder(
     file_name: &str,
 ) -> Result<Reader<std::fs::File>, Box<dyn Error>> {
@@ -32,31 +60,6 @@ fn create_file_writer_from_data_folder(
     Ok(file_writer)
 }
 
-pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
-    let mut import_list = create_task_list();
-    let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
-    for result in rdr.records() {
-        let record: csv::StringRecord = result?;
-        let new_task: Task = Task {
-            id: Uuid::parse_str(&record[3])?,
-            name: record[0].to_string(),
-            completed: FromStr::from_str(&record[2])?,
-            priority: parse_priority(&record[1])?,
-        };
-        import_list.tasks.push_back(new_task);
-    }
-    Ok(import_list)
-}
-
-pub fn load_csv(task_list: &TaskList, file_name: &str) -> Result<(), Box<dyn Error>> {
-    let mut csv_writer: Writer<std::fs::File> = create_file_writer_from_data_folder(file_name)?;
-
-    for task in &task_list.tasks {
-        csv_writer.serialize(task)?;
-    }
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -77,7 +80,7 @@ mod tests {
         let empty_task_list = create_task_list();
         let single_nil_task_list = &empty_task_list.add_nil_task();
 
-        load_csv(&single_nil_task_list, "successful_export_test.csv")?;
+        load_csv_with_task_data(&single_nil_task_list, "successful_export_test.csv")?;
         let rdr = Reader::from_path(
             env::current_dir()?
                 .join("data")
