@@ -13,14 +13,9 @@ use uuid::Uuid;
 pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
     let mut import_list = create_task_list();
     let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
-    for result in rdr.records() {
-        let record: csv::StringRecord = result?;
-        let new_task: Task = Task {
-            id: Uuid::parse_str(&record[3])?,
-            name: record[0].to_string(),
-            completed: FromStr::from_str(&record[2])?,
-            priority: parse_priority(&record[1])?,
-        };
+    for record_result in rdr.records() {
+        let record: csv::StringRecord = record_result?;
+        let new_task = record.parse_task()?;
         import_list.tasks.push_back(new_task);
     }
     Ok(import_list)
@@ -60,13 +55,28 @@ fn create_file_writer_from_data_folder(
     Ok(file_writer)
 }
 
+pub trait ParseTask {
+    fn parse_task(&self) -> Result<Task, Box<dyn Error>>;
+}
+
+impl ParseTask for csv::StringRecord {
+    fn parse_task(&self) -> Result<Task, Box<dyn Error>> {
+        Ok(Task {
+            id: Uuid::parse_str(&self[3])?,
+            name: self[0].to_string(),
+            completed: FromStr::from_str(&self[2])?,
+            priority: parse_priority(&self[1])?,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::PriEnum;
 
     #[test]
-    fn load_from_csv_sucessful_test() {
+    fn load_from_csv_sucessful() {
         let test_task_list = load_tasks_from_csv("successful_import_test.csv").unwrap();
         let test_task = &test_task_list.tasks[0];
         assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
@@ -76,7 +86,7 @@ mod tests {
     }
 
     #[test]
-    fn load_to_csv_successful_test() -> Result<(), Box<dyn Error>> {
+    fn load_to_task_data_csv_successful() -> Result<(), Box<dyn Error>> {
         let empty_task_list = create_task_list();
         let single_nil_task_list = &empty_task_list.add_nil_task();
 
@@ -107,13 +117,13 @@ mod tests {
     }
 
     #[test]
-    fn load_from_csv_bad_file_test() {
+    fn load_from_csv_bad_file() {
         let error = load_tasks_from_csv("bad_file").unwrap_err();
         assert_eq!(error.to_string(), "No such file or directory (os error 2)");
     }
 
     #[test]
-    fn load_from_csv_bad_completion_status_test() {
+    fn load_from_csv_bad_completion_status() {
         let error = load_tasks_from_csv("bad_completion_status.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
@@ -122,13 +132,13 @@ mod tests {
     }
 
     #[test]
-    fn load_from_csv_bad_priority_test() {
+    fn load_from_csv_bad_priority() {
         let error = load_tasks_from_csv("bad_priority_test.csv").unwrap_err();
         assert_eq!(error.to_string(), "invalid priority");
     }
 
     #[test]
-    fn load_from_csv_bad_id_test() {
+    fn load_from_csv_bad_id() {
         let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
