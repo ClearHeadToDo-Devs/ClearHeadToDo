@@ -35,12 +35,15 @@ pub fn create_app() -> App<'static, 'static> {
         )
 }
 
-pub trait CommandParser {
-    fn parse_command(self) -> Command;
+pub trait ArgumentParsing {
+    fn parse_command(&self) -> Command;
+    fn parse_index_for_subcommand(&self, subcommand_name: String) -> usize;
+    fn parse_desired_name(&self, subcommand_name: String) -> String;
+    fn parse_desired_priority(&self, subcommand_name: String) -> String;
 }
 
-impl CommandParser for ArgMatches<'_> {
-    fn parse_command(self) -> Command {
+impl ArgumentParsing for ArgMatches<'_> {
+    fn parse_command(&self) -> Command {
         let outcome = match self.subcommand_name() {
             Some("list_tasks") => Command::ListTasks,
             Some("create_task") => Command::CreateTask,
@@ -62,14 +65,6 @@ impl CommandParser for ArgMatches<'_> {
         };
         return outcome;
     }
-}
-pub trait SubcommandArgumentParser {
-    fn parse_index_for_subcommand(&self, subcommand_name: String) -> usize;
-    fn parse_desired_name(&self, subcommand_name: String) -> String;
-    fn parse_desired_priority(&self, subcommand_name: String) -> String;
-}
-
-impl SubcommandArgumentParser for ArgMatches<'_> {
     fn parse_index_for_subcommand(&self, subcommand_name: String) -> usize {
         self.subcommand_matches(subcommand_name)
             .unwrap()
