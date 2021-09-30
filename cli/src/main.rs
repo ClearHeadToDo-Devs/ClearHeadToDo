@@ -1,7 +1,7 @@
 mod arg_parser;
+use crate::arg_parser::CommandParser;
 
 use arg_parser::create_app;
-use arg_parser::run;
 use clear_head_todo_core::create_task_list;
 use clear_head_todo_core::load_csv;
 use clear_head_todo_core::load_tasks_from_csv;
@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let app = create_app();
     let matches = app.get_matches();
 
-    let subcommand = run(matches);
+    let subcommand = matches.parse_command();
 
     if subcommand == Command::ListTasks {
         let task_list_string_result = task_list.print_task_list();

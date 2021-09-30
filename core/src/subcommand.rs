@@ -44,6 +44,7 @@ impl Command {
             }
         }
     }
+
     pub fn create_end_user_message(
         &self,
         previous_task_list: &TaskList,
