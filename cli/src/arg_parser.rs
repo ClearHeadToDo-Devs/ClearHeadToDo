@@ -39,7 +39,7 @@ pub fn create_app() -> App<'static, 'static> {
 
 pub trait ArgumentParsing {
     fn parse_command(&self) -> Result<Command, Box<dyn Error>>;
-    fn parse_index_for_subcommand(&self, subcommand_name: String) -> Result<usize, ParseIntError>;
+    fn parse_index_for_subcommand(&self, subcommand_name: String) -> Result<usize, Box<dyn Error>>;
     fn parse_desired_name(&self, subcommand_name: String) -> String;
     fn parse_desired_priority(&self, subcommand_name: String) -> String;
 }
@@ -68,12 +68,13 @@ impl ArgumentParsing for ArgMatches<'_> {
         return outcome;
     }
 
-    fn parse_index_for_subcommand(&self, subcommand_name: String) -> Result<usize, ParseIntError> {
-        self.subcommand_matches(subcommand_name)
-            .unwrap()
+    fn parse_index_for_subcommand(&self, subcommand_name: String) -> Result<usize, Box<dyn Error>> {
+        Ok(self
+            .subcommand_matches(subcommand_name)
+            .ok_or("this is not one of the subcommands of the interface")?
             .value_of("index")
-            .unwrap()
-            .parse::<usize>()
+            .ok_or("incompatible value for subcommand")?
+            .parse::<usize>()?)
     }
 
     fn parse_desired_name(&self, subcommand_name: String) -> String {
@@ -93,6 +94,10 @@ impl ArgumentParsing for ArgMatches<'_> {
             .unwrap()
             .to_string()
     }
+
+    /* fn extract_command_arg_set(&self, subcommand_name: String) -> &ArgMatches {
+        self.subcommand_matches(subcommand_name)?
+    } */
 }
 
 #[cfg(test)]
