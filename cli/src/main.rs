@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let app = create_app();
     let matches = app.get_matches();
 
-    let subcommand = matches.parse_command();
+    let subcommand = matches.parse_command()?;
 
     if subcommand == Command::ListTasks {
         let task_list_string_result = task_list.print_task_list();

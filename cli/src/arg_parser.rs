@@ -1,7 +1,9 @@
 extern crate clap;
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 
+use crate::Error;
 use clear_head_todo_core::Command;
+use core::num::ParseIntError;
 
 pub fn create_app() -> App<'static, 'static> {
     App::new("Clear Head Todo")
@@ -36,42 +38,42 @@ pub fn create_app() -> App<'static, 'static> {
 }
 
 pub trait ArgumentParsing {
-    fn parse_command(&self) -> Command;
-    fn parse_index_for_subcommand(&self, subcommand_name: String) -> usize;
+    fn parse_command(&self) -> Result<Command, Box<dyn Error>>;
+    fn parse_index_for_subcommand(&self, subcommand_name: String) -> Result<usize, ParseIntError>;
     fn parse_desired_name(&self, subcommand_name: String) -> String;
     fn parse_desired_priority(&self, subcommand_name: String) -> String;
 }
 
 impl ArgumentParsing for ArgMatches<'_> {
-    fn parse_command(&self) -> Command {
+    fn parse_command(&self) -> Result<Command, Box<dyn Error>> {
         let outcome = match self.subcommand_name() {
-            Some("list_tasks") => Command::ListTasks,
-            Some("create_task") => Command::CreateTask,
-            Some("complete_task") => Command::ToggleTaskCompletion(
-                self.parse_index_for_subcommand("complete_task".to_string()),
-            ),
-            Some("remove_task") => {
-                Command::RemoveTask(self.parse_index_for_subcommand("remove_task".to_string()))
-            }
-            Some("rename_task") => Command::RenameTask {
-                index: self.parse_index_for_subcommand("rename_task".to_string()),
+            Some("list_tasks") => Ok(Command::ListTasks),
+            Some("create_task") => Ok(Command::CreateTask),
+            Some("complete_task") => Ok(Command::ToggleTaskCompletion(
+                self.parse_index_for_subcommand("complete_task".to_string())?,
+            )),
+            Some("remove_task") => Ok(Command::RemoveTask(
+                self.parse_index_for_subcommand("remove_task".to_string())?,
+            )),
+            Some("rename_task") => Ok(Command::RenameTask {
+                index: self.parse_index_for_subcommand("rename_task".to_string())?,
                 new_name: self.parse_desired_name("rename_task".to_string()),
-            },
-            Some("reprioritize") => Command::Reprioritize {
-                index: self.parse_index_for_subcommand("reprioritize".to_string()),
+            }),
+            Some("reprioritize") => Ok(Command::Reprioritize {
+                index: self.parse_index_for_subcommand("reprioritize".to_string())?,
                 new_priority: self.parse_desired_priority("reprioritize".to_string()),
-            },
+            }),
             _ => unreachable!(),
         };
         return outcome;
     }
-    fn parse_index_for_subcommand(&self, subcommand_name: String) -> usize {
+
+    fn parse_index_for_subcommand(&self, subcommand_name: String) -> Result<usize, ParseIntError> {
         self.subcommand_matches(subcommand_name)
             .unwrap()
             .value_of("index")
             .unwrap()
             .parse::<usize>()
-            .unwrap()
     }
 
     fn parse_desired_name(&self, subcommand_name: String) -> String {
@@ -92,6 +94,7 @@ impl ArgumentParsing for ArgMatches<'_> {
             .to_string()
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -146,7 +149,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::ListTasks);
     }
 
@@ -155,7 +158,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "lt"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::ListTasks);
     }
 
@@ -164,7 +167,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_task"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::CreateTask);
     }
 
@@ -173,7 +176,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::CreateTask);
     }
 
@@ -182,7 +185,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::ToggleTaskCompletion(0));
     }
 
@@ -191,7 +194,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "1"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::ToggleTaskCompletion(1));
     }
 
@@ -200,7 +203,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove_task", "1"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::RemoveTask(1));
     }
 
@@ -209,7 +212,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "0"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::RemoveTask(0));
     }
 
@@ -219,7 +222,7 @@ mod tests {
         let test_matches =
             app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test", "Rename"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(
             result,
             Command::RenameTask {
@@ -235,7 +238,7 @@ mod tests {
         let test_matches =
             app.get_matches_from(vec!["ClearHeadToDo", "rename", "0", "Test Rename"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(
             result,
             Command::RenameTask {
@@ -250,7 +253,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "reprioritize", "1", "High"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(
             result,
             Command::Reprioritize {
@@ -265,7 +268,7 @@ mod tests {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rp", "1", "High"]);
 
-        let result = test_matches.parse_command();
+        let result = test_matches.parse_command().unwrap();
         assert_eq!(
             result,
             Command::Reprioritize {
