@@ -4,7 +4,7 @@ use std::error::Error;
 #[derive(Debug, PartialEq)]
 pub enum Command {
     ListTasks,
-    CreateTask,
+    CreateTask(Option<String>),
     ToggleTaskCompletion(usize),
     RemoveTask(usize),
     RenameTask { index: usize, new_name: String },
@@ -18,8 +18,12 @@ impl Command {
                 task_list.print_task_list()?;
                 return Ok(task_list.clone());
             }
-            Command::CreateTask => {
+            Command::CreateTask(name) => {
                 let updated_task_list = task_list.create_task();
+                if let Some(name) = name {
+                    let updated_task_list = updated_task_list
+                        .rename_task(updated_task_list.tasks.len() - 1, name.to_string());
+                }
                 Ok(updated_task_list)
             }
             Command::ToggleTaskCompletion(index) => {
@@ -51,7 +55,7 @@ impl Command {
         updated_task_list: &TaskList,
     ) -> String {
         match self {
-            Command::CreateTask => {
+            Command::CreateTask(_name) => {
                 format!(
                     "Created Task {}",
                     updated_task_list.tasks[updated_task_list.tasks.len() - 1].name
@@ -111,7 +115,7 @@ mod tests {
     #[test]
     fn create_task_successful_run() {
         let empty_task_list = create_task_list();
-        let result = Command::CreateTask
+        let result = Command::CreateTask(None)
             .run_subcommand(&empty_task_list)
             .unwrap();
 
@@ -126,7 +130,7 @@ mod tests {
         let single_task_list = empty_task_list.create_task();
 
         let message =
-            Command::CreateTask.create_end_user_message(&empty_task_list, &single_task_list);
+            Command::CreateTask(None).create_end_user_message(&empty_task_list, &single_task_list);
         assert_eq!(message, "Created Task Default Task");
     }
 

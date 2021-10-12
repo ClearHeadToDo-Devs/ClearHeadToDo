@@ -22,9 +22,8 @@ pub struct TaskList {
 
 impl TaskList {
     pub fn create_task(&self) -> Self {
-        let new_task = create_default_task();
         let mut new_list = self.clone();
-        new_list.tasks.push_back(new_task);
+        new_list.tasks.push_back(create_default_task());
         return new_list;
     }
 
@@ -139,13 +138,13 @@ mod tests {
         use super::*;
 
         #[test]
-        fn task_list_creation_test() {
+        fn task_list_creation() {
             let test_task_list = create_task_list();
             assert_eq!(test_task_list, TaskList { tasks: vector![] });
         }
 
         #[test]
-        fn child_task_creation_test() -> Result<(), Box<dyn Error>> {
+        fn child_task_addition() -> Result<(), Box<dyn Error>> {
             let empty_task_list = create_task_list();
             let single_task_list = &empty_task_list.add_nil_task();
             let test_task = &single_task_list.tasks[0];

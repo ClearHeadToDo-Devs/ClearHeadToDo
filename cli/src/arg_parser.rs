@@ -47,7 +47,9 @@ impl ArgumentParsing for ArgMatches<'_> {
     fn parse_command(&self) -> Result<Command, Box<dyn Error>> {
         match self.subcommand_name() {
             Some("list_tasks") => Ok(Command::ListTasks),
-            Some("create_task") => Ok(Command::CreateTask),
+            Some("create_task") => Ok(Command::CreateTask(
+                self.parse_desired_name("create_task".to_string()),
+            )),
             Some("complete_task") => Ok(Command::ToggleTaskCompletion(
                 self.parse_index_for_subcommand("complete_task".to_string())?,
             )),
