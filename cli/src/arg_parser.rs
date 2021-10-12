@@ -3,7 +3,6 @@ use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 
 use crate::Error;
 use clear_head_todo_core::Command;
-use core::num::ParseIntError;
 
 pub fn create_app() -> App<'static, 'static> {
     App::new("Clear Head Todo")
@@ -46,7 +45,7 @@ pub trait ArgumentParsing {
 
 impl ArgumentParsing for ArgMatches<'_> {
     fn parse_command(&self) -> Result<Command, Box<dyn Error>> {
-        let outcome = match self.subcommand_name() {
+        match self.subcommand_name() {
             Some("list_tasks") => Ok(Command::ListTasks),
             Some("create_task") => Ok(Command::CreateTask),
             Some("complete_task") => Ok(Command::ToggleTaskCompletion(
@@ -64,8 +63,7 @@ impl ArgumentParsing for ArgMatches<'_> {
                 new_priority: self.parse_desired_priority("reprioritize".to_string()),
             }),
             _ => unreachable!(),
-        };
-        return outcome;
+        }
     }
 
     fn parse_index_for_subcommand(&self, subcommand_name: String) -> Result<usize, Box<dyn Error>> {
@@ -94,10 +92,6 @@ impl ArgumentParsing for ArgMatches<'_> {
             .unwrap()
             .to_string()
     }
-
-    /* fn extract_command_arg_set(&self, subcommand_name: String) -> &ArgMatches {
-        self.subcommand_matches(subcommand_name)?
-    } */
 }
 
 #[cfg(test)]

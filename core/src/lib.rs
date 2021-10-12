@@ -44,7 +44,7 @@ impl TaskList {
 
     pub fn remove_task(&self, index: usize) -> Result<TaskList, Box<dyn Error>> {
         match self.tasks.iter().nth(index) {
-            Some(task_ref) => {
+            Some(_task_ref) => {
                 let (mut left_side, mut right_side) = self.tasks.clone().split_at(index);
                 right_side.pop_front().unwrap();
                 left_side.append(right_side);
@@ -60,9 +60,7 @@ impl TaskList {
     pub fn rename_task(&self, index: usize, new_name: String) -> Result<TaskList, Box<dyn Error>> {
         match self.tasks.iter().nth(index) {
             Some(task_ref) => Ok(TaskList {
-                tasks: self
-                    .tasks
-                    .update(index, self.tasks[index].rename(&new_name)),
+                tasks: self.tasks.update(index, task_ref.rename(&new_name)),
             }),
             None => Err(Box::new(OtherError::new(
                 ErrorKind::Other,
@@ -76,7 +74,7 @@ impl TaskList {
             Some(task_ref) => Ok(TaskList {
                 tasks: self
                     .tasks
-                    .update(index, self.tasks[index].clone().toggle_completion_status()),
+                    .update(index, task_ref.clone().toggle_completion_status()),
             }),
             None => Err(Box::new(OtherError::new(
                 ErrorKind::Other,
@@ -92,10 +90,9 @@ impl TaskList {
     ) -> Result<TaskList, Box<dyn Error>> {
         match self.tasks.iter().nth(index) {
             Some(task_ref) => Ok(TaskList {
-                tasks: self.tasks.update(
-                    index,
-                    self.tasks[index].clone().change_priority(&new_priority)?,
-                ),
+                tasks: self
+                    .tasks
+                    .update(index, task_ref.clone().change_priority(&new_priority)?),
             }),
             None => Err(Box::new(OtherError::new(
                 ErrorKind::Other,
