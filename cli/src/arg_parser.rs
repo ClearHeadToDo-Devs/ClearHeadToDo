@@ -39,7 +39,7 @@ pub fn create_app() -> App<'static, 'static> {
 pub trait ArgumentParsing {
     fn parse_command(&self) -> Result<Command, Box<dyn Error>>;
     fn parse_index_for_subcommand(&self, subcommand_name: String) -> Result<usize, Box<dyn Error>>;
-    fn parse_desired_name(&self, subcommand_name: String) -> String;
+    fn parse_desired_name(&self, subcommand_name: String) -> Option<String>;
     fn parse_desired_priority(&self, subcommand_name: String) -> String;
 }
 
@@ -58,7 +58,7 @@ impl ArgumentParsing for ArgMatches<'_> {
             )),
             Some("rename_task") => Ok(Command::RenameTask {
                 index: self.parse_index_for_subcommand("rename_task".to_string())?,
-                new_name: self.parse_desired_name("rename_task".to_string()),
+                new_name: self.parse_desired_name("rename_task".to_string()).unwrap(),
             }),
             Some("reprioritize") => Ok(Command::Reprioritize {
                 index: self.parse_index_for_subcommand("reprioritize".to_string())?,
@@ -77,14 +77,16 @@ impl ArgumentParsing for ArgMatches<'_> {
             .parse::<usize>()?)
     }
 
-    fn parse_desired_name(&self, subcommand_name: String) -> String {
-        self.subcommand_matches(subcommand_name)
-            .unwrap()
-            .values_of("new_name")
-            .unwrap()
-            .collect::<Vec<&str>>()
-            .join(" ")
-            .to_string()
+    fn parse_desired_name(&self, subcommand_name: String) -> Option<String> {
+        Some(
+            self.subcommand_matches(subcommand_name)
+                .unwrap()
+                .values_of("new_name")
+                .unwrap()
+                .collect::<Vec<&str>>()
+                .join(" ")
+                .to_string(),
+        )
     }
 
     fn parse_desired_priority(&self, subcommand_name: String) -> String {
@@ -169,7 +171,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_task"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::CreateTask);
+        assert_eq!(result, Command::CreateTask(None));
     }
 
     #[test]
@@ -178,7 +180,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::CreateTask);
+        assert_eq!(result, Command::CreateTask(None));
     }
 
     #[test]

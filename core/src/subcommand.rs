@@ -21,7 +21,7 @@ impl Command {
             Command::CreateTask(name) => {
                 let updated_task_list = task_list.create_task();
                 if let Some(name) = name {
-                    let updated_task_list = updated_task_list
+                    return updated_task_list
                         .rename_task(updated_task_list.tasks.len() - 1, name.to_string());
                 }
                 Ok(updated_task_list)
