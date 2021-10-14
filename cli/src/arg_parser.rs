@@ -78,15 +78,13 @@ impl ArgumentParsing for ArgMatches<'_> {
     }
 
     fn parse_desired_name(&self, subcommand_name: String) -> Option<String> {
-        Some(
-            self.subcommand_matches(subcommand_name)
-                .unwrap()
-                .values_of("new_name")
-                .unwrap()
-                .collect::<Vec<&str>>()
-                .join(" ")
-                .to_string(),
-        )
+        match self.subcommand_matches(subcommand_name) {
+            Some(arg_matches) => match arg_matches.values_of("new_name") {
+                Some(values) => Some(values.collect::<Vec<&str>>().join(" ").to_string()),
+                None => None,
+            },
+            None => None,
+        }
     }
 
     fn parse_desired_priority(&self, subcommand_name: String) -> String {
