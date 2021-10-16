@@ -1,4 +1,4 @@
-pub mod task;
+extern crate task;
 pub use task::*;
 
 pub mod helper;

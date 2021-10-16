@@ -86,6 +86,7 @@ dependencies = [
  "csv",
  "im",
  "serde",
+ "task",
  "uuid",
 ]
 
@@ -259,6 +260,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-xid",
+]
+
+[[package]]
+name = "task"
+version = "0.1.0"
+dependencies = [
+ "csv",
+ "im",
+ "serde",
+ "uuid",
 ]
 
 [[package]]
