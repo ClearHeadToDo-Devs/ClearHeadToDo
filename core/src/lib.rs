@@ -7,8 +7,8 @@ pub use helper::*;
 pub mod storage;
 pub use storage::*;
 
-pub mod subcommand;
-pub use subcommand::*;
+pub mod command;
+pub use command::*;
 
 use im::vector;
 use std::error::Error;
