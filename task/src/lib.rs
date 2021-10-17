@@ -13,16 +13,6 @@ pub struct Task {
     pub priority: PriEnum,
 }
 
-#[repr(u8)]
-#[derive(AltSerialize, Copy, Clone, PartialEq, Debug)]
-pub enum PriEnum {
-    Critical = 1,
-    High = 2,
-    Medium = 3,
-    Low = 4,
-    Optional = 5,
-}
-
 pub trait TaskManipulation {
     fn rename(&self, new_task_name: &str) -> Self;
     fn toggle_completion_status(&self) -> Self;
@@ -31,6 +21,16 @@ pub trait TaskManipulation {
         Self: Sized;
     fn export_fields_as_string(&self) -> String;
     fn create_default_task() -> Self;
+}
+
+#[repr(u8)]
+#[derive(AltSerialize, Copy, Clone, PartialEq, Debug)]
+pub enum PriEnum {
+    Critical = 1,
+    High = 2,
+    Medium = 3,
+    Low = 4,
+    Optional = 5,
 }
 
 impl TaskManipulation for Task {
@@ -78,25 +78,6 @@ impl TaskManipulation for Task {
     }
 }
 
-impl fmt::Display for PriEnum {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        let printable: &str = match *self {
-            PriEnum::Critical => "Critical",
-            PriEnum::High => "High",
-            PriEnum::Medium => "Medium",
-            PriEnum::Low => "Low",
-            PriEnum::Optional => "Optional",
-        };
-        write!(formatter, "{}", printable)
-    }
-}
-
-impl Default for PriEnum {
-    fn default() -> Self {
-        PriEnum::Optional
-    }
-}
-
 impl Default for Task {
     fn default() -> Task {
         Task {
@@ -120,6 +101,25 @@ pub fn parse_priority(expr: &str) -> Result<PriEnum, Box<dyn Error>> {
             ErrorKind::Other,
             "invalid priority",
         ))),
+    }
+}
+
+impl Default for PriEnum {
+    fn default() -> Self {
+        PriEnum::Optional
+    }
+}
+
+impl fmt::Display for PriEnum {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        let printable: &str = match *self {
+            PriEnum::Critical => "Critical",
+            PriEnum::High => "High",
+            PriEnum::Medium => "Medium",
+            PriEnum::Low => "Low",
+            PriEnum::Optional => "Optional",
+        };
+        write!(formatter, "{}", printable)
     }
 }
 
