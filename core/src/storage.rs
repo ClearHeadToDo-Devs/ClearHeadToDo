@@ -56,10 +56,13 @@ fn create_file_writer_from_data_folder(
 }
 
 pub trait ParseTask {
+    type Task;
     fn parse_task(&self) -> Result<Task, Box<dyn Error>>;
 }
 
 impl ParseTask for csv::StringRecord {
+    type Task = Task;
+
     fn parse_task(&self) -> Result<Task, Box<dyn Error>> {
         Ok(Task {
             id: Uuid::parse_str(&self[3])?,
