@@ -29,8 +29,17 @@ pub fn create_default_task() -> Task {
     }
 }
 
-impl Task {
-    pub fn rename(&self, new_task_name: &String) -> Task {
+pub trait TaskManipulation {
+    fn rename(&self, new_task_name: &str) -> Self;
+    fn toggle_completion_status(&self) -> Self;
+    fn change_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>>
+    where
+        Self: Sized;
+    fn export_fields_as_string(&self) -> String;
+}
+
+impl TaskManipulation for Task {
+    fn rename(&self, new_task_name: &str) -> Task {
         return Task {
             name: new_task_name.to_owned(),
             id: self.id,
@@ -39,7 +48,7 @@ impl Task {
         };
     }
 
-    pub fn toggle_completion_status(&self) -> Task {
+    fn toggle_completion_status(&self) -> Task {
         Task {
             id: self.id.clone(),
             name: self.name.clone(),
@@ -48,7 +57,7 @@ impl Task {
         }
     }
 
-    pub fn change_priority(&self, new_priority: &str) -> Result<Task, Box<dyn Error>> {
+    fn change_priority(&self, new_priority: &str) -> Result<Task, Box<dyn Error>> {
         let new_pri: PriEnum = parse_priority(new_priority)?;
         return Ok(Task {
             name: self.name.clone(),
@@ -58,7 +67,7 @@ impl Task {
         });
     }
 
-    pub fn export_fields_as_string(&self) -> String {
+    fn export_fields_as_string(&self) -> String {
         format!(
             "{name},{priority},{completed},{ID}\n",
             name = self.name,
