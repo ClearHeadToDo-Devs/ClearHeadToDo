@@ -1,7 +1,7 @@
-use crate::create_task_list;
 use crate::parse_priority;
 use crate::Task;
 use crate::TaskList;
+use crate::TaskListManipulation;
 
 use csv::Reader;
 use csv::Writer;
@@ -11,7 +11,7 @@ use std::{env, path::PathBuf};
 use uuid::Uuid;
 
 pub fn load_tasks_from_csv(file_name: &str) -> Result<TaskList, Box<dyn Error>> {
-    let mut import_list = create_task_list();
+    let mut import_list = TaskList::create_task_list();
     let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
     for record_result in rdr.records() {
         let record: csv::StringRecord = record_result?;
@@ -87,7 +87,7 @@ mod tests {
 
     #[test]
     fn load_to_task_data_csv_successful() -> Result<(), Box<dyn Error>> {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
         let single_nil_task_list = &empty_task_list.add_nil_task();
 
         load_csv_with_task_data(&single_nil_task_list, "successful_export_test.csv")?;

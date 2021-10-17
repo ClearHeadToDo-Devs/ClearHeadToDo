@@ -99,7 +99,6 @@ impl Command {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::create_task_list;
     use crate::PriEnum;
     use crate::Task;
     use im::vector;
@@ -107,7 +106,7 @@ mod tests {
 
     #[test]
     fn list_task_failure_empty_list() {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
 
         let error = Command::ListTasks.run_subcommand(&empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "list is empty");
@@ -115,7 +114,7 @@ mod tests {
 
     #[test]
     fn create_task_successful_run() {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
         let result = Command::CreateTask(None)
             .run_subcommand(&empty_task_list)
             .unwrap();
@@ -127,7 +126,7 @@ mod tests {
 
     #[test]
     fn generate_create_task_success_message() {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
         let single_task_list = empty_task_list.create_task();
 
         let message =
@@ -137,7 +136,7 @@ mod tests {
 
     #[test]
     fn complete_task_successful_run() {
-        let single_task_list = create_task_list().add_nil_task();
+        let single_task_list = TaskList::create_task_list().add_nil_task();
 
         let result = Command::ToggleTaskCompletion(0).run_subcommand(&single_task_list);
 
@@ -178,7 +177,7 @@ mod tests {
 
     #[test]
     fn generate_complete_task_message() {
-        let single_task_list = create_task_list().create_task();
+        let single_task_list = TaskList::create_task_list().create_task();
         let updated_task_list = single_task_list.toggle_task_completion_status(0).unwrap();
 
         let message = Command::ToggleTaskCompletion(0)
@@ -192,7 +191,7 @@ mod tests {
 
     #[test]
     fn complete_task_failing_invalid_id() {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
 
         let error = Command::ToggleTaskCompletion(1).run_subcommand(&empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
@@ -200,7 +199,7 @@ mod tests {
 
     #[test]
     fn cli_remove_task_successful_run_test() {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
         let single_task_list = empty_task_list.create_task();
 
         let result = Command::RemoveTask(0).run_subcommand(&single_task_list);
@@ -209,7 +208,7 @@ mod tests {
 
     #[test]
     fn generate_remove_task_message() {
-        let single_task_list = create_task_list().create_task();
+        let single_task_list = TaskList::create_task_list().create_task();
         let updated_task_list = single_task_list.remove_task(0).unwrap();
 
         let message =
@@ -220,7 +219,7 @@ mod tests {
 
     #[test]
     fn failing_cli_remove_task_invalid_index_test() {
-        let test_task_list = create_task_list();
+        let test_task_list = TaskList::create_task_list();
 
         let error = Command::RemoveTask(0).run_subcommand(&test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
@@ -228,7 +227,7 @@ mod tests {
 
     #[test]
     fn cli_rename_task_successful_run_test() {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
         let single_task_list = empty_task_list.add_nil_task();
 
         let result = Command::RenameTask {
@@ -251,7 +250,7 @@ mod tests {
 
     #[test]
     fn generate_rename_task_message() {
-        let single_task_list = create_task_list().create_task();
+        let single_task_list = TaskList::create_task_list().create_task();
         let updated_task_list = single_task_list
             .rename_task(0, "New Name".to_string())
             .unwrap();
@@ -267,7 +266,7 @@ mod tests {
 
     #[test]
     fn cli_rename_task_failing_invalid_id_test() {
-        let test_task_list = create_task_list();
+        let test_task_list = TaskList::create_task_list();
 
         let error = Command::RenameTask {
             index: 0,
@@ -279,7 +278,7 @@ mod tests {
 
     #[test]
     fn cli_change_priority_successful_run_test() {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
         let single_task_list = empty_task_list.add_nil_task();
 
         let result = Command::Reprioritize {
@@ -301,7 +300,7 @@ mod tests {
 
     #[test]
     fn generate_reprioritize_task_message() {
-        let single_task_list = create_task_list().create_task();
+        let single_task_list = TaskList::create_task_list().create_task();
         let updated_task_list = single_task_list
             .change_task_priority(0, "low".to_string())
             .unwrap();
@@ -320,7 +319,7 @@ mod tests {
 
     #[test]
     fn cli_reprioritize_failing_invalid_id_test() {
-        let empty_task_list = create_task_list();
+        let empty_task_list = TaskList::create_task_list();
 
         let error = Command::Reprioritize {
             index: 1,

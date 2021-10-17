@@ -22,6 +22,7 @@ pub struct TaskList {
 
 pub trait TaskListManipulation {
     type Child;
+    fn create_task_list() -> Self;
     fn create_task(&self) -> Self;
     fn print_task_list(&self) -> Result<String, Box<dyn Error>>;
     fn remove_task(&self, index: usize) -> Result<Self, Box<dyn Error>>
@@ -45,6 +46,10 @@ pub trait TaskListManipulation {
 
 impl TaskListManipulation for TaskList {
     type Child = Task;
+
+    fn create_task_list() -> TaskList {
+        return TaskList { tasks: vector![] };
+    }
     fn create_task(&self) -> Self {
         let mut new_list = self.clone();
         new_list.tasks.push_back(Task::create_default_task());
@@ -138,10 +143,6 @@ impl TaskListManipulation for TaskList {
     }
 }
 
-pub fn create_task_list() -> TaskList {
-    return TaskList { tasks: vector![] };
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -152,13 +153,13 @@ mod tests {
 
         #[test]
         fn task_list_creation() {
-            let test_task_list = create_task_list();
+            let test_task_list = TaskList::create_task_list();
             assert_eq!(test_task_list, TaskList { tasks: vector![] });
         }
 
         #[test]
         fn child_task_addition() -> Result<(), Box<dyn Error>> {
-            let empty_task_list = create_task_list();
+            let empty_task_list = TaskList::create_task_list();
             let single_task_list = &empty_task_list.add_nil_task();
             let test_task = &single_task_list.tasks[0];
             assert!(test_task.name == "Default Task");
@@ -173,7 +174,7 @@ mod tests {
 
         #[test]
         fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
-            let empty_list = create_task_list();
+            let empty_list = TaskList::create_task_list();
             let single_nil_task_list = &empty_list.add_nil_task();
             let test_search_task = single_nil_task_list.select_task_by_id(Uuid::nil());
             assert!(
@@ -191,7 +192,7 @@ mod tests {
 
         #[test]
         fn task_failed_search_by_id_test() -> Result<(), Box<dyn Error>> {
-            let test_task_list = create_task_list();
+            let test_task_list = TaskList::create_task_list();
             let test_search_task = test_task_list
                 .select_task_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
             assert!(test_search_task.unwrap_err().to_string() == "No Task with given ID");
@@ -200,14 +201,14 @@ mod tests {
 
         #[test]
         fn task_print_fail_test() {
-            let test_task_list = create_task_list();
+            let test_task_list = TaskList::create_task_list();
             let error = &test_task_list.print_task_list().unwrap_err();
             assert_eq!(error.to_string(), "list is empty");
         }
 
         #[test]
         fn task_print_successful_test() {
-            let empty_task_list = create_task_list();
+            let empty_task_list = TaskList::create_task_list();
             let single_task_list = &empty_task_list.add_nil_task();
 
             let success = &single_task_list.print_task_list().unwrap();
@@ -220,14 +221,14 @@ mod tests {
 
         #[test]
         fn failing_task_removal_test() {
-            let test_task_list = create_task_list();
+            let test_task_list = TaskList::create_task_list();
             let error = &test_task_list.remove_task(0).unwrap_err();
             assert_eq!(error.to_string(), "No Task at Given Index");
         }
 
         #[test]
         fn successful_task_removal_test() {
-            let empty_task_list = create_task_list();
+            let empty_task_list = TaskList::create_task_list();
             let single_task_list = &empty_task_list.create_task();
             let good_result = &single_task_list.remove_task(0).unwrap();
             assert!(good_result.tasks.is_empty());
@@ -235,14 +236,14 @@ mod tests {
 
         #[test]
         fn failing_task_completion_bad_index_test() {
-            let test_task_list = create_task_list();
+            let test_task_list = TaskList::create_task_list();
             let error = &test_task_list.toggle_task_completion_status(0).unwrap_err();
             assert_eq!(error.to_string(), "No Task at Given Index");
         }
 
         #[test]
         fn successful_task_completion_test() {
-            let empty_task_list = create_task_list();
+            let empty_task_list = TaskList::create_task_list();
             let single_task_list = &empty_task_list.create_task();
             let good_result = &single_task_list.toggle_task_completion_status(0).unwrap();
             assert!(good_result.tasks[0].completed == true);
@@ -250,7 +251,7 @@ mod tests {
 
         #[test]
         fn successful_task_reopen_test() {
-            let mut test_task_list = create_task_list();
+            let mut test_task_list = TaskList::create_task_list();
             test_task_list.tasks.push_front(Task {
                 completed: true,
                 ..Default::default()
@@ -261,7 +262,7 @@ mod tests {
 
         #[test]
         fn failing_task_rename_bad_index_test() {
-            let test_task_list = create_task_list();
+            let test_task_list = TaskList::create_task_list();
             let error = &test_task_list
                 .rename_task(0, "Change Test".to_string())
                 .unwrap_err();
@@ -270,7 +271,7 @@ mod tests {
 
         #[test]
         fn successful_task_rename_test() {
-            let empty_task_list = create_task_list();
+            let empty_task_list = TaskList::create_task_list();
             let single_task_list = &empty_task_list.create_task();
             let good_result = &single_task_list
                 .rename_task(0, "Changed Task".to_string())
@@ -280,7 +281,7 @@ mod tests {
 
         #[test]
         fn failing_task_reprioritize_bad_index_test() {
-            let test_task_list = create_task_list();
+            let test_task_list = TaskList::create_task_list();
             let error = &test_task_list
                 .change_task_priority(0, "Optional".to_string())
                 .unwrap_err();
@@ -289,7 +290,7 @@ mod tests {
 
         #[test]
         fn failing_task_reprioritize_bad_priority_test() {
-            let empty_task_list = create_task_list();
+            let empty_task_list = TaskList::create_task_list();
             let single_task_list = &empty_task_list.create_task();
             let error = &single_task_list
                 .change_task_priority(0, "bad priority".to_string())
@@ -299,7 +300,7 @@ mod tests {
 
         #[test]
         fn successful_task_reprioritize_test() {
-            let empty_task_list = create_task_list();
+            let empty_task_list = TaskList::create_task_list();
             let single_task_list = &empty_task_list.create_task();
             let changed_task_list = &single_task_list
                 .change_task_priority(0, "low".to_string())
