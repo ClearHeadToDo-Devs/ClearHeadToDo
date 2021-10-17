@@ -5,6 +5,14 @@ use std::fmt;
 use std::io::{Error as OtherError, ErrorKind};
 use uuid::Uuid;
 
+#[derive(PartialEq, Debug, Clone)]
+pub struct Task {
+    pub id: Uuid,
+    pub name: String,
+    pub completed: bool,
+    pub priority: PriEnum,
+}
+
 #[repr(u8)]
 #[derive(AltSerialize, Copy, Clone, PartialEq, Debug)]
 pub enum PriEnum {
@@ -15,20 +23,6 @@ pub enum PriEnum {
     Optional = 5,
 }
 
-#[derive(PartialEq, Debug, Clone)]
-pub struct Task {
-    pub id: Uuid,
-    pub name: String,
-    pub completed: bool,
-    pub priority: PriEnum,
-}
-
-pub fn create_default_task() -> Task {
-    Task {
-        ..Default::default()
-    }
-}
-
 pub trait TaskManipulation {
     fn rename(&self, new_task_name: &str) -> Self;
     fn toggle_completion_status(&self) -> Self;
@@ -36,9 +30,15 @@ pub trait TaskManipulation {
     where
         Self: Sized;
     fn export_fields_as_string(&self) -> String;
+    fn create_default_task() -> Self;
 }
 
 impl TaskManipulation for Task {
+    fn create_default_task() -> Task {
+        Task {
+            ..Default::default()
+        }
+    }
     fn rename(&self, new_task_name: &str) -> Task {
         return Task {
             name: new_task_name.to_owned(),
@@ -169,15 +169,15 @@ mod test {
 
     #[test]
     fn task_creation_unique_id_test() {
-        let first_test_task = create_default_task();
-        let second_test_task = create_default_task();
+        let first_test_task = Task::create_default_task();
+        let second_test_task = Task::create_default_task();
 
         assert!(first_test_task.id != second_test_task.id);
     }
 
     #[test]
     fn rename_test() {
-        let test_task = create_default_task();
+        let test_task = Task::create_default_task();
         let renamed_task = &test_task.rename(&"Changed Name".to_string());
 
         assert!(renamed_task.name == "Changed Name");
@@ -185,7 +185,7 @@ mod test {
 
     #[test]
     fn completion_test() -> Result<(), Box<dyn Error>> {
-        let test_task = create_default_task();
+        let test_task = Task::create_default_task();
         let test_successful_completion_task = &test_task.toggle_completion_status();
 
         assert!(test_successful_completion_task.completed == true);
@@ -194,7 +194,7 @@ mod test {
 
     #[test]
     fn reopen_test() -> () {
-        let test_task = create_default_task();
+        let test_task = Task::create_default_task();
         let test_first_completion_task = &test_task.toggle_completion_status();
         let reopened_task = &test_first_completion_task.toggle_completion_status();
         assert_eq!(reopened_task.completed, false);
@@ -202,7 +202,7 @@ mod test {
 
     #[test]
     fn failing_reprioritize_test() -> Result<(), Box<dyn Error>> {
-        let test_task = create_default_task();
+        let test_task = Task::create_default_task();
         let error = &test_task.change_priority("6").unwrap_err();
         assert_eq!(error.to_string(), "invalid priority");
         return Ok(());
@@ -210,7 +210,7 @@ mod test {
 
     #[test]
     fn successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
-        let priority_5_test_task = create_default_task();
+        let priority_5_test_task = Task::create_default_task();
 
         let priority_4_test_task = &priority_5_test_task.change_priority("4")?;
         assert!(priority_4_test_task.priority == PriEnum::Low);

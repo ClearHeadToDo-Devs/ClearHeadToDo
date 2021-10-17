@@ -23,7 +23,7 @@ pub struct TaskList {
 impl TaskList {
     pub fn create_task(&self) -> Self {
         let mut new_list = self.clone();
-        new_list.tasks.push_back(create_default_task());
+        new_list.tasks.push_back(Task::create_default_task());
         return new_list;
     }
 
