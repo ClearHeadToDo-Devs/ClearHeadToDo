@@ -1,4 +1,5 @@
 use crate::TaskList;
+use crate::TaskListManipulation;
 use std::error::Error;
 
 #[derive(Debug, PartialEq)]

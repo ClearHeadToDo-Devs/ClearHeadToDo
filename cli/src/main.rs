@@ -7,7 +7,7 @@ use clear_head_todo_core::load_csv_with_task_data;
 use clear_head_todo_core::load_tasks_from_csv;
 use clear_head_todo_core::Command;
 use clear_head_todo_core::TaskList;
-
+use clear_head_todo_core::TaskListManipulation;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
