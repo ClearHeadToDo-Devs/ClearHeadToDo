@@ -148,8 +148,6 @@ mod tests {
     use super::*;
     use std::str::FromStr;
 
-    use super::*;
-
     #[test]
     fn task_list_creation() {
         let test_task_list = TaskList::create_task_list();

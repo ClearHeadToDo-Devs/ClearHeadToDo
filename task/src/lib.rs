@@ -1,11 +1,11 @@
 pub mod priority;
 pub use priority::*;
 
+pub mod task_manipulation;
+pub use task_manipulation::TaskManipulation;
+
 use serde::ser::{Serialize, SerializeStruct, Serializer};
-use serde::Serialize as AltSerialize;
 use std::error::Error;
-use std::fmt;
-use std::io::{Error as OtherError, ErrorKind};
 use uuid::Uuid;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -14,16 +14,6 @@ pub struct Task {
     pub name: String,
     pub completed: bool,
     pub priority: PriEnum,
-}
-
-pub trait TaskManipulation {
-    fn rename(&self, new_task_name: &str) -> Self;
-    fn toggle_completion_status(&self) -> Self;
-    fn change_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>>
-    where
-        Self: Sized;
-    fn export_fields_as_string(&self) -> String;
-    fn create_default_task() -> Self;
 }
 
 impl TaskManipulation for Task {
@@ -99,7 +89,6 @@ impl Serialize for Task {
 #[cfg(test)]
 mod test {
     use super::*;
-    pub use priority::PriEnum;
 
     pub fn create_nil_task() -> Task {
         Task {
@@ -112,7 +101,7 @@ mod test {
     fn default_creation_test() {
         let test_task = create_nil_task();
         assert!(test_task.name == "Default Task".to_string());
-        assert!(test_task.priority == priority::PriEnum::Optional);
+        assert!(test_task.priority == PriEnum::Optional);
         assert!(test_task.completed == false);
         assert!(test_task.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
     }
