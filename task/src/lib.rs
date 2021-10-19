@@ -4,7 +4,9 @@ pub use priority::*;
 pub mod task_manipulation;
 pub use task_manipulation::TaskManipulation;
 
-use serde::ser::{Serialize, SerializeStruct, Serializer};
+pub mod storage;
+pub use storage::*;
+
 use std::error::Error;
 use uuid::Uuid;
 
@@ -69,20 +71,6 @@ impl Default for Task {
             completed: false,
             priority: Default::default(),
         }
-    }
-}
-
-impl Serialize for Task {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut s = serializer.serialize_struct("Task", 4)?;
-        s.serialize_field("name", &self.name)?;
-        s.serialize_field("priority", &self.priority)?;
-        s.serialize_field("completed", &self.completed)?;
-        s.serialize_field("id", &self.id)?;
-        s.end()
     }
 }
 
