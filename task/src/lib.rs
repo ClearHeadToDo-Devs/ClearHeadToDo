@@ -1,3 +1,6 @@
+pub mod priority;
+pub use priority::*;
+
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde::Serialize as AltSerialize;
 use std::error::Error;
@@ -140,6 +143,7 @@ impl Serialize for Task {
 #[cfg(test)]
 mod test {
     use super::*;
+    pub use priority::PriEnum;
 
     pub fn create_nil_task() -> Task {
         Task {
@@ -152,7 +156,7 @@ mod test {
     fn default_creation_test() {
         let test_task = create_nil_task();
         assert!(test_task.name == "Default Task".to_string());
-        assert!(test_task.priority == PriEnum::Optional);
+        assert!(test_task.priority == priority::PriEnum::Optional);
         assert!(test_task.completed == false);
         assert!(test_task.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
     }
@@ -213,7 +217,7 @@ mod test {
         let priority_5_test_task = Task::create_default_task();
 
         let priority_4_test_task = &priority_5_test_task.change_priority("4")?;
-        assert!(priority_4_test_task.priority == PriEnum::Low);
+        assert!(priority_4_test_task.priority == priority::PriEnum::Low);
 
         let priority_3_test_task = &priority_4_test_task.change_priority("3")?;
         assert!(priority_3_test_task.priority == PriEnum::Medium);
