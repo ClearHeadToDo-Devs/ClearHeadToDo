@@ -18,6 +18,17 @@ pub struct Task {
     pub priority: PriEnum,
 }
 
+impl Default for Task {
+    fn default() -> Task {
+        Task {
+            id: Uuid::new_v4(),
+            name: "Default Task".to_string(),
+            completed: false,
+            priority: Default::default(),
+        }
+    }
+}
+
 impl TaskManipulation for Task {
     fn create_default_task() -> Task {
         Task {
@@ -60,17 +71,6 @@ impl TaskManipulation for Task {
             completed = self.completed,
             ID = self.id
         )
-    }
-}
-
-impl Default for Task {
-    fn default() -> Task {
-        Task {
-            id: Uuid::new_v4(),
-            name: "Default Task".to_string(),
-            completed: false,
-            priority: Default::default(),
-        }
     }
 }
 
