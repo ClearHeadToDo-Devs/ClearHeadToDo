@@ -1,4 +1,4 @@
-use crate::TaskList;
+use crate::task::Task;
 use crate::TaskListManipulation;
 use std::error::Error;
 
@@ -13,7 +13,10 @@ pub enum Command {
 }
 
 impl Command {
-    pub fn run_subcommand(&self, task_list: &TaskList) -> Result<TaskList, Box<dyn Error>> {
+    pub fn run_subcommand(
+        &self,
+        task_list: &im::Vector<Task>,
+    ) -> Result<im::Vector<Task>, Box<dyn Error>> {
         match self {
             Command::ListTasks => {
                 task_list.print_task_list()?;
@@ -23,7 +26,7 @@ impl Command {
                 let updated_task_list = task_list.create_task();
                 if let Some(name) = name {
                     return updated_task_list
-                        .rename_task(updated_task_list.tasks.len() - 1, name.to_string());
+                        .rename_task(updated_task_list.len() - 1, name.to_string());
                 }
                 Ok(updated_task_list)
             }
@@ -52,32 +55,32 @@ impl Command {
 
     pub fn create_end_user_message(
         &self,
-        previous_task_list: &TaskList,
-        updated_task_list: &TaskList,
+        previous_task_list: &im::Vector<Task>,
+        updated_task_list: &im::Vector<Task>,
     ) -> String {
         match self {
             Command::CreateTask(_name) => {
                 format!(
                     "Created Task {}",
-                    updated_task_list.tasks[updated_task_list.tasks.len() - 1].name
+                    updated_task_list[updated_task_list.len() - 1].name
                 )
             }
             Command::ToggleTaskCompletion(index) => {
                 format!(
                     "{} had its' completion status toggled to {}",
-                    updated_task_list.tasks[*index].name, updated_task_list.tasks[*index].completed
+                    updated_task_list[*index].name, updated_task_list[*index].completed
                 )
             }
             Command::RemoveTask(index) => {
                 format!(
                     "{} was removed from your Task List",
-                    previous_task_list.tasks[*index].name
+                    previous_task_list[*index].name
                 )
             }
             Command::RenameTask { index, new_name } => {
                 format!(
                     "{} was changed from {}",
-                    new_name, previous_task_list.tasks[*index].name
+                    new_name, previous_task_list[*index].name
                 )
             }
             Command::Reprioritize {
@@ -86,8 +89,8 @@ impl Command {
             } => {
                 format!(
                     "{} was changed from a priority of: {}\n to a priority of: {}",
-                    updated_task_list.tasks[*index].name,
-                    previous_task_list.tasks[*index].priority,
+                    updated_task_list[*index].name,
+                    previous_task_list[*index].priority,
                     new_priority
                 )
             }
@@ -99,6 +102,7 @@ impl Command {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::helper::add_nil_task;
     use crate::PriEnum;
     use crate::Task;
     use im::vector;
@@ -106,7 +110,7 @@ mod tests {
 
     #[test]
     fn list_task_failure_empty_list() {
-        let empty_task_list = TaskList::create_task_list();
+        let empty_task_list = vector!();
 
         let error = Command::ListTasks.run_subcommand(&empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "list is empty");
@@ -114,19 +118,19 @@ mod tests {
 
     #[test]
     fn create_task_successful_run() {
-        let empty_task_list = TaskList::create_task_list();
+        let empty_task_list = vector!();
         let result = Command::CreateTask(None)
             .run_subcommand(&empty_task_list)
             .unwrap();
 
-        assert_eq!(result.tasks[0].name, "Default Task".to_string());
-        assert_eq!(result.tasks[0].priority, PriEnum::Optional);
-        assert_eq!(result.tasks[0].completed, false);
+        assert_eq!(result[0].name, "Default Task".to_string());
+        assert_eq!(result[0].priority, PriEnum::Optional);
+        assert_eq!(result[0].completed, false);
     }
 
     #[test]
     fn generate_create_task_success_message() {
-        let empty_task_list = TaskList::create_task_list();
+        let empty_task_list = vector!();
         let single_task_list = empty_task_list.create_task();
 
         let message =
@@ -136,48 +140,42 @@ mod tests {
 
     #[test]
     fn complete_task_successful_run() {
-        let single_task_list = TaskList::create_task_list().add_nil_task();
+        let single_task_list = add_nil_task(im::vector!());
 
         let result = Command::ToggleTaskCompletion(0).run_subcommand(&single_task_list);
 
         assert_eq!(
             result.unwrap(),
-            TaskList {
-                tasks: vector![Task {
-                    completed: true,
-                    id: Uuid::nil(),
-                    ..Default::default()
-                }]
-            }
+            vector![Task {
+                completed: true,
+                id: Uuid::nil(),
+                ..Default::default()
+            }]
         );
     }
 
     #[test]
     fn reopen_task_successful_run() {
-        let single_completed_task_list = TaskList {
-            tasks: vector![Task {
-                completed: true,
-                id: Uuid::nil(),
-                ..Default::default()
-            }],
-        };
+        let single_completed_task_list = vector![Task {
+            completed: true,
+            id: Uuid::nil(),
+            ..Default::default()
+        }];
 
         let updated_task_list =
             Command::ToggleTaskCompletion(0).run_subcommand(&single_completed_task_list);
         assert_eq!(
             updated_task_list.unwrap(),
-            TaskList {
-                tasks: vector![Task {
-                    id: Uuid::nil(),
-                    ..Default::default()
-                }]
-            }
-        )
+            vector![Task {
+                id: Uuid::nil(),
+                ..Default::default()
+            }]
+        );
     }
 
     #[test]
     fn generate_complete_task_message() {
-        let single_task_list = TaskList::create_task_list().create_task();
+        let single_task_list = vector!().create_task();
         let updated_task_list = single_task_list.toggle_task_completion_status(0).unwrap();
 
         let message = Command::ToggleTaskCompletion(0)
@@ -191,7 +189,7 @@ mod tests {
 
     #[test]
     fn complete_task_failing_invalid_id() {
-        let empty_task_list = TaskList::create_task_list();
+        let empty_task_list = vector!();
 
         let error = Command::ToggleTaskCompletion(1).run_subcommand(&empty_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
@@ -199,16 +197,16 @@ mod tests {
 
     #[test]
     fn cli_remove_task_successful_run_test() {
-        let empty_task_list = TaskList::create_task_list();
+        let empty_task_list = vector!();
         let single_task_list = empty_task_list.create_task();
 
         let result = Command::RemoveTask(0).run_subcommand(&single_task_list);
-        assert_eq!(result.unwrap(), TaskList { tasks: vector![] });
+        assert_eq!(result.unwrap(), vector!());
     }
 
     #[test]
     fn generate_remove_task_message() {
-        let single_task_list = TaskList::create_task_list().create_task();
+        let single_task_list = vector!().create_task();
         let updated_task_list = single_task_list.remove_task(0).unwrap();
 
         let message =
@@ -219,7 +217,7 @@ mod tests {
 
     #[test]
     fn failing_cli_remove_task_invalid_index_test() {
-        let test_task_list = TaskList::create_task_list();
+        let test_task_list = vector!();
 
         let error = Command::RemoveTask(0).run_subcommand(&test_task_list);
         assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
@@ -227,8 +225,8 @@ mod tests {
 
     #[test]
     fn cli_rename_task_successful_run_test() {
-        let empty_task_list = TaskList::create_task_list();
-        let single_task_list = empty_task_list.add_nil_task();
+        let empty_task_list = vector!();
+        let single_task_list = add_nil_task(empty_task_list);
 
         let result = Command::RenameTask {
             index: 0,
@@ -238,19 +236,17 @@ mod tests {
 
         assert_eq!(
             result.unwrap(),
-            TaskList {
-                tasks: vector![Task {
-                    name: "Test Rename".to_string(),
-                    id: Uuid::nil(),
-                    ..Default::default()
-                }]
-            }
+            vector![Task {
+                name: "Test Rename".to_string(),
+                id: Uuid::nil(),
+                ..Default::default()
+            }]
         );
     }
 
     #[test]
     fn generate_rename_task_message() {
-        let single_task_list = TaskList::create_task_list().create_task();
+        let single_task_list = vector!().create_task();
         let updated_task_list = single_task_list
             .rename_task(0, "New Name".to_string())
             .unwrap();
@@ -266,7 +262,7 @@ mod tests {
 
     #[test]
     fn cli_rename_task_failing_invalid_id_test() {
-        let test_task_list = TaskList::create_task_list();
+        let test_task_list = vector!();
 
         let error = Command::RenameTask {
             index: 0,
@@ -278,8 +274,8 @@ mod tests {
 
     #[test]
     fn cli_change_priority_successful_run_test() {
-        let empty_task_list = TaskList::create_task_list();
-        let single_task_list = empty_task_list.add_nil_task();
+        let empty_task_list = vector!();
+        let single_task_list = add_nil_task(empty_task_list);
 
         let result = Command::Reprioritize {
             index: 0,
@@ -288,19 +284,17 @@ mod tests {
         .run_subcommand(&single_task_list);
         assert_eq!(
             result.as_ref().unwrap(),
-            &TaskList {
-                tasks: vector![Task {
-                    priority: PriEnum::High,
-                    id: Uuid::nil(),
-                    ..Default::default()
-                }]
-            }
+            &vector![Task {
+                priority: PriEnum::High,
+                id: Uuid::nil(),
+                ..Default::default()
+            }]
         );
     }
 
     #[test]
     fn generate_reprioritize_task_message() {
-        let single_task_list = TaskList::create_task_list().create_task();
+        let single_task_list = vector!().create_task();
         let updated_task_list = single_task_list
             .change_task_priority(0, "low".to_string())
             .unwrap();
@@ -319,7 +313,7 @@ mod tests {
 
     #[test]
     fn cli_reprioritize_failing_invalid_id_test() {
-        let empty_task_list = TaskList::create_task_list();
+        let empty_task_list = vector!();
 
         let error = Command::Reprioritize {
             index: 1,

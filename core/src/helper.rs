@@ -1,15 +1,12 @@
 use super::task::Task;
-use super::TaskList;
 use uuid::Uuid;
 
-impl TaskList {
-    pub fn add_nil_task(&self) -> Self {
-        let mut new_list = self.clone();
-        let new_task: Task = Task {
-            id: Uuid::nil(),
-            ..Default::default()
-        };
-        new_list.tasks.push_back(new_task);
-        return new_list;
-    }
+pub fn add_nil_task(task_list: im::Vector<Task>) -> im::Vector<Task> {
+    let mut new_list = task_list.clone();
+    let new_task: Task = Task {
+        id: Uuid::nil(),
+        ..Default::default()
+    };
+    new_list.push_back(new_task);
+    return new_list;
 }
