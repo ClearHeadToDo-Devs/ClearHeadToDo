@@ -1,4 +1,4 @@
-use crate::parse_priority;
+use crate::PriEnum;
 use crate::Task;
 
 use csv::Reader;
@@ -67,7 +67,7 @@ impl ParseTask for csv::StringRecord {
             id: Uuid::parse_str(&self[3])?,
             name: self[0].to_string(),
             completed: FromStr::from_str(&self[2])?,
-            priority: parse_priority(&self[1])?,
+            priority: PriEnum::parse_priority(&self[1])?,
         })
     }
 }

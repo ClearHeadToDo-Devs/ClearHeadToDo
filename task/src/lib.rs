@@ -54,7 +54,7 @@ impl TaskManipulation for Task {
     }
 
     fn change_priority(&self, new_priority: &str) -> Result<Task, Box<dyn Error>> {
-        let new_pri: PriEnum = parse_priority(new_priority)?;
+        let new_pri: PriEnum = PriEnum::parse_priority(new_priority)?;
         return Ok(Task {
             name: self.name.clone(),
             priority: new_pri.clone(),

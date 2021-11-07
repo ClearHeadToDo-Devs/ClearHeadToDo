@@ -13,18 +13,20 @@ pub enum PriEnum {
     Optional = 5,
 }
 
-pub fn parse_priority(expr: &str) -> Result<PriEnum, Box<dyn Error>> {
-    match expr.to_ascii_lowercase().trim() {
-        "1" | "critical" | "crit" | "c" => Ok(PriEnum::Critical),
-        "2" | "high" | "hi" | "h" => Ok(PriEnum::High),
-        "3" | "medium" | "med" | "m" => Ok(PriEnum::Medium),
-        "4" | "low" | "lo" | "l" => Ok(PriEnum::Low),
-        "5" | "optional" | "opt" | "o" => Ok(PriEnum::Optional),
-        "" => Ok(PriEnum::Optional), //defaults to this
-        _ => Err(Box::new(OtherError::new(
-            ErrorKind::Other,
-            "invalid priority",
-        ))),
+impl PriEnum {
+    pub fn parse_priority(expr: &str) -> Result<PriEnum, Box<dyn Error>> {
+        match expr.to_ascii_lowercase().trim() {
+            "1" | "critical" | "crit" | "c" => Ok(PriEnum::Critical),
+            "2" | "high" | "hi" | "h" => Ok(PriEnum::High),
+            "3" | "medium" | "med" | "m" => Ok(PriEnum::Medium),
+            "4" | "low" | "lo" | "l" => Ok(PriEnum::Low),
+            "5" | "optional" | "opt" | "o" => Ok(PriEnum::Optional),
+            "" => Ok(PriEnum::Optional), //defaults to this
+            _ => Err(Box::new(OtherError::new(
+                ErrorKind::Other,
+                "invalid priority",
+            ))),
+        }
     }
 }
 
@@ -44,5 +46,16 @@ impl fmt::Display for PriEnum {
             PriEnum::Optional => "Optional",
         };
         write!(formatter, "{}", printable)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_default_priority() {
+        let test_priority = PriEnum::default();
+        assert_eq!(test_priority, PriEnum::Optional);
     }
 }
