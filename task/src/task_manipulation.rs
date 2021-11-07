@@ -80,4 +80,9 @@ mod tests {
         assert_eq!(test_task.completed, false);
         assert_eq!(test_task.priority, "low");
     }
+    #[test]
+    fn successful_field_export() {
+        let test_export = TestStruct::create_default_task().export_fields_as_string();
+        assert_eq!(test_export, "default task,false,low")
+    }
 }
