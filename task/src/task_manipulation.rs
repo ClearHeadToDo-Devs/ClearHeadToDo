@@ -72,4 +72,12 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn successful_default_task_creation() {
+        let test_task = TestStruct::create_default_task();
+        assert_eq!(test_task.name, "default task");
+        assert_eq!(test_task.completed, false);
+        assert_eq!(test_task.priority, "low");
+    }
 }

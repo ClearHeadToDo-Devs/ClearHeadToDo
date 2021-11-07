@@ -1,6 +1,5 @@
 use crate::parse_priority;
 use crate::Task;
-use crate::TaskList;
 
 use csv::Reader;
 use csv::Writer;

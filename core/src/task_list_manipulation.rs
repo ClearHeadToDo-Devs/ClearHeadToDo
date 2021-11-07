@@ -1,7 +1,8 @@
+use super::task::TaskManipulation;
 use std::error::Error;
 use uuid::Uuid;
 pub trait TaskListManipulation {
-    type Child;
+    type Child: TaskManipulation;
     fn create_task(&self) -> Self;
     fn print_task_list(&self) -> Result<String, Box<dyn Error>>;
     fn remove_task(&self, index: usize) -> Result<Self, Box<dyn Error>>
