@@ -1,5 +1,4 @@
 use std::error::Error;
-use std::io::{Error as OtherError, ErrorKind};
 
 pub trait TaskManipulation {
     fn rename(&self, new_task_name: &str) -> Self;
@@ -14,6 +13,7 @@ pub trait TaskManipulation {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::{Error as OtherError, ErrorKind};
 
     #[derive(Debug)]
     struct TestStruct {
@@ -114,5 +114,25 @@ mod tests {
             .change_priority("bad_priority")
             .unwrap_err();
         assert_eq!(test_task_error.to_string(), "invalid priority".to_string());
+    }
+
+    #[test]
+    fn successfully_completing_task() {
+        let test_task = TestStruct::create_default_task().toggle_completion_status();
+        assert_eq!(test_task.completed, true);
+    }
+
+    #[test]
+    fn successfully_reopen_task() {
+        let test_task = TestStruct::create_default_task()
+            .toggle_completion_status()
+            .toggle_completion_status();
+        assert_eq!(test_task.completed, false);
+    }
+
+    #[test]
+    fn rename_task() {
+        let test_task = TestStruct::create_default_task().rename("rename test");
+        assert_eq!(test_task.name, "rename test");
     }
 }
