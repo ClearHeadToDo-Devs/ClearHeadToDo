@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::io::{Error as OtherError, ErrorKind};
 
 pub trait TaskManipulation {
     fn rename(&self, new_task_name: &str) -> Self;
@@ -14,6 +15,7 @@ pub trait TaskManipulation {
 mod tests {
     use super::*;
 
+    #[derive(Debug)]
     struct TestStruct {
         name: String,
         completed: bool,
@@ -48,11 +50,22 @@ mod tests {
         }
 
         fn change_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>> {
-            Ok(TestStruct {
-                name: self.name.to_string(),
-                completed: self.completed,
-                priority: new_priority.to_string(),
-            })
+            match new_priority {
+                "low" => Ok(TestStruct {
+                    name: self.name.to_string(),
+                    completed: self.completed,
+                    priority: new_priority.to_string(),
+                }),
+                "high" => Ok(TestStruct {
+                    name: self.name.to_string(),
+                    completed: self.completed,
+                    priority: new_priority.to_string(),
+                }),
+                _ => Err(Box::new(OtherError::new(
+                    ErrorKind::Other,
+                    "invalid priority",
+                ))),
+            }
         }
 
         fn export_fields_as_string(&self) -> String {
@@ -80,9 +93,26 @@ mod tests {
         assert_eq!(test_task.completed, false);
         assert_eq!(test_task.priority, "low");
     }
+
     #[test]
     fn successful_field_export() {
         let test_export = TestStruct::create_default_task().export_fields_as_string();
         assert_eq!(test_export, "default task,false,low")
+    }
+
+    #[test]
+    fn successful_reprioritization() {
+        let test_task = TestStruct::create_default_task()
+            .change_priority("high")
+            .unwrap();
+        assert_eq!(test_task.priority, "high");
+    }
+
+    #[test]
+    fn failed_reprioritization() {
+        let test_task_error = TestStruct::create_default_task()
+            .change_priority("bad_priority")
+            .unwrap_err();
+        assert_eq!(test_task_error.to_string(), "invalid priority".to_string());
     }
 }
