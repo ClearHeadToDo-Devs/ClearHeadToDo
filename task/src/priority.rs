@@ -58,4 +58,25 @@ mod tests {
         let test_priority = PriEnum::default();
         assert_eq!(test_priority, PriEnum::Optional);
     }
+
+    #[test]
+    fn successfully_parse_priority() {
+        let test_priority = PriEnum::parse_priority("optional").unwrap();
+        assert_eq!(test_priority, PriEnum::Optional);
+    }
+
+    #[test]
+    fn failed_parse_priority() {
+        let test_priority_error = PriEnum::parse_priority("bad priority").unwrap_err();
+        assert_eq!(
+            test_priority_error.to_string(),
+            "invalid priority".to_string()
+        );
+    }
+
+    #[test]
+    fn priority_display_test() {
+        let test_priority = PriEnum::default();
+        assert_eq!(test_priority.to_string(), "Optional".to_string())
+    }
 }
