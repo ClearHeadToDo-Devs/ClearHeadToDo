@@ -89,7 +89,7 @@ mod tests {
     }
 
     #[test]
-    fn load_to_task_data_csv_successful() -> Result<(), Box<dyn Error>> {
+    fn load_task_data_to_csv_successful() -> Result<(), Box<dyn Error>> {
         let empty_task_list = vector!();
         let single_nil_task_list = add_nil_task(empty_task_list);
 

@@ -15,3 +15,41 @@ impl Serialize for Task {
         s.end()
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use serde_test::{assert_ser_tokens, Configure, Token};
+    use uuid::Uuid;
+
+    #[test]
+    fn serialize_task() {
+        let test_task = Task {
+            id: Uuid::nil(),
+            ..Default::default()
+        };
+
+        assert_ser_tokens(
+            &test_task.readable(),
+            &[
+                Token::Struct {
+                    name: "Task",
+                    len: 4,
+                },
+                Token::Str("name"),
+                Token::Str("Default Task"),
+                Token::Str("priority"),
+                Token::UnitVariant {
+                    name: "PriEnum",
+                    variant: "Optional",
+                },
+                Token::Str("completed"),
+                Token::Bool(false),
+                Token::Str("id"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::StructEnd,
+            ],
+        );
+    }
+}
