@@ -24,7 +24,7 @@ mod tests {
     use uuid::Uuid;
 
     #[test]
-    fn serialize_task() {
+    fn successfully_serialize_task() {
         let test_task = Task {
             id: Uuid::nil(),
             ..Default::default()
