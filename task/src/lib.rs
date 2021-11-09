@@ -10,7 +10,9 @@ pub use storage::*;
 use std::error::Error;
 use uuid::Uuid;
 
-#[derive(PartialEq, Debug, Clone)]
+use serde::Deserialize;
+
+#[derive(PartialEq, Debug, Clone, Deserialize)]
 pub struct Task {
     pub id: Uuid,
     pub name: String,

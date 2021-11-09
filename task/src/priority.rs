@@ -1,10 +1,11 @@
+use serde::Deserialize;
 use serde::Serialize as AltSerialize;
 use std::error::Error;
 use std::fmt;
 use std::io::{Error as OtherError, ErrorKind};
 
 #[repr(u8)]
-#[derive(AltSerialize, Copy, Clone, PartialEq, Debug)]
+#[derive(AltSerialize, Deserialize, Copy, Clone, PartialEq, Debug)]
 pub enum PriEnum {
     Critical = 1,
     High = 2,

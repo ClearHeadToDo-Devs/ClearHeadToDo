@@ -1,4 +1,3 @@
-use crate::ParseTask;
 use crate::Task;
 
 use csv::Reader;
@@ -10,10 +9,10 @@ use std::{env, path::PathBuf};
 pub fn load_tasks_from_csv(file_name: &str) -> Result<im::Vector<Task>, Box<dyn Error>> {
     let mut import_list = vector!();
     let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
-    for record_result in rdr.records() {
-        let record: csv::StringRecord = record_result?;
-        let new_task = record.parse_task()?;
-        import_list.push_back(new_task);
+    for record_result in rdr.deserialize() {
+        let record = record_result?;
+        //let new_task = record.parse_task()?;
+        import_list.push_back(record);
     }
     Ok(import_list)
 }
@@ -112,14 +111,17 @@ mod tests {
         let error = load_tasks_from_csv("bad_completion_status.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
-            "provided string was not `true` or `false`"
+            "CSV deserialize error: record 1 (line: 2, byte: 26): missing field `completed`"
         );
     }
 
     #[test]
     fn load_from_csv_bad_priority() {
         let error = load_tasks_from_csv("bad_priority_test.csv").unwrap_err();
-        assert_eq!(error.to_string(), "invalid priority");
+        assert_eq!(
+            error.to_string(),
+            "CSV deserialize error: record 1 (line: 2, byte: 28): unknown variant `bad priority`, expected one of `Critical`, `High`, `Medium`, `Low`, `Optional`"
+        );
     }
 
     #[test]
@@ -127,7 +129,7 @@ mod tests {
         let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
-            "invalid length: expected one of [36, 32], found 24"
+            "CSV deserialize error: record 1 (line: 2, byte: 28): missing field `id`"
         );
     }
 }
