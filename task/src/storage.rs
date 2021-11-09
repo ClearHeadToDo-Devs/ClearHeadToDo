@@ -1,4 +1,8 @@
+use crate::Error;
+use crate::PriEnum;
 use crate::Task;
+use crate::Uuid;
+use std::str::FromStr;
 
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
@@ -13,6 +17,24 @@ impl Serialize for Task {
         s.serialize_field("completed", &self.completed)?;
         s.serialize_field("id", &self.id)?;
         s.end()
+    }
+}
+
+pub trait ParseTask {
+    type Task;
+    fn parse_task(&self) -> Result<Task, Box<dyn Error>>;
+}
+
+impl ParseTask for csv::StringRecord {
+    type Task = Task;
+
+    fn parse_task(&self) -> Result<Task, Box<dyn Error>> {
+        Ok(Task {
+            id: Uuid::parse_str(&self[3])?,
+            name: self[0].to_string(),
+            completed: FromStr::from_str(&self[2])?,
+            priority: PriEnum::parse_priority(&self[1])?,
+        })
     }
 }
 

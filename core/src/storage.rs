@@ -1,13 +1,11 @@
-use crate::PriEnum;
+use crate::ParseTask;
 use crate::Task;
 
 use csv::Reader;
 use csv::Writer;
 use im::vector;
 use std::error::Error;
-use std::str::FromStr;
 use std::{env, path::PathBuf};
-use uuid::Uuid;
 
 pub fn load_tasks_from_csv(file_name: &str) -> Result<im::Vector<Task>, Box<dyn Error>> {
     let mut import_list = vector!();
@@ -54,29 +52,13 @@ fn create_file_writer_from_data_folder(
     Ok(file_writer)
 }
 
-pub trait ParseTask {
-    type Task;
-    fn parse_task(&self) -> Result<Task, Box<dyn Error>>;
-}
-
-impl ParseTask for csv::StringRecord {
-    type Task = Task;
-
-    fn parse_task(&self) -> Result<Task, Box<dyn Error>> {
-        Ok(Task {
-            id: Uuid::parse_str(&self[3])?,
-            name: self[0].to_string(),
-            completed: FromStr::from_str(&self[2])?,
-            priority: PriEnum::parse_priority(&self[1])?,
-        })
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::helper::add_nil_task;
     use crate::PriEnum;
+    use std::str::FromStr;
+    use uuid::Uuid;
 
     #[test]
     fn load_from_csv_sucessful() {
