@@ -111,7 +111,7 @@ mod tests {
     #[test]
     fn load_from_csv_bad_file() {
         let error = load_tasks_from_csv("bad_file").unwrap_err();
-        assert_eq!(error.to_string(), r#"The system cannot find the file specified. (os error 2)"#);
+        assert_eq!(error.to_string(), "The system cannot find the file specified. (os error 2)");
     }
 
     #[cfg(not(target_os = "windows"))]
