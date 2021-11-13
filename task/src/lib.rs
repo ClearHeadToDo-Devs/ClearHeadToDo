@@ -18,6 +18,7 @@ pub struct Task {
     pub name: String,
     pub completed: bool,
     pub priority: PriEnum,
+    pub due_date: Option<bool>
 }
 
 impl Default for Task {
@@ -27,6 +28,7 @@ impl Default for Task {
             name: "Default Task".to_string(),
             completed: false,
             priority: Default::default(),
+            due_date: None
         }
     }
 }
@@ -40,28 +42,22 @@ impl TaskManipulation for Task {
     fn rename(&self, new_task_name: &str) -> Task {
         return Task {
             name: new_task_name.to_owned(),
-            id: self.id,
-            priority: self.priority,
-            completed: self.completed,
+            ..self.to_owned()
         };
     }
 
     fn toggle_completion_status(&self) -> Task {
         Task {
-            id: self.id.clone(),
-            name: self.name.clone(),
-            priority: self.priority.clone(),
             completed: !self.completed,
+            ..self.to_owned()
         }
     }
 
     fn change_priority(&self, new_priority: &str) -> Result<Task, Box<dyn Error>> {
         let new_pri: PriEnum = PriEnum::parse_priority(new_priority)?;
         return Ok(Task {
-            name: self.name.clone(),
             priority: new_pri.clone(),
-            id: self.id.clone(),
-            completed: self.completed.clone(),
+            ..self.to_owned()
         });
     }
 

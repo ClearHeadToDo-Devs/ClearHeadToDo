@@ -34,7 +34,8 @@ fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
                 id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap(),
                 name: String::from("Default Task"),
                 completed: false,
-                priority: PriEnum::Optional
+                priority: PriEnum::Optional,
+                due_date: None
             }
     );
 

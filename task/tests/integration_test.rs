@@ -16,6 +16,7 @@ fn default_task_creation() {
     assert!(test_task.priority == PriEnum::Optional);
     assert!(test_task.completed == false);
     assert!(test_task.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
+    assert!(test_task.due_date == None);
 }
 
 #[test]
