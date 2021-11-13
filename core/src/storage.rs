@@ -100,12 +100,21 @@ mod tests {
         return Ok(());
     }
 
+    #[cfg(not(target_os = "windows"))]
     #[test]
     fn load_from_csv_bad_file() {
         let error = load_tasks_from_csv("bad_file").unwrap_err();
         assert_eq!(error.to_string(), "No such file or directory (os error 2)");
     }
 
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn load_from_csv_bad_file() {
+        let error = load_tasks_from_csv("bad_file").unwrap_err();
+        assert_eq!(error.to_string(), r#"The system cannot find the file specified. (os error 2)"#);
+    }
+
+    #[cfg(not(target_os = "windows"))]
     #[test]
     fn load_from_csv_bad_completion_status() {
         let error = load_tasks_from_csv("bad_completion_status.csv").unwrap_err();
@@ -115,6 +124,17 @@ mod tests {
         );
     }
 
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn load_from_csv_bad_completion_status() {
+        let error = load_tasks_from_csv("bad_completion_status.csv").unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "CSV deserialize error: record 1 (line: 1, byte: 26): missing field `completed`"
+        );
+    }
+
+    #[cfg(not(target_os = "windows"))]
     #[test]
     fn load_from_csv_bad_priority() {
         let error = load_tasks_from_csv("bad_priority_test.csv").unwrap_err();
@@ -124,6 +144,27 @@ mod tests {
         );
     }
 
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn load_from_csv_bad_priority() {
+        let error = load_tasks_from_csv("bad_priority_test.csv").unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "CSV deserialize error: record 1 (line: 1, byte: 28): unknown variant `bad priority`, expected one of `Critical`, `High`, `Medium`, `Low`, `Optional`"
+        );
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    #[test]
+    fn load_from_csv_bad_id() {
+        let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "CSV deserialize error: record 1 (line: 2, byte: 28): missing field `id`"
+        );
+    }
+
+    #[cfg(target_os = "windows")]
     #[test]
     fn load_from_csv_bad_id() {
         let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();

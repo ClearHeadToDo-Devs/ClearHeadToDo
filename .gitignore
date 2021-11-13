@@ -12,3 +12,4 @@ profile.log
 **/Sessions.vim
 *.vi
 
+.vscode/launch.json
