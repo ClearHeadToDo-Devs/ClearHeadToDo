@@ -20,7 +20,7 @@ impl Serialize for Task {
 mod tests {
 
     use super::*;
-    use serde_test::{assert_ser_tokens, Configure, Token};
+    use serde_test::{assert_de_tokens, assert_ser_tokens, Configure, Token};
     use uuid::Uuid;
 
     #[test]
@@ -52,4 +52,7 @@ mod tests {
             ],
         );
     }
+
+    #[test]
+    fn successfully_deserializing_task() {}
 }
