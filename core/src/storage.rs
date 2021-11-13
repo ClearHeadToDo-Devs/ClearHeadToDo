@@ -170,7 +170,7 @@ mod tests {
         let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
-            "CSV deserialize error: record 1 (line: 2, byte: 28): missing field `id`"
+            "CSV deserialize error: record 1 (line: 1, byte: 28): missing field `id`"
         );
     }
 }
