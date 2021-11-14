@@ -21,7 +21,7 @@ pub fn load_csv_with_task_data(
     task_list: &im::Vector<Task>,
     file_name: &str,
 ) -> Result<(), Box<dyn Error>> {
-    let mut csv_writer: Writer<std::fs::File> = create_file_writer_from_data_folder(file_name)?;
+    let mut csv_writer: Writer<std::fs::File> = create_file_writer_to_data_folder(file_name)?;
 
     for task in task_list {
         csv_writer.serialize(task)?;
@@ -40,7 +40,7 @@ fn create_file_reader_from_data_folder(
     Ok(file_reader)
 }
 
-fn create_file_writer_from_data_folder(
+fn create_file_writer_to_data_folder(
     file_name: &str,
 ) -> Result<Writer<std::fs::File>, Box<dyn Error>> {
     let file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))

@@ -54,5 +54,25 @@ mod tests {
     }
 
     #[test]
-    fn successfully_deserializing_task() {}
+    fn successfully_deserializing_task() {
+        let test_task =  Task {
+            id: Uuid::nil(),
+            ..Default::default()
+        };
+    assert_de_tokens(&test_task.readable(), &[
+        Token::Struct {name: "Task", len:5},
+        Token::Str("name"),
+        Token::Str("Default Task"),
+        Token::Str("priority"),
+        Token::UnitVariant {
+            name: "PriEnum",
+            variant: "Optional",
+        },
+        Token::Str("completed"),
+        Token::Bool(false),
+        Token::Str("id"),
+        Token::Str("00000000-0000-0000-0000-000000000000"),
+        Token::StructEnd,
+    ])
+    }
 }
