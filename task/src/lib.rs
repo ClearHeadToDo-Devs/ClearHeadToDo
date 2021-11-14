@@ -34,18 +34,12 @@ impl Default for Task {
 }
 
 impl TaskManipulation for Task {
-    fn create_default_task() -> Task {
-        Task {
-            ..Default::default()
-        }
-    }
     fn rename(&self, new_task_name: &str) -> Task {
         return Task {
             name: new_task_name.to_owned(),
             ..self.to_owned()
         };
     }
-
     fn toggle_completion_status(&self) -> Task {
         Task {
             completed: !self.completed,
@@ -69,5 +63,11 @@ impl TaskManipulation for Task {
             completed = self.completed,
             ID = self.id
         )
+    }
+
+    fn create_default_task() -> Task {
+        Task {
+            ..Default::default()
+        }
     }
 }
