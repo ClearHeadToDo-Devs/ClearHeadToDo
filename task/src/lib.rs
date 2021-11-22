@@ -18,7 +18,6 @@ pub struct Task {
     pub name: String,
     pub completed: bool,
     pub priority: PriEnum,
-    pub due_date: Option<bool>
 }
 
 impl Default for Task {
@@ -28,7 +27,6 @@ impl Default for Task {
             name: "Default Task".to_string(),
             completed: false,
             priority: Default::default(),
-            due_date: None
         }
     }
 }

@@ -35,7 +35,6 @@ fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
                 name: String::from("Default Task"),
                 completed: false,
                 priority: PriEnum::Optional,
-                due_date: None
             }
     );
 
