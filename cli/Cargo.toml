@@ -1,0 +1,12 @@
+[package]
+name = "clear_head_todo_cli"
+version = "0.1.0"
+authors = ["Mantis-Shrimp <dargondab9@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "*", features = ["yaml", "color"]}
+clear_head_todo_core = { path = "../core"}
+im = "*"

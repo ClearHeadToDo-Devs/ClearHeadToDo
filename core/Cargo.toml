@@ -1,0 +1,17 @@
+[package]
+name = "clear_head_todo_core"
+version = "0.1.0"
+authors = ["Mantis-Shrimp <dargondab9@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+csv = "1.1"
+serde = { version = "*", features = ["derive"] }
+im = "*"
+task = { path = "../task"}
+
+[dependencies.uuid]
+version = "*"
+features = ["serde", "v4"]
