@@ -106,7 +106,7 @@ pub fn parse_priority(expr: &str) -> Result<PriEnum, Box<dyn Error>> {
         "3" | "medium" | "med" | "m" => Ok(PriEnum::Medium),
         "4" | "low" | "lo" | "l" => Ok(PriEnum::Low),
         "5" | "optional" | "opt" | "o" => Ok(PriEnum::Optional),
-        "" => Ok(PriEnum::Optional), //defaults to this
+        "" => Ok(PriEnum::Optional),
         _ => Err(Box::new(OtherError::new(
             ErrorKind::Other,
             "invalid priority",
@@ -140,7 +140,7 @@ mod test {
     }
 
     #[test]
-    fn default_creation_test() {
+    fn default_creation() {
         let test_task = create_nil_task();
         assert!(test_task.name == "Default Task".to_string());
         assert!(test_task.priority == PriEnum::Optional);
@@ -149,7 +149,7 @@ mod test {
     }
 
     #[test]
-    fn print_task_content_test() {
+    fn print_content() {
         let test_task = create_nil_task();
         let test_task_string = test_task.export_fields_as_string();
         assert_eq!(
@@ -159,7 +159,7 @@ mod test {
     }
 
     #[test]
-    fn task_creation_unique_id_test() {
+    fn creation_unique_id() {
         let first_test_task = create_default_task();
         let second_test_task = create_default_task();
 
@@ -167,7 +167,7 @@ mod test {
     }
 
     #[test]
-    fn rename_test() {
+    fn rename() {
         let test_task = create_default_task();
         let renamed_task = &test_task.rename(&"Changed Name".to_string());
 
@@ -175,7 +175,7 @@ mod test {
     }
 
     #[test]
-    fn completion_test() -> Result<(), Box<dyn Error>> {
+    fn completion() -> Result<(), Box<dyn Error>> {
         let test_task = create_default_task();
         let test_successful_completion_task = &test_task.toggle_completion_status();
 
@@ -184,7 +184,7 @@ mod test {
     }
 
     #[test]
-    fn reopen_test() -> () {
+    fn reopen() -> () {
         let test_task = create_default_task();
         let test_first_completion_task = &test_task.toggle_completion_status();
         let reopened_task = &test_first_completion_task.toggle_completion_status();
@@ -192,7 +192,7 @@ mod test {
     }
 
     #[test]
-    fn failing_reprioritize_test() -> Result<(), Box<dyn Error>> {
+    fn failing_reprioritize() -> Result<(), Box<dyn Error>> {
         let test_task = create_default_task();
         let error = &test_task.change_priority("6").unwrap_err();
         assert_eq!(error.to_string(), "invalid priority");
@@ -200,7 +200,7 @@ mod test {
     }
 
     #[test]
-    fn successful_reprioritize_test() -> Result<(), Box<dyn Error>> {
+    fn successful_reprioritize() -> Result<(), Box<dyn Error>> {
         let priority_5_test_task = create_default_task();
 
         let priority_4_test_task = &priority_5_test_task.change_priority("4")?;
