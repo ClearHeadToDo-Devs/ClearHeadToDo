@@ -109,7 +109,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_creation_author_test() {
+    fn cli_creation_author() {
         let app = create_app();
 
         assert_eq!(
@@ -119,14 +119,14 @@ mod tests {
     }
 
     #[test]
-    fn cli_creation_version_test() {
+    fn cli_creation_version() {
         let app = create_app();
 
         assert_eq!(app.p.meta.version.unwrap(), "0.1.0");
     }
 
     #[test]
-    fn cli_creation_about_test() {
+    fn cli_creation_about() {
         let app = create_app();
 
         assert_eq!(
@@ -136,7 +136,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_creation_subcommand_or_help_test() {
+    fn cli_creation_subcommand_or_help() {
         let app = create_app();
 
         let matches = app.get_matches_from_safe(&[""]);
@@ -146,7 +146,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_list_task_successful_match_test() {
+    fn cli_list_task_successful_match() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
 
@@ -155,7 +155,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_list_task_alias_test() {
+    fn cli_list_task_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "lt"]);
 
@@ -164,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_create_task_successful_parse_test() {
+    fn cli_create_task_successful_parse() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_task"]);
 
@@ -173,7 +173,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_create_task_alias_test() {
+    fn cli_create_task_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create"]);
 
@@ -182,7 +182,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_complete_task_successful_parse_test() {
+    fn cli_complete_task_successful_parse() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
 
@@ -191,7 +191,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_complete_task_alias_test() {
+    fn cli_complete_task_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "1"]);
 
@@ -200,7 +200,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_remove_task_successful_parse_test() {
+    fn cli_remove_task_successful_parse() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove_task", "1"]);
 
@@ -209,7 +209,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_remove_task_alias_test() {
+    fn cli_remove_task_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "0"]);
 
@@ -218,7 +218,7 @@ mod tests {
     }
 
     #[test]
-    fn successful_cli_rename_task_parse_test() {
+    fn successful_cli_rename_task_parse() {
         let app = create_app();
         let test_matches =
             app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test", "Rename"]);
@@ -234,7 +234,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_rename_task_alias_test() {
+    fn cli_rename_task_alias() {
         let app = create_app();
         let test_matches =
             app.get_matches_from(vec!["ClearHeadToDo", "rename", "0", "Test Rename"]);
@@ -250,7 +250,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_change_priority_successful_parse_test() {
+    fn cli_change_priority_successful_parse() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "reprioritize", "1", "High"]);
 
@@ -265,7 +265,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_reprioritize_task_alias_test() {
+    fn cli_reprioritize_task_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rp", "1", "High"]);
 
