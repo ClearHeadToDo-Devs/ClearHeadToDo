@@ -8,7 +8,8 @@ enum EdgeDirection {
 }
 
 #[allow(dead_code)]
-struct Relationship {
+pub struct Relationship {
+    id: Uuid,
     direction: EdgeDirection,
     participant_1: Uuid,
     participant_2: Uuid,
@@ -16,12 +17,14 @@ struct Relationship {
 
 impl Relationship {
     #[allow(dead_code)]
-    fn create_relationship(
+    fn create_new(
         direction: EdgeDirection,
         participant_1: Uuid,
         participant_2: Uuid,
     ) -> Self {
+        let relationship_id = Uuid::new_v4();
         return Relationship {
+            id: relationship_id,
             direction,
             participant_1,
             participant_2,
@@ -38,7 +41,7 @@ mod tests {
         let second_participant_id = Uuid::new_v4();
         let direction = EdgeDirection::Directed;
 
-        let relationship = Relationship::create_relationship(
+        let relationship = Relationship::create_new(
             direction,
             first_participant_id,
             second_participant_id,
@@ -60,12 +63,12 @@ mod tests {
         let direction_1 = EdgeDirection::Directed;
         let direction_2 = EdgeDirection::Undirected;
 
-        let relationship_1 = Relationship::create_relationship(
+        let relationship_1 = Relationship::create_new(
             direction_1,
             first_participant_id,
             second_participant_id,
         );
-        let relationship_2 = Relationship::create_relationship(
+        let relationship_2 = Relationship::create_new(
             direction_2,
             first_participant_id,
             third_participant_id,
