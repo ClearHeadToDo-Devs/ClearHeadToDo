@@ -1,12 +1,13 @@
+#[allow(dead_code)]
 #[derive(PartialEq)]
-enum RelationshipType {
-    ParentChild,
-    PreviousSubsequent,
-    Related,
+enum Direction {
+    Directed,
+    Undirected,
 }
+
 #[allow(dead_code)]
 struct Relationship {
-    relationship_type: RelationshipType,
+    direction: Direction,
     participant_1: usize,
     participant_2: usize,
 }
@@ -14,12 +15,12 @@ struct Relationship {
 impl Relationship {
     #[allow(dead_code)]
     fn create_relationship(
-        relationship_type: RelationshipType,
+        direction: Direction,
         participant_1: usize,
         participant_2: usize,
     ) -> Self {
         return Relationship {
-            relationship_type: relationship_type,
+            direction,
             participant_1,
             participant_2,
         };
@@ -33,16 +34,16 @@ mod tests {
     fn successful_relationship_creation() {
         let first_participant_id = 1;
         let second_participant_id = 2;
-        let relationship_type = RelationshipType::ParentChild;
+        let direction = Direction::Directed;
 
         let relationship = Relationship::create_relationship(
-            relationship_type,
+            direction,
             first_participant_id,
             second_participant_id,
         );
 
         assert!(
-            relationship.relationship_type == RelationshipType::ParentChild
+            relationship.direction == Direction::Directed
                 && relationship.participant_1 == 1
                 && relationship.participant_2 == 2
         )
@@ -54,27 +55,27 @@ mod tests {
         let second_participant_id = 2;
         let third_participant_id = 3;
 
-        let relationship_type_1 = RelationshipType::ParentChild;
-        let relationship_type_2 = RelationshipType::PreviousSubsequent;
+        let direction_1 = Direction::Directed;
+        let direction_2 = Direction::Undirected;
 
         let relationship_1 = Relationship::create_relationship(
-            relationship_type_1,
+            direction_1,
             first_participant_id,
             second_participant_id,
         );
         let relationship_2 = Relationship::create_relationship(
-            relationship_type_2,
+            direction_2,
             first_participant_id,
             third_participant_id,
         );
 
         assert!(
-            relationship_1.relationship_type == RelationshipType::ParentChild
+            relationship_1.direction == Direction::Directed
                 && relationship_1.participant_1 == 1
                 && relationship_1.participant_2 == 2
         );
         assert!(
-            relationship_2.relationship_type == RelationshipType::PreviousSubsequent
+            relationship_2.direction == Direction::Undirected
                 && relationship_2.participant_1 == 1
                 && relationship_2.participant_2 == 3
         );
