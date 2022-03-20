@@ -35,6 +35,25 @@ impl Relationship {
 mod tests {
     use super::*;
 
+    fn create_nil_relationship(edge_direction: EdgeDirection, participant_1: Uuid, participant_2: Uuid)->Relationship{
+        let nil_id = Uuid::nil();
+        return Relationship{
+            id: nil_id,
+            direction: edge_direction,
+            participant_1,
+            participant_2,
+        }
+    }
+
+    #[test]
+    fn relationship_id_creation() {
+        let nil_id = Uuid::nil();
+
+        let nil_relationship = create_nil_relationship(EdgeDirection::Undirected, nil_id, nil_id);
+
+        assert!(nil_relationship.id==Uuid::nil());
+    }
+
     #[test]
     fn successful_relationship_creation() {
         let first_participant_id = Uuid::new_v4();
