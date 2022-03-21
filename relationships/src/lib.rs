@@ -55,6 +55,15 @@ mod tests {
     }
 
     #[test]
+    fn relationship_direction_creation(){
+        let nil_participant_id = Uuid::nil();
+
+        let nil_relationship = Relationship::create_new(EdgeDirection::Undirected,nil_participant_id, nil_participant_id);
+
+        assert!(nil_relationship.direction==EdgeDirection::Undirected);
+    }
+
+    #[test]
     fn successful_relationship_creation() {
         let first_participant_id = Uuid::new_v4();
         let second_participant_id = Uuid::new_v4();
