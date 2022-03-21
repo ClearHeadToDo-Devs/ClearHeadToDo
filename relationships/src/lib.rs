@@ -1,18 +1,18 @@
 use uuid::Uuid;
 
 #[allow(dead_code)]
-#[derive(PartialEq)]
-enum EdgeDirection {
-    Directed,
-    Undirected,
-}
-
-#[allow(dead_code)]
 pub struct Relationship {
     id: Uuid,
     direction: EdgeDirection,
     participant_1: Uuid,
     participant_2: Uuid,
+}
+
+#[allow(dead_code)]
+#[derive(PartialEq)]
+enum EdgeDirection {
+    Directed,
+    Undirected,
 }
 
 trait RelationshipManagement {
@@ -59,7 +59,7 @@ mod tests {
     }
 
     #[test]
-    fn relationship_direction_creation() {
+    fn undirected_relationship_creation() {
         let nil_participant_id = Uuid::nil();
 
         let nil_relationship = Relationship::create_new(
@@ -72,7 +72,20 @@ mod tests {
     }
 
     #[test]
-    fn successful_relationship_creation() {
+    fn directed_relationship_creation() {
+        let nil_participant_id = Uuid::nil();
+
+        let nil_relationship = Relationship::create_new(
+            EdgeDirection::Directed,
+            nil_participant_id,
+            nil_participant_id,
+        );
+
+        assert!(nil_relationship.direction == EdgeDirection::Directed);
+    }
+
+    #[test]
+    fn unique_relationship_participants() {
         let first_participant_id = Uuid::new_v4();
         let second_participant_id = Uuid::new_v4();
         let direction = EdgeDirection::Directed;
@@ -84,7 +97,7 @@ mod tests {
     }
 
     #[test]
-    fn two_successful_relationship_creations() {
+    fn unique_relationship_id() {
         let nil_participant_id = Uuid::nil();
 
         let relationship_1 = Relationship::create_new(
