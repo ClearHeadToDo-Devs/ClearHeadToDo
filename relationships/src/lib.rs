@@ -17,11 +17,7 @@ pub struct Relationship {
 
 impl Relationship {
     #[allow(dead_code)]
-    fn create_new(
-        direction: EdgeDirection,
-        participant_1: Uuid,
-        participant_2: Uuid,
-    ) -> Self {
+    fn create_new(direction: EdgeDirection, participant_1: Uuid, participant_2: Uuid) -> Self {
         let relationship_id = Uuid::new_v4();
         return Relationship {
             id: relationship_id,
@@ -35,14 +31,18 @@ impl Relationship {
 mod tests {
     use super::*;
 
-    fn create_nil_relationship(edge_direction: EdgeDirection, participant_1: Uuid, participant_2: Uuid)->Relationship{
+    fn create_nil_relationship(
+        edge_direction: EdgeDirection,
+        participant_1: Uuid,
+        participant_2: Uuid,
+    ) -> Relationship {
         let nil_id = Uuid::nil();
-        return Relationship{
+        return Relationship {
             id: nil_id,
             direction: edge_direction,
             participant_1,
             participant_2,
-        }
+        };
     }
 
     #[test]
@@ -51,16 +51,20 @@ mod tests {
 
         let nil_relationship = create_nil_relationship(EdgeDirection::Undirected, nil_id, nil_id);
 
-        assert!(nil_relationship.id==Uuid::nil());
+        assert!(nil_relationship.id == Uuid::nil());
     }
 
     #[test]
-    fn relationship_direction_creation(){
+    fn relationship_direction_creation() {
         let nil_participant_id = Uuid::nil();
 
-        let nil_relationship = Relationship::create_new(EdgeDirection::Undirected,nil_participant_id, nil_participant_id);
+        let nil_relationship = Relationship::create_new(
+            EdgeDirection::Undirected,
+            nil_participant_id,
+            nil_participant_id,
+        );
 
-        assert!(nil_relationship.direction==EdgeDirection::Undirected);
+        assert!(nil_relationship.direction == EdgeDirection::Undirected);
     }
 
     #[test]
@@ -69,15 +73,10 @@ mod tests {
         let second_participant_id = Uuid::new_v4();
         let direction = EdgeDirection::Directed;
 
-        let relationship = Relationship::create_new(
-            direction,
-            first_participant_id,
-            second_participant_id,
-        );
+        let relationship =
+            Relationship::create_new(direction, first_participant_id, second_participant_id);
 
-        assert!(
-                relationship.participant_2 != relationship.participant_1
-        )
+        assert!(relationship.participant_2 != relationship.participant_1)
     }
 
     #[test]
@@ -95,8 +94,6 @@ mod tests {
             nil_participant_id,
         );
 
-        assert!(
-                relationship_2.id != relationship_1.id
-        );
+        assert!(relationship_2.id != relationship_1.id);
     }
 }
