@@ -15,8 +15,12 @@ pub struct Relationship {
     participant_2: Uuid,
 }
 
-impl Relationship {
+trait RelationshipManagement {
     #[allow(dead_code)]
+    fn create_new(direction: EdgeDirection, participant_1: Uuid, participant_2: Uuid) -> Self;
+}
+
+impl RelationshipManagement for Relationship {
     fn create_new(direction: EdgeDirection, participant_1: Uuid, participant_2: Uuid) -> Self {
         let relationship_id = Uuid::new_v4();
         return Relationship {
