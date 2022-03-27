@@ -11,9 +11,9 @@ pub struct Relationship {
 #[allow(dead_code)]
 #[derive(PartialEq)]
 enum RelationshipVariant {
-    ParentChild (EdgeDirection),
-    PreviousSubsiquent (EdgeDirection),
-    Related (EdgeDirection)
+    ParentChild(EdgeDirection),
+    PreviousSubsiquent(EdgeDirection),
+    Related(EdgeDirection),
 }
 
 #[allow(dead_code)]
@@ -61,7 +61,11 @@ mod tests {
     fn relationship_id_creation() {
         let nil_id = Uuid::nil();
 
-        let nil_relationship = create_nil_relationship(RelationshipVariant::Related(EdgeDirection::Undirected), nil_id, nil_id);
+        let nil_relationship = create_nil_relationship(
+            RelationshipVariant::Related(EdgeDirection::Undirected),
+            nil_id,
+            nil_id,
+        );
 
         assert!(nil_relationship.id == Uuid::nil());
     }
@@ -76,7 +80,9 @@ mod tests {
             nil_participant_id,
         );
 
-        assert!(nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected));
+        assert!(
+            nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected)
+        );
     }
 
     #[test]
@@ -89,7 +95,9 @@ mod tests {
             nil_participant_id,
         );
 
-        assert!(nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected));
+        assert!(
+            nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected)
+        );
     }
 
     #[test]
