@@ -89,7 +89,7 @@ mod tests {
         let nil_id = Uuid::nil();
 
         let nil_relationship = create_nil_relationship(
-            RelationshipVariant::Related(EdgeDirection::Undirected),
+            RelationshipVariant::create_related_variant(),
             nil_id,
             nil_id,
         );
@@ -102,7 +102,7 @@ mod tests {
         let nil_participant_id = Uuid::nil();
 
         let nil_relationship = Relationship::create_new(
-            RelationshipVariant::Related(EdgeDirection::Undirected),
+            RelationshipVariant::create_related_variant(),
             nil_participant_id,
             nil_participant_id,
         );
@@ -117,7 +117,7 @@ mod tests {
         let nil_participant_id = Uuid::nil();
 
         let nil_relationship = Relationship::create_new(
-            RelationshipVariant::Related(EdgeDirection::Undirected),
+            RelationshipVariant::create_related_variant(),
             nil_participant_id,
             nil_participant_id,
         );
@@ -131,7 +131,7 @@ mod tests {
     fn unique_relationship_participants() {
         let first_participant_id = Uuid::new_v4();
         let second_participant_id = Uuid::new_v4();
-        let direction = RelationshipVariant::Related(EdgeDirection::Undirected);
+        let direction = RelationshipVariant::create_related_variant();
 
         let relationship =
             Relationship::create_new(direction, first_participant_id, second_participant_id);
@@ -144,12 +144,12 @@ mod tests {
         let nil_participant_id = Uuid::nil();
 
         let relationship_1 = Relationship::create_new(
-            RelationshipVariant::Related(EdgeDirection::Undirected),
+            RelationshipVariant::create_related_variant(),
             nil_participant_id,
             nil_participant_id,
         );
         let relationship_2 = Relationship::create_new(
-            RelationshipVariant::Related(EdgeDirection::Undirected),
+            RelationshipVariant::create_related_variant(),
             nil_participant_id,
             nil_participant_id,
         );
