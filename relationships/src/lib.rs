@@ -39,6 +39,14 @@ impl RelationshipManagement for Relationship {
         };
     }
 }
+
+#[allow(dead_code)]
+impl RelationshipVariant {
+    fn create_related_edge() -> RelationshipVariant {
+        return RelationshipVariant::Related(EdgeDirection::Undirected);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -55,6 +63,13 @@ mod tests {
             participant_1,
             participant_2,
         };
+    }
+
+    #[test]
+    fn related_edge_creation() {
+        let related_edge = RelationshipVariant::create_related_edge();
+
+        assert!(related_edge == RelationshipVariant::Related(EdgeDirection::Undirected))
     }
 
     #[test]
