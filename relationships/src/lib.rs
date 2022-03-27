@@ -55,6 +55,13 @@ impl RelationshipVariant {
     }
 }
 
+#[allow(dead_code)]
+impl EdgeDirection {
+    fn create_directed_edge() -> EdgeDirection {
+        return EdgeDirection::Directed;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -168,5 +175,12 @@ mod tests {
             previous_subsiquent_variant
                 == RelationshipVariant::PreviousSubsiquent(EdgeDirection::Directed)
         )
+    }
+
+    #[test]
+    fn directed_edge_creation() {
+        let directed_edge = EdgeDirection::create_directed_edge();
+
+        assert!(directed_edge == EdgeDirection::Directed)
     }
 }
