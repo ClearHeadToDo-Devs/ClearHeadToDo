@@ -42,8 +42,12 @@ impl RelationshipManagement for Relationship {
 
 #[allow(dead_code)]
 impl RelationshipVariant {
-    fn create_related_edge() -> RelationshipVariant {
+    fn create_related_variant() -> RelationshipVariant {
         return RelationshipVariant::Related(EdgeDirection::Undirected);
+    }
+
+    fn create_parent_child_variant() -> RelationshipVariant {
+        return RelationshipVariant::ParentChild(EdgeDirection::Directed);
     }
 }
 
@@ -67,9 +71,16 @@ mod tests {
 
     #[test]
     fn related_edge_creation() {
-        let related_edge = RelationshipVariant::create_related_edge();
+        let related_variant = RelationshipVariant::create_related_variant();
 
-        assert!(related_edge == RelationshipVariant::Related(EdgeDirection::Undirected))
+        assert!(related_variant == RelationshipVariant::Related(EdgeDirection::Undirected))
+    }
+
+    #[test]
+    fn parent_child_edge_creation() {
+        let parent_child_variant = RelationshipVariant::create_parent_child_variant();
+
+        assert!(parent_child_variant == RelationshipVariant::ParentChild(EdgeDirection::Directed))
     }
 
     #[test]
