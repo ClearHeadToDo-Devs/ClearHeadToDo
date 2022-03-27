@@ -49,6 +49,10 @@ impl RelationshipVariant {
     fn create_parent_child_variant() -> RelationshipVariant {
         return RelationshipVariant::ParentChild(EdgeDirection::Directed);
     }
+
+    fn create_subsiquent_previous_variant() -> RelationshipVariant {
+        return RelationshipVariant::PreviousSubsiquent(EdgeDirection::Directed);
+    }
 }
 
 #[cfg(test)]
@@ -70,17 +74,27 @@ mod tests {
     }
 
     #[test]
-    fn related_edge_creation() {
+    fn related_variant_creation() {
         let related_variant = RelationshipVariant::create_related_variant();
 
         assert!(related_variant == RelationshipVariant::Related(EdgeDirection::Undirected))
     }
 
     #[test]
-    fn parent_child_edge_creation() {
+    fn parent_child_variant_creation() {
         let parent_child_variant = RelationshipVariant::create_parent_child_variant();
 
         assert!(parent_child_variant == RelationshipVariant::ParentChild(EdgeDirection::Directed))
+    }
+
+    #[test]
+    fn previous_subsequest_variant_creation() {
+        let previous_subsiquent_variant = RelationshipVariant::create_subsiquent_previous_variant();
+
+        assert!(
+            previous_subsiquent_variant
+                == RelationshipVariant::PreviousSubsiquent(EdgeDirection::Directed)
+        )
     }
 
     #[test]
