@@ -34,6 +34,11 @@ trait RelationshipVariantManagement {
     fn create_parent_child_variant() -> RelationshipVariant;
 }
 
+trait EdgeDirectionManagement {
+    fn create_undirected_edge() -> EdgeDirection;
+    fn create_directed_edge() -> EdgeDirection;
+}
+
 impl RelationshipManagement for Relationship {
     fn create_new(variant: RelationshipVariant, participant_1: Uuid, participant_2: Uuid) -> Self {
         let relationship_id = Uuid::new_v4();
@@ -62,7 +67,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
 }
 
 #[allow(dead_code)]
-impl EdgeDirection {
+impl EdgeDirectionManagement for EdgeDirection {
     fn create_directed_edge() -> EdgeDirection {
         return EdgeDirection::Directed;
     }
