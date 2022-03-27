@@ -28,6 +28,12 @@ trait RelationshipManagement {
     fn create_new(variant: RelationshipVariant, participant_1: Uuid, participant_2: Uuid) -> Self;
 }
 
+trait RelationshipVariantManagement {
+    fn create_related_variant() -> RelationshipVariant;
+    fn create_previous_subsequent_variant() -> RelationshipVariant;
+    fn create_parent_child_variant() -> RelationshipVariant;
+}
+
 impl RelationshipManagement for Relationship {
     fn create_new(variant: RelationshipVariant, participant_1: Uuid, participant_2: Uuid) -> Self {
         let relationship_id = Uuid::new_v4();
@@ -41,7 +47,7 @@ impl RelationshipManagement for Relationship {
 }
 
 #[allow(dead_code)]
-impl RelationshipVariant {
+impl RelationshipVariantManagement for RelationshipVariant {
     fn create_related_variant() -> RelationshipVariant {
         return RelationshipVariant::Related(EdgeDirection::create_undirected_edge());
     }
@@ -50,7 +56,7 @@ impl RelationshipVariant {
         return RelationshipVariant::ParentChild(EdgeDirection::create_directed_edge());
     }
 
-    fn create_subsiquent_previous_variant() -> RelationshipVariant {
+    fn create_previous_subsequent_variant() -> RelationshipVariant {
         return RelationshipVariant::PreviousSubsiquent(EdgeDirection::create_directed_edge());
     }
 }
@@ -173,7 +179,7 @@ mod tests {
 
     #[test]
     fn previous_subsequest_variant_creation() {
-        let previous_subsiquent_variant = RelationshipVariant::create_subsiquent_previous_variant();
+        let previous_subsiquent_variant = RelationshipVariant::create_previous_subsequent_variant();
 
         assert!(
             previous_subsiquent_variant
