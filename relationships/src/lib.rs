@@ -60,6 +60,10 @@ impl EdgeDirection {
     fn create_directed_edge() -> EdgeDirection {
         return EdgeDirection::Directed;
     }
+
+    fn create_undirected_edge() -> EdgeDirection {
+        return EdgeDirection::Undirected;
+    }
 }
 
 #[cfg(test)]
@@ -182,5 +186,12 @@ mod tests {
         let directed_edge = EdgeDirection::create_directed_edge();
 
         assert!(directed_edge == EdgeDirection::Directed)
+    }
+
+    #[test]
+    fn undirected_edge_creation() {
+        let undirected_edge = EdgeDirection::create_undirected_edge();
+
+        assert!(undirected_edge == EdgeDirection::Undirected)
     }
 }
