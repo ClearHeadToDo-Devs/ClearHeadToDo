@@ -43,15 +43,15 @@ impl RelationshipManagement for Relationship {
 #[allow(dead_code)]
 impl RelationshipVariant {
     fn create_related_variant() -> RelationshipVariant {
-        return RelationshipVariant::Related(EdgeDirection::Undirected);
+        return RelationshipVariant::Related(EdgeDirection::create_undirected_edge());
     }
 
     fn create_parent_child_variant() -> RelationshipVariant {
-        return RelationshipVariant::ParentChild(EdgeDirection::Directed);
+        return RelationshipVariant::ParentChild(EdgeDirection::create_directed_edge());
     }
 
     fn create_subsiquent_previous_variant() -> RelationshipVariant {
-        return RelationshipVariant::PreviousSubsiquent(EdgeDirection::Directed);
+        return RelationshipVariant::PreviousSubsiquent(EdgeDirection::create_directed_edge());
     }
 }
 
