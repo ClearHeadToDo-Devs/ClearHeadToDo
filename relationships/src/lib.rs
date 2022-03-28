@@ -10,6 +10,7 @@ pub struct Relationship {
 
 #[allow(dead_code)]
 #[derive(PartialEq)]
+#[non_exhaustive]
 enum RelationshipVariant {
     ParentChild(EdgeDirection),
     PreviousSubsiquent(EdgeDirection),
@@ -37,6 +38,7 @@ trait RelationshipVariantManagement {
 trait EdgeDirectionManagement {
     fn create_undirected_edge() -> EdgeDirection;
     fn create_directed_edge() -> EdgeDirection;
+    fn change_edge_direction(self) -> EdgeDirection;
 }
 
 impl RelationshipManagement for Relationship {
@@ -74,6 +76,13 @@ impl EdgeDirectionManagement for EdgeDirection {
 
     fn create_undirected_edge() -> EdgeDirection {
         return EdgeDirection::Undirected;
+    }
+
+    fn change_edge_direction(self) -> EdgeDirection {
+        match self {
+            EdgeDirection::Undirected => EdgeDirection::Directed,
+            EdgeDirection::Directed => EdgeDirection::Undirected,
+        }
     }
 }
 
@@ -204,5 +213,13 @@ mod tests {
         let undirected_edge = EdgeDirection::create_undirected_edge();
 
         assert!(undirected_edge == EdgeDirection::Undirected)
+    }
+
+    #[test]
+    fn change_edge_direction() {
+        let example_edge = EdgeDirection::Undirected;
+        let altered_edge = example_edge.change_edge_direction();
+
+        assert!(altered_edge == EdgeDirection::Directed)
     }
 }
