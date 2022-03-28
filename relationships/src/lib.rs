@@ -30,10 +30,12 @@ trait RelationshipManagement {
 }
 
 trait RelationshipVariantManagement {
-    fn create_related_variant() -> RelationshipVariant;
-    fn create_previous_subsequent_variant() -> RelationshipVariant;
-    fn create_parent_child_variant() -> RelationshipVariant;
-    fn change_variant_edge_direction(self) -> RelationshipVariant;
+    type V: RelationshipVariantManagement;
+
+    fn create_related_variant() -> Self::V;
+    fn create_previous_subsequent_variant() -> Self::V;
+    fn create_parent_child_variant() -> Self::V;
+    fn change_variant_edge_direction(self) -> Self::V;
 }
 
 trait EdgeDirectionManagement {
@@ -57,6 +59,7 @@ impl RelationshipManagement for Relationship {
 
 #[allow(dead_code)]
 impl RelationshipVariantManagement for RelationshipVariant {
+    type V = RelationshipVariant;
     fn create_related_variant() -> RelationshipVariant {
         return RelationshipVariant::Related(EdgeDirection::create_undirected_edge());
     }
