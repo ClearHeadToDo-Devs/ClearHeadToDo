@@ -37,9 +37,10 @@ trait RelationshipVariantManagement {
 }
 
 trait EdgeDirectionManagement {
-    fn create_undirected_edge() -> EdgeDirection;
-    fn create_directed_edge() -> EdgeDirection;
-    fn change_edge_direction(self) -> EdgeDirection;
+    type D: EdgeDirectionManagement;
+    fn create_undirected_edge() -> Self::D;
+    fn create_directed_edge() -> Self::D;
+    fn change_edge_direction(self) -> Self::D;
 }
 
 impl RelationshipManagement for Relationship {
@@ -85,6 +86,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
 
 #[allow(dead_code)]
 impl EdgeDirectionManagement for EdgeDirection {
+    type D = EdgeDirection;
     fn create_directed_edge() -> EdgeDirection {
         return EdgeDirection::Directed;
     }
@@ -214,6 +216,11 @@ mod tests {
             previous_subsiquent_variant
                 == RelationshipVariant::PreviousSubsiquent(EdgeDirection::Directed)
         )
+    }
+
+    #[test]
+    fn change_variant() {
+        let example_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
     }
 
     #[test]
