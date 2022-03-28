@@ -57,12 +57,12 @@ impl RelationshipVariantManagement for RelationshipVariant {
         return RelationshipVariant::Related(EdgeDirection::create_undirected_edge());
     }
 
-    fn create_parent_child_variant() -> RelationshipVariant {
-        return RelationshipVariant::ParentChild(EdgeDirection::create_directed_edge());
-    }
-
     fn create_previous_subsequent_variant() -> RelationshipVariant {
         return RelationshipVariant::PreviousSubsiquent(EdgeDirection::create_directed_edge());
+    }
+
+    fn create_parent_child_variant() -> RelationshipVariant {
+        return RelationshipVariant::ParentChild(EdgeDirection::create_directed_edge());
     }
 }
 
