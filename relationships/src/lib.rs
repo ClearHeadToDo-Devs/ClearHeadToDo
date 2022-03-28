@@ -27,6 +27,7 @@ enum EdgeDirection {
 trait RelationshipManagement {
     type R: RelationshipManagement;
     type V: RelationshipVariantManagement;
+
     #[allow(dead_code)]
     fn create_new(variant: Self::V, participant_1: Uuid, participant_2: Uuid) -> Self::R;
 }
@@ -42,6 +43,7 @@ trait RelationshipVariantManagement {
 
 trait EdgeDirectionManagement {
     type D: EdgeDirectionManagement;
+
     fn create_undirected_edge() -> Self::D;
     fn create_directed_edge() -> Self::D;
     fn change_edge_direction(self) -> Self::D;
@@ -50,6 +52,7 @@ trait EdgeDirectionManagement {
 impl RelationshipManagement for Relationship {
     type R = Relationship;
     type V = RelationshipVariant;
+
     fn create_new(variant: Self::V, participant_1: Uuid, participant_2: Uuid) -> Self {
         let relationship_id = Uuid::new_v4();
         return Relationship {
@@ -64,6 +67,7 @@ impl RelationshipManagement for Relationship {
 #[allow(dead_code)]
 impl RelationshipVariantManagement for RelationshipVariant {
     type V = RelationshipVariant;
+
     fn create_related_variant() -> RelationshipVariant {
         return RelationshipVariant::Related(EdgeDirection::create_undirected_edge());
     }
@@ -94,6 +98,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
 #[allow(dead_code)]
 impl EdgeDirectionManagement for EdgeDirection {
     type D = EdgeDirection;
+
     fn create_directed_edge() -> EdgeDirection {
         return EdgeDirection::Directed;
     }
