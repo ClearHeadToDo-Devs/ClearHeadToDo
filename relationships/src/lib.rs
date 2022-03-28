@@ -27,7 +27,6 @@ enum EdgeDirection {
 trait RelationshipManagement {
     type R: RelationshipManagement;
     type V: RelationshipVariantManagement;
-
     #[allow(dead_code)]
     fn create_new(variant: Self::V, participant_1: Uuid, participant_2: Uuid) -> Self::R;
 }
