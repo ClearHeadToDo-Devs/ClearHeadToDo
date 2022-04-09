@@ -38,6 +38,7 @@ trait RelationshipVariantManagement {
     fn create_previous_subsequent_variant() -> Self::V;
     fn create_parent_child_variant() -> Self::V;
     fn change_variant_edge_direction(self) -> Self::V;
+    fn change_variant_type(self, target_variant: Self::V) -> Self::V;
 }
 
 trait EdgeDirectionManagement {
@@ -89,6 +90,20 @@ impl RelationshipVariantManagement for RelationshipVariant {
             }
             RelationshipVariant::ParentChild(direction) => {
                 RelationshipVariant::ParentChild(direction.change_edge_direction())
+            }
+        }
+    }
+
+    fn change_variant_type(self, target_variant: RelationshipVariant) -> RelationshipVariant {
+        match target_variant {
+            RelationshipVariant::Related(direction) => {
+                return RelationshipVariant::Related(direction)
+            }
+            RelationshipVariant::ParentChild(direction) => {
+                return RelationshipVariant::ParentChild(direction)
+            }
+            RelationshipVariant::PreviousSubsiquent(direction) => {
+                return RelationshipVariant::PreviousSubsiquent(direction)
             }
         }
     }
