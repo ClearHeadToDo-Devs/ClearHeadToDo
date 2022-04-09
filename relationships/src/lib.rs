@@ -230,11 +230,6 @@ mod tests {
     }
 
     #[test]
-    fn change_variant() {
-        let example_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
-    }
-
-    #[test]
     fn change_variant_edge_direction() {
         let example_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
         let altered_variant = example_variant.change_variant_edge_direction();
