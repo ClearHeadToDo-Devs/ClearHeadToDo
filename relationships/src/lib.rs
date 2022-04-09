@@ -253,6 +253,13 @@ mod tests {
     }
 
     #[test]
+    fn change_variant_type() {
+        let example_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
+        let altered_variant = example_variant
+            .change_variant_type(RelationshipVariant::ParentChild(EdgeDirection::Undirected));
+    }
+
+    #[test]
     fn directed_edge_creation() {
         let directed_edge = EdgeDirection::create_directed_edge();
 
