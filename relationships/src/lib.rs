@@ -54,9 +54,9 @@ impl RelationshipManagement for Relationship {
     type V = RelationshipVariant;
 
     fn create_new(variant: Self::V, participant_1: Uuid, participant_2: Uuid) -> Self {
-        let relationship_id = Uuid::new_v4();
+        let id = Uuid::new_v4();
         return Relationship {
-            id: relationship_id,
+            id,
             variant,
             participant_1,
             participant_2,
