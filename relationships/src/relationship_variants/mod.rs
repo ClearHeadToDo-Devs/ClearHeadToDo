@@ -18,6 +18,7 @@ pub trait RelationshipVariantManagement {
     fn create_parent_child_variant() -> Self::V;
     fn change_variant_edge_direction(self) -> Self::V;
     fn change_variant_type(self, target_variant: Self::V) -> Self::V;
+    fn create_variant_from_string(target_variant: &str) -> Self::V;
 }
 
 #[allow(dead_code)]
@@ -61,6 +62,13 @@ impl RelationshipVariantManagement for RelationshipVariant {
             RelationshipVariant::PreviousSubsiquent(direction) => {
                 return RelationshipVariant::PreviousSubsiquent(direction)
             }
+        }
+    }
+
+    fn create_variant_from_string(target_variant: &str) -> RelationshipVariant {
+        match target_variant {
+            "parent" => return RelationshipVariant::create_parent_child_variant(),
+            _ => return RelationshipVariant::create_related_variant(),
         }
     }
 }
@@ -109,5 +117,12 @@ mod tests {
             .change_variant_type(RelationshipVariant::ParentChild(EdgeDirection::Undirected));
 
         assert!(altered_variant == RelationshipVariant::ParentChild(EdgeDirection::Undirected))
+    }
+
+    #[test]
+    fn create_variant_from_string() {
+        let test_variant = RelationshipVariant::create_variant_from_string("parent");
+
+        assert!(test_variant == RelationshipVariant::ParentChild(EdgeDirection::Directed))
     }
 }
