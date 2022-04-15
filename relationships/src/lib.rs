@@ -1,8 +1,6 @@
-pub mod edge_direction;
-pub use edge_direction::*;
-
 pub mod relationship_variants;
-pub use relationship_variants::*;
+pub use relationship_variants::RelationshipVariant;
+pub use relationship_variants::RelationshipVariantManagement;
 
 use uuid::Uuid;
 
@@ -64,9 +62,7 @@ mod tests {
             nil_participant_id,
         );
 
-        assert!(
-            nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected)
-        );
+        assert!(nil_relationship.variant == RelationshipVariant::create_related_variant());
     }
 
     #[test]

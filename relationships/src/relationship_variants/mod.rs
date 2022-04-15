@@ -1,4 +1,5 @@
-pub use crate::edge_direction::*;
+pub mod edge_direction;
+pub use edge_direction::*;
 
 #[allow(dead_code)]
 #[derive(PartialEq)]
