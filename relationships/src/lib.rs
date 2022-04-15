@@ -1,3 +1,6 @@
+pub mod edge_direction;
+pub use edge_direction::*;
+
 use uuid::Uuid;
 
 #[allow(dead_code)]
@@ -17,13 +20,6 @@ enum RelationshipVariant {
     Related(EdgeDirection),
 }
 
-#[allow(dead_code)]
-#[derive(PartialEq)]
-enum EdgeDirection {
-    Directed,
-    Undirected,
-}
-
 trait RelationshipManagement {
     type R: RelationshipManagement;
     type V: RelationshipVariantManagement;
@@ -39,14 +35,6 @@ trait RelationshipVariantManagement {
     fn create_parent_child_variant() -> Self::V;
     fn change_variant_edge_direction(self) -> Self::V;
     fn change_variant_type(self, target_variant: Self::V) -> Self::V;
-}
-
-trait EdgeDirectionManagement {
-    type D: EdgeDirectionManagement;
-
-    fn create_undirected_edge() -> Self::D;
-    fn create_directed_edge() -> Self::D;
-    fn change_edge_direction(self) -> Self::D;
 }
 
 impl RelationshipManagement for Relationship {
@@ -105,26 +93,6 @@ impl RelationshipVariantManagement for RelationshipVariant {
             RelationshipVariant::PreviousSubsiquent(direction) => {
                 return RelationshipVariant::PreviousSubsiquent(direction)
             }
-        }
-    }
-}
-
-#[allow(dead_code)]
-impl EdgeDirectionManagement for EdgeDirection {
-    type D = EdgeDirection;
-
-    fn create_directed_edge() -> EdgeDirection {
-        return EdgeDirection::Directed;
-    }
-
-    fn create_undirected_edge() -> EdgeDirection {
-        return EdgeDirection::Undirected;
-    }
-
-    fn change_edge_direction(self) -> EdgeDirection {
-        match self {
-            EdgeDirection::Undirected => EdgeDirection::Directed,
-            EdgeDirection::Directed => EdgeDirection::Undirected,
         }
     }
 }
@@ -259,27 +227,5 @@ mod tests {
             .change_variant_type(RelationshipVariant::ParentChild(EdgeDirection::Undirected));
 
         assert!(altered_variant == RelationshipVariant::ParentChild(EdgeDirection::Undirected))
-    }
-
-    #[test]
-    fn directed_edge_creation() {
-        let directed_edge = EdgeDirection::create_directed_edge();
-
-        assert!(directed_edge == EdgeDirection::Directed)
-    }
-
-    #[test]
-    fn undirected_edge_creation() {
-        let undirected_edge = EdgeDirection::create_undirected_edge();
-
-        assert!(undirected_edge == EdgeDirection::Undirected)
-    }
-
-    #[test]
-    fn change_edge_direction() {
-        let example_edge = EdgeDirection::Undirected;
-        let altered_edge = example_edge.change_edge_direction();
-
-        assert!(altered_edge == EdgeDirection::Directed)
     }
 }
