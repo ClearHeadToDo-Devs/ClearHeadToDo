@@ -67,7 +67,9 @@ impl RelationshipVariantManagement for RelationshipVariant {
 
     fn create_variant_from_string(target_variant: &str) -> RelationshipVariant {
         match target_variant {
-            "parent" => return RelationshipVariant::create_parent_child_variant(),
+            "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
+                return RelationshipVariant::create_parent_child_variant()
+            }
             _ => return RelationshipVariant::create_related_variant(),
         }
     }
