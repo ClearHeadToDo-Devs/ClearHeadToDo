@@ -6,7 +6,7 @@ pub use edge_direction::*;
 #[non_exhaustive]
 pub enum RelationshipVariant {
     ParentChild(EdgeDirection),
-    PreviousSubsiquent(EdgeDirection),
+    PreviousSubsequent(EdgeDirection),
     Related(EdgeDirection),
 }
 
@@ -30,7 +30,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
     }
 
     fn create_previous_subsequent_variant() -> RelationshipVariant {
-        return RelationshipVariant::PreviousSubsiquent(EdgeDirection::create_directed_edge());
+        return RelationshipVariant::PreviousSubsequent(EdgeDirection::create_directed_edge());
     }
 
     fn create_parent_child_variant() -> RelationshipVariant {
@@ -42,8 +42,8 @@ impl RelationshipVariantManagement for RelationshipVariant {
             RelationshipVariant::Related(direction) => {
                 RelationshipVariant::Related(direction.change_edge_direction())
             }
-            RelationshipVariant::PreviousSubsiquent(direction) => {
-                RelationshipVariant::PreviousSubsiquent(direction.change_edge_direction())
+            RelationshipVariant::PreviousSubsequent(direction) => {
+                RelationshipVariant::PreviousSubsequent(direction.change_edge_direction())
             }
             RelationshipVariant::ParentChild(direction) => {
                 RelationshipVariant::ParentChild(direction.change_edge_direction())
@@ -59,8 +59,8 @@ impl RelationshipVariantManagement for RelationshipVariant {
             RelationshipVariant::ParentChild(direction) => {
                 return RelationshipVariant::ParentChild(direction)
             }
-            RelationshipVariant::PreviousSubsiquent(direction) => {
-                return RelationshipVariant::PreviousSubsiquent(direction)
+            RelationshipVariant::PreviousSubsequent(direction) => {
+                return RelationshipVariant::PreviousSubsequent(direction)
             }
         }
     }
@@ -69,6 +69,9 @@ impl RelationshipVariantManagement for RelationshipVariant {
         match target_variant {
             "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
                 return RelationshipVariant::create_parent_child_variant()
+            }
+            "previous" | "subsequent" | "Previous/Subsequent" | "PS" | "P/S" | "sequential" => {
+                return RelationshipVariant::create_previous_subsequent_variant()
             }
             _ => return RelationshipVariant::create_related_variant(),
         }
@@ -100,7 +103,7 @@ mod tests {
 
         assert!(
             previous_subsiquent_variant
-                == RelationshipVariant::PreviousSubsiquent(EdgeDirection::Directed)
+                == RelationshipVariant::PreviousSubsequent(EdgeDirection::Directed)
         )
     }
 
@@ -122,9 +125,16 @@ mod tests {
     }
 
     #[test]
-    fn create_variant_from_string() {
-        let test_variant = RelationshipVariant::create_variant_from_string("parent");
+    fn create_parent_variant_from_string() {
+        let test_variant = RelationshipVariant::create_variant_from_string("parental");
 
         assert!(test_variant == RelationshipVariant::ParentChild(EdgeDirection::Directed))
+    }
+
+    #[test]
+    fn create_sequential_variant_from_string() {
+        let test_variant = RelationshipVariant::create_variant_from_string("sequential");
+
+        assert!(test_variant == RelationshipVariant::PreviousSubsequent(EdgeDirection::Directed))
     }
 }
