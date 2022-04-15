@@ -1,6 +1,5 @@
 pub mod relationship_variants;
-pub use relationship_variants::RelationshipVariant;
-pub use relationship_variants::RelationshipVariantManagement;
+pub use relationship_variants::*;
 
 use uuid::Uuid;
 
