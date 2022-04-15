@@ -83,21 +83,6 @@ mod tests {
     }
 
     #[test]
-    fn directed_relationship_creation() {
-        let nil_participant_id = Uuid::nil();
-
-        let nil_relationship = Relationship::create_new(
-            RelationshipVariant::create_related_variant(),
-            nil_participant_id,
-            nil_participant_id,
-        );
-
-        assert!(
-            nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected)
-        );
-    }
-
-    #[test]
     fn unique_relationship_participants() {
         let first_participant_id = Uuid::new_v4();
         let second_participant_id = Uuid::new_v4();
