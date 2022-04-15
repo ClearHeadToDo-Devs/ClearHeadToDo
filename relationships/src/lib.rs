@@ -148,19 +148,6 @@ mod tests {
     }
 
     #[test]
-    fn relationship_id_creation() {
-        let nil_id = Uuid::nil();
-
-        let nil_relationship = create_nil_relationship(
-            RelationshipVariant::create_related_variant(),
-            nil_id,
-            nil_id,
-        );
-
-        assert!(nil_relationship.id == Uuid::nil());
-    }
-
-    #[test]
     fn undirected_relationship_creation() {
         let nil_participant_id = Uuid::nil();
 
@@ -173,6 +160,19 @@ mod tests {
         assert!(
             nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected)
         );
+    }
+
+    #[test]
+    fn relationship_id_creation() {
+        let nil_id = Uuid::nil();
+
+        let nil_relationship = create_nil_relationship(
+            RelationshipVariant::create_related_variant(),
+            nil_id,
+            nil_id,
+        );
+
+        assert!(nil_relationship.id == Uuid::nil());
     }
 
     #[test]
@@ -257,6 +257,8 @@ mod tests {
         let example_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
         let altered_variant = example_variant
             .change_variant_type(RelationshipVariant::ParentChild(EdgeDirection::Undirected));
+
+        assert!(altered_variant == RelationshipVariant::ParentChild(EdgeDirection::Undirected))
     }
 
     #[test]
