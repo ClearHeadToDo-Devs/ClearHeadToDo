@@ -2,7 +2,7 @@ pub mod edge_direction;
 pub use edge_direction::*;
 
 #[allow(dead_code)]
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 #[non_exhaustive]
 pub enum RelationshipVariant {
     ParentChild(EdgeDirection),
@@ -18,7 +18,7 @@ pub trait RelationshipVariantManagement {
     fn create_parent_child_variant() -> Self::V;
     fn change_variant_edge_direction(self) -> Self::V;
     fn change_variant_type(self, target_variant: Self::V) -> Self::V;
-    fn create_variant_from_string(target_variant: &str) -> Self::V;
+    fn create_variant_from_string(target_variant: &str) -> Result<Self::V, String>;
 }
 
 #[allow(dead_code)]
@@ -65,15 +65,18 @@ impl RelationshipVariantManagement for RelationshipVariant {
         }
     }
 
-    fn create_variant_from_string(target_variant: &str) -> RelationshipVariant {
+    fn create_variant_from_string(target_variant: &str) -> Result<RelationshipVariant, String> {
         match target_variant {
             "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
-                return RelationshipVariant::create_parent_child_variant()
+                return Ok(RelationshipVariant::create_parent_child_variant())
             }
             "previous" | "subsequent" | "Previous/Subsequent" | "PS" | "P/S" | "sequential" => {
-                return RelationshipVariant::create_previous_subsequent_variant()
+                return Ok(RelationshipVariant::create_previous_subsequent_variant())
             }
-            _ => return RelationshipVariant::create_related_variant(),
+            "related" | "relational" | "generic" => {
+                return Ok(RelationshipVariant::create_related_variant())
+            }
+            _ => return Err("invalid relationship variant".to_string()),
         }
     }
 }
@@ -126,15 +129,30 @@ mod tests {
 
     #[test]
     fn create_parent_variant_from_string() {
-        let test_variant = RelationshipVariant::create_variant_from_string("parental");
+        let test_variant = RelationshipVariant::create_variant_from_string("parental").unwrap();
 
         assert!(test_variant == RelationshipVariant::ParentChild(EdgeDirection::Directed))
     }
 
     #[test]
     fn create_sequential_variant_from_string() {
-        let test_variant = RelationshipVariant::create_variant_from_string("sequential");
+        let test_variant = RelationshipVariant::create_variant_from_string("sequential").unwrap();
 
         assert!(test_variant == RelationshipVariant::PreviousSubsequent(EdgeDirection::Directed))
+    }
+
+    #[test]
+    fn create_related_variant_from_string() {
+        let test_variant = RelationshipVariant::create_variant_from_string("related").unwrap();
+
+        assert!(test_variant == RelationshipVariant::Related(EdgeDirection::Undirected))
+    }
+
+    #[test]
+    fn failed_string_variant_creation() {
+        let relationship_error =
+            RelationshipVariant::create_variant_from_string("bad variant").unwrap_err();
+
+        assert!(relationship_error.to_string() == "invalid relationship variant")
     }
 }

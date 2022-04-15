@@ -1,5 +1,5 @@
 #[allow(dead_code)]
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum EdgeDirection {
     Directed,
     Undirected,
