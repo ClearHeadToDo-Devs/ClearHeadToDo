@@ -4,6 +4,7 @@ pub use relationship_variants::*;
 use uuid::Uuid;
 
 #[allow(dead_code)]
+#[derive(PartialEq, Debug)]
 pub struct Relationship {
     id: Uuid,
     variant: RelationshipVariant,
@@ -106,5 +107,16 @@ mod tests {
             Relationship::create_new("related", nil_participant_id, nil_participant_id).unwrap();
 
         assert!(relationship_2.id != relationship_1.id);
+    }
+
+    #[test]
+    fn invalid_relationship_variant_input() {
+        let nil_participant_id = Uuid::nil();
+
+        let invalid_relationship =
+            Relationship::create_new("bad variant", nil_participant_id, nil_participant_id)
+                .unwrap_err();
+
+        assert!(invalid_relationship == "invalid relationship variant");
     }
 }
