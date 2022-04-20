@@ -15,21 +15,30 @@ trait RelationshipManagement {
     type R: RelationshipManagement;
     type V: RelationshipVariantManagement;
     #[allow(dead_code)]
-    fn create_new(variant: Self::V, participant_1: Uuid, participant_2: Uuid) -> Self::R;
+    fn create_new(
+        variant_str: &str,
+        participant_1: Uuid,
+        participant_2: Uuid,
+    ) -> Result<Self::R, String>;
 }
 
 impl RelationshipManagement for Relationship {
     type R = Relationship;
     type V = RelationshipVariant;
 
-    fn create_new(variant: Self::V, participant_1: Uuid, participant_2: Uuid) -> Self {
+    fn create_new(
+        variant_str: &str,
+        participant_1: Uuid,
+        participant_2: Uuid,
+    ) -> Result<Self, String> {
         let id = Uuid::new_v4();
-        return Relationship {
+        let variant = RelationshipVariant::create_variant_from_string(variant_str)?;
+        return Ok(Relationship {
             id,
             variant,
             participant_1,
             participant_2,
-        };
+        });
     }
 }
 
@@ -55,11 +64,8 @@ mod tests {
     fn undirected_relationship_creation() {
         let nil_participant_id = Uuid::nil();
 
-        let nil_relationship = Relationship::create_new(
-            RelationshipVariant::create_related_variant(),
-            nil_participant_id,
-            nil_participant_id,
-        );
+        let nil_relationship =
+            Relationship::create_new("related", nil_participant_id, nil_participant_id).unwrap();
 
         assert!(nil_relationship.variant == RelationshipVariant::create_related_variant());
     }
@@ -81,10 +87,11 @@ mod tests {
     fn unique_relationship_participants() {
         let first_participant_id = Uuid::new_v4();
         let second_participant_id = Uuid::new_v4();
-        let direction = RelationshipVariant::create_related_variant();
+        let variant_str = "related";
 
         let relationship =
-            Relationship::create_new(direction, first_participant_id, second_participant_id);
+            Relationship::create_new(variant_str, first_participant_id, second_participant_id)
+                .unwrap();
 
         assert!(relationship.participant_2 != relationship.participant_1)
     }
@@ -93,16 +100,10 @@ mod tests {
     fn unique_relationship_id() {
         let nil_participant_id = Uuid::nil();
 
-        let relationship_1 = Relationship::create_new(
-            RelationshipVariant::create_related_variant(),
-            nil_participant_id,
-            nil_participant_id,
-        );
-        let relationship_2 = Relationship::create_new(
-            RelationshipVariant::create_related_variant(),
-            nil_participant_id,
-            nil_participant_id,
-        );
+        let relationship_1 =
+            Relationship::create_new("related", nil_participant_id, nil_participant_id).unwrap();
+        let relationship_2 =
+            Relationship::create_new("related", nil_participant_id, nil_participant_id).unwrap();
 
         assert!(relationship_2.id != relationship_1.id);
     }
