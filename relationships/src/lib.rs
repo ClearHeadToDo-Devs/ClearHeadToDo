@@ -23,6 +23,7 @@ trait RelationshipManagement {
     ) -> Result<Self::R, String>;
 
     fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Result<Self::R, String>;
+    fn create_new_sequential(participant_2: Uuid, participant_1: Uuid) -> Result<Self::R, String>;
 }
 
 impl RelationshipManagement for Relationship {
@@ -46,6 +47,17 @@ impl RelationshipManagement for Relationship {
     fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Result<Self, String> {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_related_variant();
+        return Ok(Relationship {
+            id,
+            variant,
+            participant_1,
+            participant_2,
+        });
+    }
+
+    fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Result<Self, String> {
+        let id = Uuid::new_v4();
+        let variant = RelationshipVariant::create_previous_subsequent_variant();
         return Ok(Relationship {
             id,
             variant,
@@ -143,5 +155,18 @@ mod tests {
             new_related_relationship.variant
                 == RelationshipVariant::Related(EdgeDirection::Undirected)
         )
+    }
+
+    #[test]
+    fn create_subsequent() {
+        let nil_participant_id = Uuid::nil();
+
+        let new_sequential_relationship =
+            Relationship::create_new_sequential(nil_participant_id, nil_participant_id).unwrap();
+
+        assert!(
+            new_sequential_relationship.variant
+                == RelationshipVariant::PreviousSubsequent(EdgeDirection::Directed)
+        );
     }
 }
