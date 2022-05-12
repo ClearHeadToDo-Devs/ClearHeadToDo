@@ -16,8 +16,10 @@ pub trait RelationshipVariantManagement {
     fn create_related_variant() -> Self::V;
     fn create_previous_subsequent_variant() -> Self::V;
     fn create_parent_child_variant() -> Self::V;
+
     fn change_variant_edge_direction(self) -> Self::V;
     fn change_variant_type(self, target_variant: Self::V) -> Self::V;
+
     fn create_variant_from_string(target_variant: &str) -> Result<Self::V, String>;
 }
 
