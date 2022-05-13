@@ -3,7 +3,7 @@ pub use relationship_variants::*;
 
 use uuid::Uuid;
 
-use im::Vector
+use im::Vector;
 
 #[allow(dead_code)]
 #[derive(PartialEq, Debug)]
