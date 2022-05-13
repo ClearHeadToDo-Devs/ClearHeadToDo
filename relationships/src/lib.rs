@@ -22,8 +22,9 @@ trait RelationshipManagement {
         participant_2: Uuid,
     ) -> Result<Self::R, String>;
 
-    fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Result<Self::R, String>;
-    fn create_new_sequential(participant_2: Uuid, participant_1: Uuid) -> Result<Self::R, String>;
+    fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self::R;
+    fn create_new_sequential(participant_2: Uuid, participant_1: Uuid) -> Self::R;
+    fn create_new_parental(participant_2: Uuid, participant_1: Uuid) -> Self::R;
 }
 
 impl RelationshipManagement for Relationship {
@@ -44,26 +45,37 @@ impl RelationshipManagement for Relationship {
             participant_2,
         });
     }
-    fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Result<Self, String> {
+    fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_related_variant();
-        return Ok(Relationship {
+        Relationship {
             id,
             variant,
             participant_1,
             participant_2,
-        });
+        }
     }
 
-    fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Result<Self, String> {
+    fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_previous_subsequent_variant();
-        return Ok(Relationship {
+        Relationship {
             id,
             variant,
             participant_1,
             participant_2,
-        });
+        }
+    }
+
+    fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self {
+        let id = Uuid::new_v4();
+        let variant = RelationshipVariant::create_parent_child_variant();
+        Relationship {
+            id,
+            variant,
+            participant_1,
+            participant_2,
+        }
     }
 }
 
@@ -149,7 +161,7 @@ mod tests {
         let nil_participant_id = Uuid::nil();
 
         let new_related_relationship =
-            Relationship::create_new_related(nil_participant_id, nil_participant_id).unwrap();
+            Relationship::create_new_related(nil_participant_id, nil_participant_id);
 
         assert!(
             new_related_relationship.variant
@@ -162,11 +174,24 @@ mod tests {
         let nil_participant_id = Uuid::nil();
 
         let new_sequential_relationship =
-            Relationship::create_new_sequential(nil_participant_id, nil_participant_id).unwrap();
+            Relationship::create_new_sequential(nil_participant_id, nil_participant_id);
 
         assert!(
             new_sequential_relationship.variant
                 == RelationshipVariant::PreviousSubsequent(EdgeDirection::Directed)
         );
+    }
+
+    #[test]
+    fn create_parental() {
+        let nil_particpant_id = Uuid::nil();
+
+        let new_parental_relationship =
+            Relationship::create_new_parental(nil_particpant_id, nil_particpant_id);
+
+        assert!(
+            new_parental_relationship.variant
+                == RelationshipVariant::ParentChild(EdgeDirection::Directed)
+        )
     }
 }
