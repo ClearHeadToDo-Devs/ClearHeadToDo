@@ -3,6 +3,8 @@ pub use relationship_variants::*;
 
 use uuid::Uuid;
 
+use im::Vector
+
 #[allow(dead_code)]
 #[derive(PartialEq, Debug)]
 pub struct Relationship {
@@ -23,7 +25,7 @@ trait RelationshipManagement {
     ) -> Result<Self::R, String>;
 
     fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self::R;
-    fn create_new_sequential(participant_2: Uuid, participant_1: Uuid) -> Self::R;
+    fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self::R;
     fn create_new_parental(participant_2: Uuid, participant_1: Uuid) -> Self::R;
 }
 
