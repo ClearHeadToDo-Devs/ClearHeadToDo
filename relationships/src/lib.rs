@@ -39,7 +39,7 @@ impl RelationshipManagement for Relationship {
         participant_2: Uuid,
     ) -> Result<Self, String> {
         let id = Uuid::new_v4();
-        let variant = RelationshipVariant::create_variant_from_string(variant_str)?;
+        let variant = RelationshipVariant::create_from_string(variant_str)?;
         return Ok(Relationship {
             id,
             variant,
@@ -49,7 +49,7 @@ impl RelationshipManagement for Relationship {
     }
     fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
-        let variant = RelationshipVariant::create_related_variant();
+        let variant = RelationshipVariant::create_related();
         Relationship {
             id,
             variant,
@@ -60,7 +60,7 @@ impl RelationshipManagement for Relationship {
 
     fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
-        let variant = RelationshipVariant::create_previous_subsequent_variant();
+        let variant = RelationshipVariant::create_sequential();
         Relationship {
             id,
             variant,
@@ -71,7 +71,7 @@ impl RelationshipManagement for Relationship {
 
     fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
-        let variant = RelationshipVariant::create_parent_child_variant();
+        let variant = RelationshipVariant::create_parental();
         Relationship {
             id,
             variant,
@@ -115,11 +115,8 @@ mod tests {
     fn relationship_id_creation() {
         let nil_id = Uuid::nil();
 
-        let nil_relationship = create_nil_relationship(
-            RelationshipVariant::create_related_variant(),
-            nil_id,
-            nil_id,
-        );
+        let nil_relationship =
+            create_nil_relationship(RelationshipVariant::create_related(), nil_id, nil_id);
 
         assert!(nil_relationship.id == Uuid::nil());
     }
