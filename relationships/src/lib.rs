@@ -26,7 +26,7 @@ trait RelationshipManagement {
 
     fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self::R;
     fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self::R;
-    fn create_new_parental(participant_2: Uuid, participant_1: Uuid) -> Self::R;
+    fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self::R;
 }
 
 impl RelationshipManagement for Relationship {
@@ -100,13 +100,15 @@ mod tests {
     }
 
     #[test]
-    fn undirected_relationship_creation() {
+    fn base_relationship_creation() {
         let nil_participant_id = Uuid::nil();
 
         let nil_relationship =
             Relationship::create_new("related", nil_participant_id, nil_participant_id).unwrap();
 
-        assert!(nil_relationship.variant == RelationshipVariant::create_related_variant());
+        assert!(
+            nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected)
+        );
     }
 
     #[test]
@@ -180,7 +182,7 @@ mod tests {
 
         assert!(
             new_sequential_relationship.variant
-                == RelationshipVariant::PreviousSubsequent(EdgeDirection::Directed)
+                == RelationshipVariant::Sequential(EdgeDirection::Directed)
         );
     }
 
@@ -193,7 +195,7 @@ mod tests {
 
         assert!(
             new_parental_relationship.variant
-                == RelationshipVariant::ParentChild(EdgeDirection::Directed)
+                == RelationshipVariant::Parental(EdgeDirection::Directed)
         )
     }
 }
