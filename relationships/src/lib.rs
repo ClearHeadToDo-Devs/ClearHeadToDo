@@ -113,8 +113,8 @@ mod tests {
     fn relationship_id_creation() {
         let nil_relationship = create_nil_relationship(
             RelationshipVariant::create_related(),
-            Uuid::nil(),
-            Uuid::nil(),
+            Uuid::new_v4(),
+            Uuid::new_v4(),
         );
 
         assert!(nil_relationship.id == Uuid::nil());
@@ -130,12 +130,10 @@ mod tests {
 
     #[test]
     fn unique_relationship_id() {
-        let nil_participant_id = Uuid::nil();
-
         let relationship_1 =
-            Relationship::create_new("related", nil_participant_id, nil_participant_id).unwrap();
+            Relationship::create_new("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
         let relationship_2 =
-            Relationship::create_new("related", nil_participant_id, nil_participant_id).unwrap();
+            Relationship::create_new("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
 
         assert!(relationship_2.id != relationship_1.id);
     }
