@@ -100,16 +100,6 @@ mod tests {
     }
 
     #[test]
-    fn base_relationship_creation() {
-        let nil_relationship =
-            Relationship::create_new("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
-
-        assert!(
-            nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected)
-        );
-    }
-
-    #[test]
     fn relationship_id_creation() {
         let nil_relationship = create_nil_relationship(
             RelationshipVariant::create_related(),
