@@ -102,7 +102,7 @@ mod tests {
     #[test]
     fn relationship_id_creation() {
         let nil_relationship = create_nil_relationship(
-            RelationshipVariant::create_related(),
+            RelationshipVariant::Related(EdgeDirection::Undirected),
             Uuid::new_v4(),
             Uuid::new_v4(),
         );
