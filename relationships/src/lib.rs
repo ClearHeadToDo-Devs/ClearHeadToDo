@@ -148,10 +148,8 @@ mod tests {
 
     #[test]
     fn create_related_relationship() {
-        let nil_participant_id = Uuid::nil();
-
         let new_related_relationship =
-            Relationship::create_new_related(nil_participant_id, nil_participant_id);
+            Relationship::create_new_related(Uuid::new_v4(), Uuid::new_v4());
 
         assert!(
             new_related_relationship.variant
@@ -161,10 +159,8 @@ mod tests {
 
     #[test]
     fn create_subsequent() {
-        let nil_participant_id = Uuid::nil();
-
         let new_sequential_relationship =
-            Relationship::create_new_sequential(nil_participant_id, nil_participant_id);
+            Relationship::create_new_sequential(Uuid::new_v4(), Uuid::new_v4());
 
         assert!(
             new_sequential_relationship.variant
@@ -174,10 +170,8 @@ mod tests {
 
     #[test]
     fn create_parental() {
-        let nil_particpant_id = Uuid::nil();
-
         let new_parental_relationship =
-            Relationship::create_new_parental(nil_particpant_id, nil_particpant_id);
+            Relationship::create_new_parental(Uuid::new_v4(), Uuid::new_v4());
 
         assert!(
             new_parental_relationship.variant
