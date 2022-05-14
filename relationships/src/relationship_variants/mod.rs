@@ -28,27 +28,27 @@ impl RelationshipVariantManagement for RelationshipVariant {
     type V = RelationshipVariant;
 
     fn create_related() -> RelationshipVariant {
-        return RelationshipVariant::Related(EdgeDirection::create_undirected_edge());
+        return RelationshipVariant::Related(EdgeDirection::create_undirected());
     }
 
     fn create_sequential() -> RelationshipVariant {
-        return RelationshipVariant::Sequential(EdgeDirection::create_directed_edge());
+        return RelationshipVariant::Sequential(EdgeDirection::create_directed());
     }
 
     fn create_parental() -> RelationshipVariant {
-        return RelationshipVariant::Parental(EdgeDirection::create_directed_edge());
+        return RelationshipVariant::Parental(EdgeDirection::create_directed());
     }
 
     fn change_edge_direction(self) -> RelationshipVariant {
         match self {
             RelationshipVariant::Related(direction) => {
-                RelationshipVariant::Related(direction.change_edge_direction())
+                RelationshipVariant::Related(direction.change_direction())
             }
             RelationshipVariant::Sequential(direction) => {
-                RelationshipVariant::Sequential(direction.change_edge_direction())
+                RelationshipVariant::Sequential(direction.change_direction())
             }
             RelationshipVariant::Parental(direction) => {
-                RelationshipVariant::Parental(direction.change_edge_direction())
+                RelationshipVariant::Parental(direction.change_direction())
             }
         }
     }

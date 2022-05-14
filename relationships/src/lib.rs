@@ -101,10 +101,8 @@ mod tests {
 
     #[test]
     fn base_relationship_creation() {
-        let nil_participant_id = Uuid::nil();
-
         let nil_relationship =
-            Relationship::create_new("related", nil_participant_id, nil_participant_id).unwrap();
+            Relationship::create_new("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
 
         assert!(
             nil_relationship.variant == RelationshipVariant::Related(EdgeDirection::Undirected)
@@ -113,23 +111,19 @@ mod tests {
 
     #[test]
     fn relationship_id_creation() {
-        let nil_id = Uuid::nil();
-
-        let nil_relationship =
-            create_nil_relationship(RelationshipVariant::create_related(), nil_id, nil_id);
+        let nil_relationship = create_nil_relationship(
+            RelationshipVariant::create_related(),
+            Uuid::nil(),
+            Uuid::nil(),
+        );
 
         assert!(nil_relationship.id == Uuid::nil());
     }
 
     #[test]
     fn unique_relationship_participants() {
-        let first_participant_id = Uuid::new_v4();
-        let second_participant_id = Uuid::new_v4();
-        let variant_str = "related";
-
         let relationship =
-            Relationship::create_new(variant_str, first_participant_id, second_participant_id)
-                .unwrap();
+            Relationship::create_new("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
 
         assert!(relationship.participant_2 != relationship.participant_1)
     }
@@ -148,11 +142,8 @@ mod tests {
 
     #[test]
     fn invalid_relationship_variant_input() {
-        let nil_participant_id = Uuid::nil();
-
         let invalid_relationship =
-            Relationship::create_new("bad variant", nil_participant_id, nil_participant_id)
-                .unwrap_err();
+            Relationship::create_new("bad variant", Uuid::new_v4(), Uuid::new_v4()).unwrap_err();
 
         assert!(invalid_relationship == "invalid relationship variant");
     }
