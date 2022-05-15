@@ -246,4 +246,20 @@ mod tests {
             relationship_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)
         );
     }
+
+    #[test]
+    fn remove_middle_relationship() {
+        let mut relationship_list: Vector<Relationship> = Vector::new();
+        relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
+        relationship_list.add_related(Uuid::nil(), Uuid::nil());
+        relationship_list.add_parental(Uuid::nil(), Uuid::nil());
+
+        relationship_list.remove(1);
+
+        assert!(
+            relationship_list[0].variant
+                == RelationshipVariant::Sequential(EdgeDirection::Directed)
+                && relationship_list.len() == 2
+        );
+    }
 }
