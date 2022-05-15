@@ -91,7 +91,7 @@ impl RelationshipListManagement for Vector<Relationship> {
 
     fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid) {
         let new_relationship = Relationship::create_new_related(participant_1, participant_2);
-        let new_list = self.push_back(new_relationship);
+        self.push_back(new_relationship);
     }
 }
 
