@@ -3,11 +3,11 @@ pub use relationship_variants::*;
 
 use uuid::Uuid;
 
-use im::Vector;
+use rpds::vector::Vector;
 
 trait RelationshipListManagement {
     type L: RelationshipListManagement;
-    fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid);
+    fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self;
 }
 
 #[allow(dead_code)]
@@ -89,9 +89,9 @@ impl RelationshipManagement for Relationship {
 impl RelationshipListManagement for Vector<Relationship> {
     type L = Vector<Relationship>;
 
-    fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid) {
+    fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self {
         let new_relationship = Relationship::create_new_related(participant_1, participant_2);
-        self.push_back(new_relationship);
+        self.push_back(new_relationship)
     }
 }
 
@@ -185,10 +185,10 @@ mod tests {
 
     #[test]
     fn add_related_to_list() {
-        let mut relationship_list: Vector<Relationship> = Vector::new();
+        let relationship_list: Vector<Relationship> = Vector::new();
 
-        relationship_list.add_related(Uuid::new_v4(), Uuid::new_v4());
+        let new_list = relationship_list.add_related(Uuid::new_v4(), Uuid::new_v4());
 
-        assert! {relationship_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
+        assert! {new_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
     }
 }
