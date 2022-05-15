@@ -8,6 +8,7 @@ use rpds::vector::Vector;
 trait RelationshipListManagement {
     type L: RelationshipListManagement;
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self;
+    fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self;
 }
 
 #[allow(dead_code)]
@@ -91,6 +92,11 @@ impl RelationshipListManagement for Vector<Relationship> {
 
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self {
         let new_relationship = Relationship::create_new_related(participant_1, participant_2);
+        self.push_back(new_relationship)
+    }
+
+    fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self {
+        let new_relationship = Relationship::create_new_sequential(participant_1, participant_2);
         self.push_back(new_relationship)
     }
 }
@@ -184,11 +190,20 @@ mod tests {
     }
 
     #[test]
-    fn add_related_to_list() {
+    fn add_related_relationship_to_list() {
         let relationship_list: Vector<Relationship> = Vector::new();
 
         let new_list = relationship_list.add_related(Uuid::new_v4(), Uuid::new_v4());
 
         assert! {new_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
+    }
+
+    #[test]
+    fn add_sequential_relationship_to_list() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+
+        let new_list = relationship_list.add_sequential(Uuid::new_v4(), Uuid::new_v4());
+
+        assert! {new_list[0].variant == RelationshipVariant::Sequential(EdgeDirection::Directed)}
     }
 }
