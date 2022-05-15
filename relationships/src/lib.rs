@@ -5,8 +5,13 @@ use uuid::Uuid;
 
 use im::Vector;
 
+trait RelationshipListManagement {
+    type L: RelationshipListManagement;
+    fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid);
+}
+
 #[allow(dead_code)]
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Relationship {
     id: Uuid,
     variant: RelationshipVariant,
@@ -78,6 +83,15 @@ impl RelationshipManagement for Relationship {
             participant_1,
             participant_2,
         }
+    }
+}
+
+impl RelationshipListManagement for Vector<Relationship> {
+    type L = Vector<Relationship>;
+
+    fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid) {
+        let new_relationship = Relationship::create_new_related(participant_1, participant_2);
+        let new_list = self.push_back(new_relationship);
     }
 }
 
@@ -167,5 +181,14 @@ mod tests {
             new_parental_relationship.variant
                 == RelationshipVariant::Parental(EdgeDirection::Directed)
         )
+    }
+
+    #[test]
+    fn add_related_to_list() {
+        let mut relationship_list: Vector<Relationship> = Vector::new();
+
+        relationship_list.add_related(Uuid::new_v4(), Uuid::new_v4());
+
+        assert! {relationship_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
     }
 }
