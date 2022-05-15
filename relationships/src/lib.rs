@@ -3,13 +3,13 @@ pub use relationship_variants::*;
 
 use uuid::Uuid;
 
-use rpds::vector::Vector;
+use im::Vector;
 
 trait RelationshipListManagement {
     type L: RelationshipListManagement;
-    fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self;
-    fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self;
-    fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self;
+    fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid);
+    fn add_sequential(&mut self, participant_1: Uuid, participant_2: Uuid);
+    fn add_parental(&mut self, participant_1: Uuid, participant_2: Uuid);
 }
 
 #[allow(dead_code)]
@@ -91,17 +91,17 @@ impl RelationshipManagement for Relationship {
 impl RelationshipListManagement for Vector<Relationship> {
     type L = Vector<Relationship>;
 
-    fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self {
+    fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid) {
         let new_relationship = Relationship::create_new_related(participant_1, participant_2);
         self.push_back(new_relationship)
     }
 
-    fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self {
+    fn add_sequential(&mut self, participant_1: Uuid, participant_2: Uuid) {
         let new_relationship = Relationship::create_new_sequential(participant_1, participant_2);
         self.push_back(new_relationship)
     }
 
-    fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self {
+    fn add_parental(&mut self, participant_1: Uuid, participant_2: Uuid) {
         let new_relationship = Relationship::create_new_parental(participant_1, participant_2);
         self.push_back(new_relationship)
     }
@@ -197,28 +197,30 @@ mod tests {
 
     #[test]
     fn add_related_relationship_to_list() {
-        let relationship_list: Vector<Relationship> = Vector::new();
+        let mut relationship_list: Vector<Relationship> = Vector::new();
 
-        let new_list = relationship_list.add_related(Uuid::new_v4(), Uuid::new_v4());
+        relationship_list.add_related(Uuid::new_v4(), Uuid::new_v4());
 
-        assert! {new_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
+        assert! {relationship_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
     }
 
     #[test]
     fn add_sequential_relationship_to_list() {
-        let relationship_list: Vector<Relationship> = Vector::new();
+        let mut relationship_list: Vector<Relationship> = Vector::new();
 
-        let new_list = relationship_list.add_sequential(Uuid::new_v4(), Uuid::new_v4());
+        relationship_list.add_sequential(Uuid::new_v4(), Uuid::new_v4());
 
-        assert! {new_list[0].variant == RelationshipVariant::Sequential(EdgeDirection::Directed)}
+        assert! {relationship_list[0].variant == RelationshipVariant::Sequential(EdgeDirection::Directed)}
     }
 
     #[test]
     fn add_parental_relationship_to_list() {
-        let relationship_list: Vector<Relationship> = Vector::new();
+        let mut relationship_list: Vector<Relationship> = Vector::new();
 
-        let new_list = relationship_list.add_parental(Uuid::new_v4(), Uuid::new_v4());
+        relationship_list.add_parental(Uuid::new_v4(), Uuid::new_v4());
 
-        assert!(new_list[0].variant == RelationshipVariant::Parental(EdgeDirection::Directed))
+        assert!(
+            relationship_list[0].variant == RelationshipVariant::Parental(EdgeDirection::Directed)
+        )
     }
 }
