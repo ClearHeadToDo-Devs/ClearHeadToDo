@@ -223,4 +223,27 @@ mod tests {
             relationship_list[0].variant == RelationshipVariant::Parental(EdgeDirection::Directed)
         )
     }
+
+    #[test]
+    fn remove_relationship() {
+        let mut relationship_list: Vector<Relationship> = Vector::new();
+        relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        relationship_list.pop_back();
+
+        assert!(relationship_list.len() == 0);
+    }
+
+    #[test]
+    fn remove_first_relationship() {
+        let mut relationship_list: Vector<Relationship> = Vector::new();
+        relationship_list.add_related(Uuid::nil(), Uuid::nil());
+        relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        relationship_list.pop_front();
+
+        assert!(
+            relationship_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)
+        );
+    }
 }
