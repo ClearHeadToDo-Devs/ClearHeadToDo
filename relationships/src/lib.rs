@@ -129,27 +129,17 @@ mod tests {
     fn relationship_id_creation() {
         let nil_relationship = create_nil_relationship(
             RelationshipVariant::Related(EdgeDirection::Undirected),
-            Uuid::new_v4(),
-            Uuid::new_v4(),
+            Uuid::nil(),
+            Uuid::nil(),
         );
 
         assert!(nil_relationship.id == Uuid::nil());
     }
 
     #[test]
-    fn unique_relationship_participants() {
-        let relationship =
-            Relationship::create_new("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
-
-        assert!(relationship.participant_2 != relationship.participant_1)
-    }
-
-    #[test]
     fn unique_relationship_id() {
-        let relationship_1 =
-            Relationship::create_new("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
-        let relationship_2 =
-            Relationship::create_new("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
+        let relationship_1 = Relationship::create_new("related", Uuid::nil(), Uuid::nil()).unwrap();
+        let relationship_2 = Relationship::create_new("related", Uuid::nil(), Uuid::nil()).unwrap();
 
         assert!(relationship_2.id != relationship_1.id);
     }
@@ -157,15 +147,14 @@ mod tests {
     #[test]
     fn invalid_relationship_variant_input() {
         let invalid_relationship =
-            Relationship::create_new("bad variant", Uuid::new_v4(), Uuid::new_v4()).unwrap_err();
+            Relationship::create_new("bad variant", Uuid::nil(), Uuid::nil()).unwrap_err();
 
         assert!(invalid_relationship == "invalid relationship variant");
     }
 
     #[test]
     fn create_related_relationship() {
-        let new_related_relationship =
-            Relationship::create_new_related(Uuid::new_v4(), Uuid::new_v4());
+        let new_related_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
         assert!(
             new_related_relationship.variant
@@ -176,7 +165,7 @@ mod tests {
     #[test]
     fn create_subsequent() {
         let new_sequential_relationship =
-            Relationship::create_new_sequential(Uuid::new_v4(), Uuid::new_v4());
+            Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
 
         assert!(
             new_sequential_relationship.variant
@@ -186,8 +175,7 @@ mod tests {
 
     #[test]
     fn create_parental() {
-        let new_parental_relationship =
-            Relationship::create_new_parental(Uuid::new_v4(), Uuid::new_v4());
+        let new_parental_relationship = Relationship::create_new_parental(Uuid::nil(), Uuid::nil());
 
         assert!(
             new_parental_relationship.variant
@@ -199,7 +187,7 @@ mod tests {
     fn add_related_relationship_to_list() {
         let mut relationship_list: Vector<Relationship> = Vector::new();
 
-        relationship_list.add_related(Uuid::new_v4(), Uuid::new_v4());
+        relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
         assert! {relationship_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
     }
@@ -208,7 +196,7 @@ mod tests {
     fn add_sequential_relationship_to_list() {
         let mut relationship_list: Vector<Relationship> = Vector::new();
 
-        relationship_list.add_sequential(Uuid::new_v4(), Uuid::new_v4());
+        relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
 
         assert! {relationship_list[0].variant == RelationshipVariant::Sequential(EdgeDirection::Directed)}
     }
@@ -217,7 +205,7 @@ mod tests {
     fn add_parental_relationship_to_list() {
         let mut relationship_list: Vector<Relationship> = Vector::new();
 
-        relationship_list.add_parental(Uuid::new_v4(), Uuid::new_v4());
+        relationship_list.add_parental(Uuid::nil(), Uuid::nil());
 
         assert!(
             relationship_list[0].variant == RelationshipVariant::Parental(EdgeDirection::Directed)
