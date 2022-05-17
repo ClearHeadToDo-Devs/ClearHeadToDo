@@ -7,9 +7,9 @@ use im::Vector;
 
 trait RelationshipListManagement {
     type L: RelationshipListManagement;
-    fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid);
-    fn add_sequential(&mut self, participant_1: Uuid, participant_2: Uuid);
-    fn add_parental(&mut self, participant_1: Uuid, participant_2: Uuid);
+    fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
+    fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
+    fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
 }
 
 #[allow(dead_code)]
@@ -91,19 +91,30 @@ impl RelationshipManagement for Relationship {
 impl RelationshipListManagement for Vector<Relationship> {
     type L = Vector<Relationship>;
 
-    fn add_related(&mut self, participant_1: Uuid, participant_2: Uuid) {
+    fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let new_relationship = Relationship::create_new_related(participant_1, participant_2);
-        self.push_back(new_relationship)
-    }
+        let mut cloned_list = self.clone();
 
-    fn add_sequential(&mut self, participant_1: Uuid, participant_2: Uuid) {
+        cloned_list.push_back(new_relationship);
+
+        return cloned_list;
+    }
+    fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let new_relationship = Relationship::create_new_sequential(participant_1, participant_2);
-        self.push_back(new_relationship)
+        let mut cloned_list = self.clone();
+
+        cloned_list.push_back(new_relationship);
+
+        return cloned_list;
     }
 
-    fn add_parental(&mut self, participant_1: Uuid, participant_2: Uuid) {
+    fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let new_relationship = Relationship::create_new_parental(participant_1, participant_2);
-        self.push_back(new_relationship)
+        let mut cloned_list = self.clone();
+
+        cloned_list.push_back(new_relationship);
+
+        return cloned_list;
     }
 }
 
@@ -185,69 +196,68 @@ mod tests {
 
     #[test]
     fn add_related_relationship_to_list() {
-        let mut relationship_list: Vector<Relationship> = Vector::new();
+        let relationship_list: Vector<Relationship> = Vector::new();
 
-        relationship_list.add_related(Uuid::nil(), Uuid::nil());
+        let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
-        assert! {relationship_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
+        assert! {modified_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
     }
 
     #[test]
     fn add_sequential_relationship_to_list() {
-        let mut relationship_list: Vector<Relationship> = Vector::new();
+        let relationship_list: Vector<Relationship> = Vector::new();
 
-        relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
+        let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
 
-        assert! {relationship_list[0].variant == RelationshipVariant::Sequential(EdgeDirection::Directed)}
+        assert! {modified_list[0].variant == RelationshipVariant::Sequential(EdgeDirection::Directed)}
     }
 
     #[test]
     fn add_parental_relationship_to_list() {
-        let mut relationship_list: Vector<Relationship> = Vector::new();
+        let relationship_list: Vector<Relationship> = Vector::new();
 
-        relationship_list.add_parental(Uuid::nil(), Uuid::nil());
+        let modified_list = relationship_list.add_parental(Uuid::nil(), Uuid::nil());
 
-        assert!(
-            relationship_list[0].variant == RelationshipVariant::Parental(EdgeDirection::Directed)
-        )
+        assert!(modified_list[0].variant == RelationshipVariant::Parental(EdgeDirection::Directed))
     }
 
     #[test]
     fn remove_relationship() {
-        let mut relationship_list: Vector<Relationship> = Vector::new();
-        relationship_list.add_related(Uuid::nil(), Uuid::nil());
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let mut modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
-        relationship_list.pop_back();
+        modified_list.pop_back();
 
-        assert!(relationship_list.len() == 0);
+        assert!(modified_list.len() == 0);
     }
 
     #[test]
     fn remove_first_relationship() {
-        let mut relationship_list: Vector<Relationship> = Vector::new();
-        relationship_list.add_related(Uuid::nil(), Uuid::nil());
-        relationship_list.add_related(Uuid::nil(), Uuid::nil());
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+        let mut second_modified_list = modified_list.add_related(Uuid::nil(), Uuid::nil());
 
-        relationship_list.pop_front();
+        second_modified_list.pop_front();
 
         assert!(
-            relationship_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)
+            second_modified_list[0].variant
+                == RelationshipVariant::Related(EdgeDirection::Undirected)
         );
     }
 
     #[test]
     fn remove_middle_relationship() {
-        let mut relationship_list: Vector<Relationship> = Vector::new();
-        relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
-        relationship_list.add_related(Uuid::nil(), Uuid::nil());
-        relationship_list.add_parental(Uuid::nil(), Uuid::nil());
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
+        let second_modified_list = modified_list.add_related(Uuid::nil(), Uuid::nil());
+        let mut third_modified_list = second_modified_list.add_parental(Uuid::nil(), Uuid::nil());
 
-        relationship_list.remove(1);
+        third_modified_list.remove(1);
 
         assert!(
-            relationship_list[0].variant
+            third_modified_list[0].variant
                 == RelationshipVariant::Sequential(EdgeDirection::Directed)
-                && relationship_list.len() == 2
+                && third_modified_list.len() == 2
         );
     }
 }
