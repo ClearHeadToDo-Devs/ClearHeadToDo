@@ -173,8 +173,8 @@ mod tests {
 
     #[test]
     fn format_string() {
-        let relationship_variant = RelationshipVariant::Related;
+        let relationship_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
 
-        //assert!(format!("{}", relationship_variant) == "Related:Undirected")
+        assert!(format!("{}", relationship_variant) == "Related: Undirected")
     }
 }
