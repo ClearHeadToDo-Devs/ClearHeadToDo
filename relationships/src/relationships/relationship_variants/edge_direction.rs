@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[allow(dead_code)]
 #[derive(PartialEq, Debug, Clone)]
 pub enum EdgeDirection {
@@ -33,9 +35,19 @@ impl EdgeDirectionManagement for EdgeDirection {
     }
 }
 
+impl fmt::Display for EdgeDirection {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            EdgeDirection::Directed => write!(f, "Directed"),
+            EdgeDirection::Undirected => write!(f, "Undirected"),
+        }
+    }
+}
+
 #[cfg(test)]
 
 mod tests {
+
     use super::*;
     #[test]
     fn directed_edge_creation() {
@@ -57,5 +69,12 @@ mod tests {
         let altered_edge = example_edge.change_direction();
 
         assert!(altered_edge == EdgeDirection::Directed)
+    }
+
+    #[test]
+    fn edge_direction_formatting() {
+        let example_edge = EdgeDirection::create_directed();
+
+        assert!(format!("{}", example_edge) == "Directed")
     }
 }
