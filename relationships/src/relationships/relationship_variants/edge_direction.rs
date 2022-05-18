@@ -7,7 +7,7 @@ pub enum EdgeDirection {
     Undirected,
 }
 
-pub trait EdgeDirectionManagement {
+pub trait EdgeDirectionManagement: fmt::Display {
     type D: EdgeDirectionManagement;
 
     fn create_undirected() -> Self::D;

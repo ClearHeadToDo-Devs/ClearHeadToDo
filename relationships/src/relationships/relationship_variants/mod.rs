@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub mod edge_direction;
 pub use edge_direction::*;
 
@@ -83,6 +85,18 @@ impl RelationshipVariantManagement for RelationshipVariant {
     }
 }
 
+impl fmt::Display for RelationshipVariant {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &*self {
+            RelationshipVariant::Related(edge) => write!(f, "Related: {:?}", edge),
+            RelationshipVariant::Parental(edge) => write!(f, "Parental: {:?}", edge),
+            RelationshipVariant::Sequential(edge) => {
+                write!(f, "Sequential: {:?}", edge)
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -155,5 +169,12 @@ mod tests {
             RelationshipVariant::create_from_string("bad variant").unwrap_err();
 
         assert!(relationship_error.to_string() == "invalid relationship variant")
+    }
+
+    #[test]
+    fn format_string() {
+        let relationship_variant = RelationshipVariant::Related;
+
+        //assert!(format!("{}", relationship_variant) == "Related:Undirected")
     }
 }
