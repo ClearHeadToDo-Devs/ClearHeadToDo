@@ -172,9 +172,23 @@ mod tests {
     }
 
     #[test]
-    fn format_string() {
+    fn print_related_string() {
         let relationship_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
 
         assert!(format!("{}", relationship_variant) == "Related: Undirected")
+    }
+
+    #[test]
+    fn print_parental_string() {
+        let relationship_variant = RelationshipVariant::create_parental();
+
+        assert!(format!("{}", relationship_variant) == "Parental: Directed")
+    }
+
+    #[test]
+    fn print_sequential_string() {
+        let relationship_variant = RelationshipVariant::create_sequential();
+
+        assert!(format!("{}", relationship_variant) == "Sequential: Directed")
     }
 }
