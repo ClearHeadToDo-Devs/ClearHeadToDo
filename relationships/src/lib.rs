@@ -11,6 +11,7 @@ trait RelationshipListManagement {
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
+    fn remove_at_index(&self, index: usize) -> Self::L;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -40,6 +41,21 @@ impl RelationshipListManagement for Vector<Relationship> {
         cloned_list.push_back(new_relationship);
 
         return cloned_list;
+    }
+
+    fn remove_at_index(&self, index: usize) -> Self::L {
+        let mut updated_list = self.clone();
+
+        if index == 0 {
+            updated_list.pop_front();
+            return updated_list;
+        } else if index == updated_list.len() - 1 {
+            updated_list.pop_back();
+            return updated_list;
+        } else {
+            updated_list.remove(index);
+            return updated_list;
+        }
     }
 }
 
@@ -74,14 +90,15 @@ mod tests {
 
         //assert!(modified_list[0].variant == RelationshipVariant::Parental(EdgeDirection::Directed))
     }
+
     #[test]
     fn remove_relationship() {
         let relationship_list: Vector<Relationship> = Vector::new();
-        let mut modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+        let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
-        modified_list.pop_back();
+        let pruned_list = modified_list.remove_at_index(0);
 
-        assert!(modified_list.len() == 0);
+        assert!(pruned_list.len() == 0);
     }
 
     #[test]
