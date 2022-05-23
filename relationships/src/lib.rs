@@ -70,7 +70,7 @@ mod tests {
 
         let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
-        // assert! {modified_list[0].variant == RelationshipVariant::Related(EdgeDirection::Undirected)}
+        assert! {modified_list[0].get_variant_string() == "Related: Undirected"}
     }
 
     #[test]
@@ -79,7 +79,7 @@ mod tests {
 
         let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
 
-        //assert! {modified_list[0].variant == RelationshipVariant::Sequential(EdgeDirection::Directed)}
+        assert! {modified_list[0].get_variant_string() == "Sequential: Directed"}
     }
 
     #[test]
@@ -88,7 +88,7 @@ mod tests {
 
         let modified_list = relationship_list.add_parental(Uuid::nil(), Uuid::nil());
 
-        //assert!(modified_list[0].variant == RelationshipVariant::Parental(EdgeDirection::Directed))
+        assert!(modified_list[0].get_variant_string() == "Parental: Directed")
     }
 
     #[test]
@@ -109,10 +109,7 @@ mod tests {
 
         second_modified_list.pop_front();
 
-        //       assert!(
-        //           second_modified_list[0].variant
-        //              == RelationshipVariant::Related(EdgeDirection::Undirected)
-        //     );
+        assert!(second_modified_list[0].get_variant_string() == "Related: Undirected");
     }
 
     #[test]
@@ -124,10 +121,9 @@ mod tests {
 
         third_modified_list.remove(1);
 
-        //       assert!(
-        //third_modified_list[0].variant
-        //   == RelationshipVariant::Sequential(EdgeDirection::Directed)
-        //  && third_modified_list.len() == 2
-        //);
+        assert!(
+            third_modified_list[1].get_variant_string() == "Parental: Directed"
+                && third_modified_list.len() == 2
+        );
     }
 }
