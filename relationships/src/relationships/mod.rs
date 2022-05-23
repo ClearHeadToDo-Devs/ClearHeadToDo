@@ -169,4 +169,32 @@ mod tests {
 
         assert!(variant_string == "Related: Undirected".to_string())
     }
+
+    #[test]
+    fn export_related_variant_string() {
+        let new_related_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+
+        let variant_string = new_related_relationship.get_variant_string();
+
+        assert!(variant_string == "Related: Undirected")
+    }
+
+    #[test]
+    fn export_parental_variant_string() {
+        let new_related_relationship = Relationship::create_new_parental(Uuid::nil(), Uuid::nil());
+
+        let variant_string = new_related_relationship.get_variant_string();
+
+        assert!(variant_string == "Parental: Directed")
+    }
+
+    #[test]
+    fn export_sequential_variant_string() {
+        let new_related_relationship =
+            Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
+
+        let variant_string = new_related_relationship.get_variant_string();
+
+        assert!(variant_string == "Sequential: Directed")
+    }
 }
