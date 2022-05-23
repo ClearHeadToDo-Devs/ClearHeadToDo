@@ -105,11 +105,11 @@ mod tests {
     fn remove_first_relationship() {
         let relationship_list: Vector<Relationship> = Vector::new();
         let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
-        let mut second_modified_list = modified_list.add_related(Uuid::nil(), Uuid::nil());
+        let second_modified_list = modified_list.add_related(Uuid::nil(), Uuid::nil());
 
-        second_modified_list.pop_front();
+        let popped_list = second_modified_list.remove_at_index(1);
 
-        assert!(second_modified_list[0].get_variant_string() == "Related: Undirected");
+        assert!(popped_list[0].get_variant_string() == "Related: Undirected");
     }
 
     #[test]
@@ -117,13 +117,22 @@ mod tests {
         let relationship_list: Vector<Relationship> = Vector::new();
         let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
         let second_modified_list = modified_list.add_related(Uuid::nil(), Uuid::nil());
-        let mut third_modified_list = second_modified_list.add_parental(Uuid::nil(), Uuid::nil());
+        let third_modified_list = second_modified_list.add_parental(Uuid::nil(), Uuid::nil());
 
-        third_modified_list.remove(1);
+        let popped_list = third_modified_list.remove_at_index(1);
 
         assert!(
-            third_modified_list[1].get_variant_string() == "Parental: Directed"
-                && third_modified_list.len() == 2
+            popped_list[1].get_variant_string() == "Parental: Directed" && popped_list.len() == 2
         );
+    }
+
+    #[test]
+    fn out_of_bounds_removal_error() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+
+        let failed_poped_list = relationship_list.remove_at_index(0);
+
+        //assert!(failed_poped_list == "out of bounds index")
+        // don't really know what is going on here...
     }
 }
