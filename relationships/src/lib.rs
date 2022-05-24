@@ -46,16 +46,12 @@ impl RelationshipListManagement for Vector<Relationship> {
     fn remove_at_index(&self, index: usize) -> Self::L {
         let mut updated_list = self.clone();
 
-        if index == 0 {
-            updated_list.pop_front();
-            return updated_list;
-        } else if index == updated_list.len() - 1 {
-            updated_list.pop_back();
-            return updated_list;
+        if self.len() == 0 && index == 0 {
+            panic!("out of bounds index error")
         } else {
             updated_list.remove(index);
-            return updated_list;
         }
+        return updated_list;
     }
 }
 
@@ -127,12 +123,23 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
     fn out_of_bounds_removal_error() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let single_relationship_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let failed_poped_list = single_relationship_list.remove_at_index(1);
+
+        assert!(failed_poped_list.len() == 0)
+    }
+
+    #[test]
+    #[should_panic]
+    fn empty_vector_removal() {
         let relationship_list: Vector<Relationship> = Vector::new();
 
         let failed_poped_list = relationship_list.remove_at_index(0);
 
-        //assert!(failed_poped_list == "out of bounds index")
-        // don't really know what is going on here...
+        assert!(failed_poped_list.len() == 0)
     }
 }
