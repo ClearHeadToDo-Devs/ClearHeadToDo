@@ -45,12 +45,7 @@ impl RelationshipListManagement for Vector<Relationship> {
 
     fn remove_at_index(&self, index: usize) -> Self::L {
         let mut updated_list = self.clone();
-
-        if self.len() == 0 && index == 0 {
-            panic!("out of bounds index error")
-        } else {
-            updated_list.remove(index);
-        }
+        updated_list.remove(index);
         return updated_list;
     }
 }
@@ -95,42 +90,6 @@ mod tests {
         let pruned_list = modified_list.remove_at_index(0);
 
         assert!(pruned_list.len() == 0);
-    }
-
-    #[test]
-    fn remove_first_relationship() {
-        let relationship_list: Vector<Relationship> = Vector::new();
-        let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
-        let second_modified_list = modified_list.add_related(Uuid::nil(), Uuid::nil());
-
-        let popped_list = second_modified_list.remove_at_index(1);
-
-        assert!(popped_list[0].get_variant_string() == "Related: Undirected");
-    }
-
-    #[test]
-    fn remove_middle_relationship() {
-        let relationship_list: Vector<Relationship> = Vector::new();
-        let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
-        let second_modified_list = modified_list.add_related(Uuid::nil(), Uuid::nil());
-        let third_modified_list = second_modified_list.add_parental(Uuid::nil(), Uuid::nil());
-
-        let popped_list = third_modified_list.remove_at_index(1);
-
-        assert!(
-            popped_list[1].get_variant_string() == "Parental: Directed" && popped_list.len() == 2
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn out_of_bounds_removal_error() {
-        let relationship_list: Vector<Relationship> = Vector::new();
-        let single_relationship_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
-
-        let failed_poped_list = single_relationship_list.remove_at_index(1);
-
-        assert!(failed_poped_list.len() == 0)
     }
 
     #[test]
