@@ -18,6 +18,7 @@ pub trait RelationshipVariantManagement {
     fn create_related() -> Self::V;
     fn create_sequential() -> Self::V;
     fn create_parental() -> Self::V;
+    fn get_edge_direction(&self) -> String;
 
     fn change_edge_direction(self) -> Self::V;
     fn change_type(self, target_variant: Self::V) -> Self::V;
@@ -82,6 +83,14 @@ impl RelationshipVariantManagement for RelationshipVariant {
             }
             _ => return Err("invalid relationship variant".to_string()),
         }
+    }
+
+    fn get_edge_direction(&self) -> String {
+        return match self {
+            RelationshipVariant::Related(direction) => format!("{}", direction),
+            RelationshipVariant::Parental(direction) => format!("{}", direction),
+            RelationshipVariant::Sequential(direction) => format!("{}", direction),
+        };
     }
 }
 
@@ -190,5 +199,14 @@ mod tests {
         let relationship_variant = RelationshipVariant::create_sequential();
 
         assert!(format!("{}", relationship_variant) == "Sequential: Directed")
+    }
+
+    #[test]
+    fn print_edge_direction() {
+        let relationship_variant = RelationshipVariant::create_related();
+
+        let edge_string = relationship_variant.get_edge_direction();
+
+        assert!(edge_string == "Undirected")
     }
 }
