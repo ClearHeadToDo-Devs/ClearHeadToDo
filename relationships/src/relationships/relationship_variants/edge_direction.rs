@@ -77,4 +77,13 @@ mod tests {
 
         assert!(format!("{}", example_edge) == "Directed")
     }
+
+    #[test]
+    fn return_as_string() {
+        let example_edge = EdgeDirection::create_directed();
+
+        let edge_string = example_edge.to_string();
+
+        assert!(edge_string == "Directed")
+    }
 }

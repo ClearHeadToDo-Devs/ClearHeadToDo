@@ -101,4 +101,10 @@ mod tests {
 
         assert!(failed_poped_list.len() == 0)
     }
+
+    #[test]
+    fn return_index_from_id() {
+        let relationship_list: Vector<Relationship> =
+            Vector::new().add_related(Uuid::nil(), Uuid::nil());
+    }
 }
