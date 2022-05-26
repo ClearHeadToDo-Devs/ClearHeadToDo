@@ -29,6 +29,7 @@ pub trait RelationshipManagement {
     fn change_edge_direction(&self) -> Self::R;
 
     fn get_id(&self) -> Uuid;
+    fn get_participant_1(&self) -> Uuid;
     fn get_variant_string(&self) -> String;
     fn get_edge_direction_as_string(&self) -> String;
 }
@@ -102,6 +103,10 @@ impl RelationshipManagement for Relationship {
         return self.id;
     }
 
+    fn get_participant_1(&self) -> Uuid {
+        return self.participant_1;
+    }
+
     fn get_variant_string(&self) -> String {
         return format!("{}", self.variant).to_string();
     }
@@ -138,7 +143,7 @@ mod tests {
             Uuid::nil(),
         );
 
-        assert!(nil_relationship.id == Uuid::nil());
+        assert!(nil_relationship.id.is_nil());
     }
 
     #[test]
@@ -289,9 +294,15 @@ mod tests {
 
         let id = test_relationship.get_id();
 
-        assert!(id == Uuid::nil())
+        assert!(id.is_nil())
     }
 
     #[test]
-    fn get_particpant_1_id() {}
+    fn get_particpant_1_id() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::new_v4());
+
+        let participant_1 = test_relationship.get_participant_1();
+
+        assert!(participant_1.is_nil())
+    }
 }
