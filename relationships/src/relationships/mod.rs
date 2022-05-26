@@ -249,5 +249,13 @@ mod tests {
         let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
         let updated_relationship = test_relationship.change_edge_direction();
+
+        assert!(
+            updated_relationship
+                == Relationship {
+                    variant: RelationshipVariant::Related(EdgeDirection::Directed),
+                    ..test_relationship
+                }
+        )
     }
 }
