@@ -26,6 +26,7 @@ pub trait RelationshipManagement {
     fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self::R;
     fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self::R;
     fn change_variant(&self, target_variant: &str) -> Result<Self::R, String>;
+    fn change_edge_direction(&self) -> Self::R;
     fn get_variant_string(&self) -> String;
 }
 
@@ -85,6 +86,13 @@ impl RelationshipManagement for Relationship {
             variant: RelationshipVariant::create_from_string(target_variant)?,
             ..self.to_owned()
         });
+    }
+
+    fn change_edge_direction(&self) -> Self {
+        return Relationship {
+            variant: self.variant.change_edge_direction(),
+            ..self.to_owned()
+        };
     }
 
     fn get_variant_string(&self) -> String {
@@ -234,5 +242,12 @@ mod tests {
                     ..test_relationship
                 }
         )
+    }
+
+    #[test]
+    fn change_variant_direction() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+
+        let updated_relationship = test_relationship.change_edge_direction();
     }
 }

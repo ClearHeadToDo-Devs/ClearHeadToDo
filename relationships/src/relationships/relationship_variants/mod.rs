@@ -20,8 +20,8 @@ pub trait RelationshipVariantManagement {
     fn create_parental() -> Self::V;
     fn get_edge_direction(&self) -> String;
 
-    fn change_edge_direction(self) -> Self::V;
-    fn change_type(self, target_variant: Self::V) -> Self::V;
+    fn change_edge_direction(&self) -> Self::V;
+    fn change_type(&self, target_variant: Self::V) -> Self::V;
 
     fn create_from_string(target_variant: &str) -> Result<Self::V, String>;
 }
@@ -42,7 +42,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
         return RelationshipVariant::Parental(EdgeDirection::create_directed());
     }
 
-    fn change_edge_direction(self) -> RelationshipVariant {
+    fn change_edge_direction(&self) -> RelationshipVariant {
         match self {
             RelationshipVariant::Related(direction) => {
                 RelationshipVariant::Related(direction.change_direction())
@@ -56,7 +56,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
         }
     }
 
-    fn change_type(self, target_variant: RelationshipVariant) -> RelationshipVariant {
+    fn change_type(&self, target_variant: RelationshipVariant) -> RelationshipVariant {
         match target_variant {
             RelationshipVariant::Related(direction) => {
                 return RelationshipVariant::Related(direction)

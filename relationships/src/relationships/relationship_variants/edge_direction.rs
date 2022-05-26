@@ -12,7 +12,7 @@ pub trait EdgeDirectionManagement: fmt::Display {
 
     fn create_undirected() -> Self::D;
     fn create_directed() -> Self::D;
-    fn change_direction(self) -> Self::D;
+    fn change_direction(&self) -> Self::D;
 }
 
 #[allow(dead_code)]
@@ -27,7 +27,7 @@ impl EdgeDirectionManagement for EdgeDirection {
         return EdgeDirection::Undirected;
     }
 
-    fn change_direction(self) -> EdgeDirection {
+    fn change_direction(&self) -> EdgeDirection {
         match self {
             EdgeDirection::Undirected => EdgeDirection::Directed,
             EdgeDirection::Directed => EdgeDirection::Undirected,
