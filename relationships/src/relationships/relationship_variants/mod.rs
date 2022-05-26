@@ -18,12 +18,12 @@ pub trait RelationshipVariantManagement {
     fn create_related() -> Self::V;
     fn create_sequential() -> Self::V;
     fn create_parental() -> Self::V;
-    fn get_edge_direction(&self) -> String;
+    fn create_from_string(target_variant: &str) -> Result<Self::V, String>;
 
     fn change_edge_direction(&self) -> Self::V;
     fn change_type(&self, target_variant: Self::V) -> Self::V;
 
-    fn create_from_string(target_variant: &str) -> Result<Self::V, String>;
+    fn get_edge_direction_as_string(&self) -> String;
 }
 
 #[allow(dead_code)]
@@ -40,6 +40,21 @@ impl RelationshipVariantManagement for RelationshipVariant {
 
     fn create_parental() -> RelationshipVariant {
         return RelationshipVariant::Parental(EdgeDirection::create_directed());
+    }
+
+    fn create_from_string(target_variant: &str) -> Result<RelationshipVariant, String> {
+        match target_variant {
+            "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
+                return Ok(RelationshipVariant::create_parental())
+            }
+            "previous" | "subsequent" | "Previous/Subsequent" | "PS" | "P/S" | "sequential" => {
+                return Ok(RelationshipVariant::create_sequential())
+            }
+            "related" | "relational" | "generic" => {
+                return Ok(RelationshipVariant::create_related())
+            }
+            _ => return Err("invalid relationship variant".to_string()),
+        }
     }
 
     fn change_edge_direction(&self) -> RelationshipVariant {
@@ -70,22 +85,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
         }
     }
 
-    fn create_from_string(target_variant: &str) -> Result<RelationshipVariant, String> {
-        match target_variant {
-            "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
-                return Ok(RelationshipVariant::create_parental())
-            }
-            "previous" | "subsequent" | "Previous/Subsequent" | "PS" | "P/S" | "sequential" => {
-                return Ok(RelationshipVariant::create_sequential())
-            }
-            "related" | "relational" | "generic" => {
-                return Ok(RelationshipVariant::create_related())
-            }
-            _ => return Err("invalid relationship variant".to_string()),
-        }
-    }
-
-    fn get_edge_direction(&self) -> String {
+    fn get_edge_direction_as_string(&self) -> String {
         return match self {
             RelationshipVariant::Related(direction) => format!("{}", direction),
             RelationshipVariant::Parental(direction) => format!("{}", direction),
@@ -205,7 +205,7 @@ mod tests {
     fn print_edge_direction() {
         let relationship_variant = RelationshipVariant::create_related();
 
-        let edge_string = relationship_variant.get_edge_direction();
+        let edge_string = relationship_variant.get_edge_direction_as_string();
 
         assert!(edge_string == "Undirected")
     }
