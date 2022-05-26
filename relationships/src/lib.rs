@@ -61,7 +61,7 @@ mod tests {
 
         let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
-        assert! {modified_list[0].get_variant_string() == "Related: Undirected"}
+        assert! {modified_list[0].get_variant().to_string() == "Related: Undirected"}
     }
 
     #[test]
@@ -70,7 +70,7 @@ mod tests {
 
         let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
 
-        assert! {modified_list[0].get_variant_string() == "Sequential: Directed"}
+        assert! {modified_list[0].get_variant().to_string() == "Sequential: Directed"}
     }
 
     #[test]
@@ -79,7 +79,7 @@ mod tests {
 
         let modified_list = relationship_list.add_parental(Uuid::nil(), Uuid::nil());
 
-        assert!(modified_list[0].get_variant_string() == "Parental: Directed")
+        assert!(modified_list[0].get_variant().to_string() == "Parental: Directed")
     }
 
     #[test]

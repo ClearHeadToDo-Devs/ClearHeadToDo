@@ -4,7 +4,7 @@ pub mod edge_direction;
 pub use edge_direction::*;
 
 #[allow(dead_code)]
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 #[non_exhaustive]
 pub enum RelationshipVariant {
     Parental(EdgeDirection),

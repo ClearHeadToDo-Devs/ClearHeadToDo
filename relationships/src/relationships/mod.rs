@@ -30,7 +30,7 @@ pub trait RelationshipManagement {
 
     fn get_id(&self) -> Uuid;
     fn get_participant_1(&self) -> Uuid;
-    fn get_variant_string(&self) -> String;
+    fn get_variant(&self) -> Self::V;
     fn get_edge_direction_as_string(&self) -> String;
 }
 
@@ -107,8 +107,8 @@ impl RelationshipManagement for Relationship {
         return self.participant_1;
     }
 
-    fn get_variant_string(&self) -> String {
-        return format!("{}", self.variant).to_string();
+    fn get_variant(&self) -> RelationshipVariant {
+        return self.variant;
     }
 
     fn get_edge_direction_as_string(&self) -> String {
@@ -194,30 +194,21 @@ mod tests {
     }
 
     #[test]
-    fn return_variant_string() {
+    fn get_variant() {
         let example_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
-        let variant_string = example_relationship.get_variant_string();
+        let variant = example_relationship.get_variant();
 
-        assert!(variant_string == "Related: Undirected".to_string())
-    }
-
-    #[test]
-    fn export_related_variant_string() {
-        let new_related_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
-
-        let variant_string = new_related_relationship.get_variant_string();
-
-        assert!(variant_string == "Related: Undirected")
+        assert!(variant == RelationshipVariant::Related(EdgeDirection::Undirected))
     }
 
     #[test]
     fn export_parental_variant_string() {
         let new_related_relationship = Relationship::create_new_parental(Uuid::nil(), Uuid::nil());
 
-        let variant_string = new_related_relationship.get_variant_string();
+        let variant = new_related_relationship.get_variant();
 
-        assert!(variant_string == "Parental: Directed")
+        assert!(variant == RelationshipVariant::Parental(EdgeDirection::Directed))
     }
 
     #[test]
@@ -225,9 +216,9 @@ mod tests {
         let new_related_relationship =
             Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
 
-        let variant_string = new_related_relationship.get_variant_string();
+        let variant = new_related_relationship.get_variant();
 
-        assert!(variant_string == "Sequential: Directed")
+        assert!(variant == RelationshipVariant::Sequential(EdgeDirection::Directed))
     }
 
     #[test]
@@ -246,7 +237,7 @@ mod tests {
     }
 
     #[test]
-    fn cahnge_undirected_to_directed() {
+    fn change_undirected_to_directed() {
         let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
         let updated_relationship = test_relationship.change_variant("parental").unwrap();
@@ -304,5 +295,12 @@ mod tests {
         let participant_1 = test_relationship.get_participant_1();
 
         assert!(participant_1.is_nil())
+    }
+
+    #[test]
+    fn get_edge_direction() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+
+        //let edge_direction = test_relationship.get_variant();
     }
 }

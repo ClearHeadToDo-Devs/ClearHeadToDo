@@ -1,7 +1,7 @@
 use std::fmt;
 
 #[allow(dead_code)]
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub enum EdgeDirection {
     Directed,
     Undirected,
