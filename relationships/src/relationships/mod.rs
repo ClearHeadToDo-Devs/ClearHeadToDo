@@ -25,6 +25,7 @@ pub trait RelationshipManagement {
     fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self::R;
     fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self::R;
     fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self::R;
+    fn change_variant(&self, target_variant: &str) -> Result<Self::R, String>;
     fn get_variant_string(&self) -> String;
 }
 
@@ -77,6 +78,13 @@ impl RelationshipManagement for Relationship {
             participant_1,
             participant_2,
         }
+    }
+
+    fn change_variant(&self, target_variant: &str) -> Result<Self, String> {
+        return Ok(Relationship {
+            variant: RelationshipVariant::create_from_string(target_variant)?,
+            ..self.to_owned()
+        });
     }
 
     fn get_variant_string(&self) -> String {
@@ -196,5 +204,35 @@ mod tests {
         let variant_string = new_related_relationship.get_variant_string();
 
         assert!(variant_string == "Sequential: Directed")
+    }
+
+    #[test]
+    fn change_relationship_variant() {
+        let test_relationship = Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
+
+        let updated_relationship = test_relationship.change_variant("parental").unwrap();
+
+        assert!(
+            updated_relationship
+                == Relationship {
+                    variant: RelationshipVariant::Parental(EdgeDirection::Directed),
+                    ..test_relationship
+                }
+        )
+    }
+
+    #[test]
+    fn cahnge_undirected_to_directed() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+
+        let updated_relationship = test_relationship.change_variant("parental").unwrap();
+
+        assert!(
+            updated_relationship
+                == Relationship {
+                    variant: RelationshipVariant::Parental(EdgeDirection::Directed),
+                    ..test_relationship
+                }
+        )
     }
 }
