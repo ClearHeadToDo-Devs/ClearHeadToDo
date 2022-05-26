@@ -28,7 +28,7 @@ pub trait RelationshipManagement {
     fn change_variant(&self, target_variant: &str) -> Result<Self::R, String>;
     fn change_edge_direction(&self) -> Self::R;
 
-    fn get_id_string(&self) -> String;
+    fn get_id(&self) -> Uuid;
     fn get_variant_string(&self) -> String;
     fn get_edge_direction_as_string(&self) -> String;
 }
@@ -98,8 +98,8 @@ impl RelationshipManagement for Relationship {
         };
     }
 
-    fn get_id_string(&self) -> String {
-        return self.id.to_string();
+    fn get_id(&self) -> Uuid {
+        return self.id;
     }
 
     fn get_variant_string(&self) -> String {
@@ -287,8 +287,11 @@ mod tests {
             Uuid::nil(),
         );
 
-        let id_string = test_relationship.get_id_string();
+        let id = test_relationship.get_id();
 
-        assert!(id_string == Uuid::nil().to_string())
+        assert!(id == Uuid::nil())
     }
+
+    #[test]
+    fn get_particpant_1_id() {}
 }
