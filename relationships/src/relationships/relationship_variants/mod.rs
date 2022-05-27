@@ -14,6 +14,7 @@ pub enum RelationshipVariant {
 
 pub trait RelationshipVariantManagement {
     type V: RelationshipVariantManagement;
+    type E: EdgeDirectionManagement;
 
     fn create_related() -> Self::V;
     fn create_sequential() -> Self::V;
@@ -23,12 +24,13 @@ pub trait RelationshipVariantManagement {
     fn change_edge_direction(&self) -> Self::V;
     fn change_type(&self, target_variant: Self::V) -> Self::V;
 
-    fn get_edge_direction_as_string(&self) -> String;
+    fn get_edge_direction(&self) -> EdgeDirection;
 }
 
 #[allow(dead_code)]
 impl RelationshipVariantManagement for RelationshipVariant {
     type V = RelationshipVariant;
+    type E = EdgeDirection;
 
     fn create_related() -> RelationshipVariant {
         return RelationshipVariant::Related(EdgeDirection::create_undirected());
@@ -85,11 +87,11 @@ impl RelationshipVariantManagement for RelationshipVariant {
         }
     }
 
-    fn get_edge_direction_as_string(&self) -> String {
+    fn get_edge_direction(&self) -> EdgeDirection {
         return match self {
-            RelationshipVariant::Related(direction) => format!("{}", direction),
-            RelationshipVariant::Parental(direction) => format!("{}", direction),
-            RelationshipVariant::Sequential(direction) => format!("{}", direction),
+            RelationshipVariant::Related(direction) => *direction,
+            RelationshipVariant::Parental(direction) => *direction,
+            RelationshipVariant::Sequential(direction) => *direction,
         };
     }
 }
@@ -205,8 +207,8 @@ mod tests {
     fn print_edge_direction() {
         let relationship_variant = RelationshipVariant::create_related();
 
-        let edge_string = relationship_variant.get_edge_direction_as_string();
+        let edge_string = relationship_variant.get_edge_direction();
 
-        assert!(edge_string == "Undirected")
+        assert!(edge_string == EdgeDirection::Undirected)
     }
 }
