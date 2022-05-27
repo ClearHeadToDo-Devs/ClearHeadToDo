@@ -11,7 +11,9 @@ trait RelationshipListManagement {
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
+
     fn remove_at_index(&self, index: usize) -> Self::L;
+
     fn return_index_from_id(&self, id: Uuid) -> Result<usize, String>;
 }
 
@@ -122,5 +124,16 @@ mod tests {
             .unwrap();
 
         assert!(relationship_id == 0)
+    }
+
+    #[test]
+    fn fail_to_find_id() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+
+        let failed_id_query = relationship_list
+            .return_index_from_id(Uuid::nil())
+            .unwrap_err();
+
+        assert!(failed_id_query == "cannot find this id within the relationship list".to_string())
     }
 }
