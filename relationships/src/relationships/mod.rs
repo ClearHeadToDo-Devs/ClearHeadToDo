@@ -30,6 +30,7 @@ pub trait RelationshipManagement {
 
     fn get_id(&self) -> Uuid;
     fn get_participant_1(&self) -> Uuid;
+    fn get_participant_2(&self) -> Uuid;
     fn get_variant(&self) -> Self::V;
     fn get_edge_direction(&self) -> EdgeDirection;
 }
@@ -113,6 +114,10 @@ impl RelationshipManagement for Relationship {
 
     fn get_edge_direction(&self) -> EdgeDirection {
         return self.variant.get_edge_direction();
+    }
+
+    fn get_participant_2(&self) -> Uuid {
+        return self.participant_2;
     }
 }
 
@@ -290,11 +295,20 @@ mod tests {
 
     #[test]
     fn get_particpant_1_id() {
-        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::new_v4());
+        let test_relationship = Relationship::create_new_related(Uuid::new_v4(), Uuid::nil());
 
         let participant_1 = test_relationship.get_participant_1();
 
-        assert!(participant_1.is_nil())
+        assert!(participant_1 == test_relationship.participant_1)
+    }
+
+    #[test]
+    fn get_participant_2_id() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::new_v4());
+
+        let participant_2 = test_relationship.get_participant_2();
+
+        assert!(participant_2 == test_relationship.participant_2)
     }
 
     #[test]
