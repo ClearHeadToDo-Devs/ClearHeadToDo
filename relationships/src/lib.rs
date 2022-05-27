@@ -12,6 +12,7 @@ trait RelationshipListManagement {
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn remove_at_index(&self, index: usize) -> Self::L;
+    fn return_index_from_id(&self, id: Uuid) -> Result<usize, String>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -47,6 +48,15 @@ impl RelationshipListManagement for Vector<Relationship> {
         let mut updated_list = self.clone();
         updated_list.remove(index);
         return updated_list;
+    }
+
+    fn return_index_from_id(&self, id: Uuid) -> Result<usize, String> {
+        let cloned_list = self.clone();
+
+        return cloned_list
+            .iter()
+            .position(|relationship| relationship.get_id() == id)
+            .ok_or("cannot find this id within the relationship list".to_string());
     }
 }
 
@@ -94,7 +104,7 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn empty_vector_removal() {
+    fn empty_vector_removal_error() {
         let relationship_list: Vector<Relationship> = Vector::new();
 
         let failed_poped_list = relationship_list.remove_at_index(0);
@@ -106,5 +116,11 @@ mod tests {
     fn return_index_from_id() {
         let relationship_list: Vector<Relationship> =
             Vector::new().add_related(Uuid::nil(), Uuid::nil());
+
+        let relationship_id = relationship_list
+            .return_index_from_id(relationship_list[0].get_id())
+            .unwrap();
+
+        assert!(relationship_id == 0)
     }
 }

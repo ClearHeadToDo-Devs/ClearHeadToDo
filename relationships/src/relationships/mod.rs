@@ -301,6 +301,8 @@ mod tests {
     fn get_edge_direction() {
         let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
-        //let edge_direction = test_relationship.get_variant();
+        let edge_direction = test_relationship.get_edge_direction();
+
+        assert!(edge_direction == EdgeDirection::Undirected)
     }
 }
