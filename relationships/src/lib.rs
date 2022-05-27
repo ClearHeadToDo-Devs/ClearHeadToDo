@@ -8,6 +8,12 @@ use im::Vector;
 
 trait RelationshipListManagement {
     type L: RelationshipListManagement;
+    fn add_new(
+        &self,
+        target_variant: &str,
+        participant_1: Uuid,
+        participant_2: Uuid,
+    ) -> Result<Self::L, String>;
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
@@ -20,6 +26,19 @@ trait RelationshipListManagement {
 impl RelationshipListManagement for Vector<Relationship> {
     type L = Vector<Relationship>;
 
+    fn add_new(
+        &self,
+        target_variant: &str,
+        participant_1: Uuid,
+        participant_2: Uuid,
+    ) -> Result<Vector<Relationship>, String> {
+        let mut cloned_list = self.clone();
+        let new_relationship =
+            Relationship::create_new(target_variant, participant_1, participant_2)?;
+
+        cloned_list.push_back(new_relationship);
+        return Ok(cloned_list);
+    }
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let new_relationship = Relationship::create_new_related(participant_1, participant_2);
         let mut cloned_list = self.clone();
@@ -66,6 +85,17 @@ impl RelationshipListManagement for Vector<Relationship> {
 mod tests {
 
     use super::*;
+
+    #[test]
+    fn create_new_from_string() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+
+        let updated_list = relationship_list
+            .add_new("related", Uuid::nil(), Uuid::nil())
+            .unwrap();
+
+        assert!(updated_list.len() == 1)
+    }
 
     #[test]
     fn add_related_relationship_to_list() {
