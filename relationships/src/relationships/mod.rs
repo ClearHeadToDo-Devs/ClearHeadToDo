@@ -133,7 +133,7 @@ mod tests {
     }
 
     #[test]
-    fn relationship_id_creation() {
+    fn id_creation() {
         let nil_relationship = create_nil_relationship(
             RelationshipVariant::Related(EdgeDirection::Undirected),
             Uuid::nil(),
@@ -144,7 +144,7 @@ mod tests {
     }
 
     #[test]
-    fn unique_relationship_id() {
+    fn ensure_unique_id() {
         let relationship_1 = Relationship::create_new("related", Uuid::nil(), Uuid::nil()).unwrap();
         let relationship_2 = Relationship::create_new("related", Uuid::nil(), Uuid::nil()).unwrap();
 
@@ -160,7 +160,7 @@ mod tests {
     }
 
     #[test]
-    fn create_related_relationship() {
+    fn create_related() {
         let new_related_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
         assert!(
@@ -191,7 +191,7 @@ mod tests {
     }
 
     #[test]
-    fn get_variant() {
+    fn get_related_variant() {
         let example_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
         let variant = example_relationship.get_variant();
@@ -200,7 +200,7 @@ mod tests {
     }
 
     #[test]
-    fn export_parental_variant_string() {
+    fn get_parental() {
         let new_related_relationship = Relationship::create_new_parental(Uuid::nil(), Uuid::nil());
 
         let variant = new_related_relationship.get_variant();
@@ -209,43 +209,13 @@ mod tests {
     }
 
     #[test]
-    fn export_sequential_variant_string() {
+    fn get_sequential() {
         let new_related_relationship =
             Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
 
         let variant = new_related_relationship.get_variant();
 
         assert!(variant == RelationshipVariant::Sequential(EdgeDirection::Directed))
-    }
-
-    #[test]
-    fn change_relationship_variant() {
-        let test_relationship = Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
-
-        let updated_relationship = test_relationship.change_variant("parental").unwrap();
-
-        assert!(
-            updated_relationship
-                == Relationship {
-                    variant: RelationshipVariant::Parental(EdgeDirection::Directed),
-                    ..test_relationship
-                }
-        )
-    }
-
-    #[test]
-    fn change_undirected_to_directed() {
-        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
-
-        let updated_relationship = test_relationship.change_variant("parental").unwrap();
-
-        assert!(
-            updated_relationship
-                == Relationship {
-                    variant: RelationshipVariant::Parental(EdgeDirection::Directed),
-                    ..test_relationship
-                }
-        )
     }
 
     #[test]
@@ -258,7 +228,7 @@ mod tests {
     }
 
     #[test]
-    fn get_id_string() {
+    fn get_id() {
         let test_relationship = create_nil_relationship(
             RelationshipVariant::create_related(),
             Uuid::nil(),
@@ -295,5 +265,35 @@ mod tests {
         let edge_direction = test_relationship.get_edge_direction();
 
         assert!(edge_direction == EdgeDirection::Undirected)
+    }
+
+    #[test]
+    fn change_relationship_variant() {
+        let test_relationship = Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
+
+        let updated_relationship = test_relationship.change_variant("parental").unwrap();
+
+        assert!(
+            updated_relationship
+                == Relationship {
+                    variant: RelationshipVariant::Parental(EdgeDirection::Directed),
+                    ..test_relationship
+                }
+        )
+    }
+
+    #[test]
+    fn change_undirected_to_directed() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+
+        let updated_relationship = test_relationship.change_variant("parental").unwrap();
+
+        assert!(
+            updated_relationship
+                == Relationship {
+                    variant: RelationshipVariant::Parental(EdgeDirection::Directed),
+                    ..test_relationship
+                }
+        )
     }
 }
