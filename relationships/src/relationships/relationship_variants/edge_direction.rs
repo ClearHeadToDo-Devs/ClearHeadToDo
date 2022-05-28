@@ -2,16 +2,16 @@ use std::fmt;
 
 #[allow(dead_code)]
 #[derive(PartialEq, Debug, Clone, Copy)]
-pub enum EdgeDirection {
+pub enum EdgeDirectionality {
     Directed,
     Undirected,
 }
 
-impl fmt::Display for EdgeDirection {
+impl fmt::Display for EdgeDirectionality {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            EdgeDirection::Directed => write!(f, "Directed"),
-            EdgeDirection::Undirected => write!(f, "Undirected"),
+            EdgeDirectionality::Directed => write!(f, "Directed"),
+            EdgeDirectionality::Undirected => write!(f, "Undirected"),
         }
     }
 }
@@ -24,14 +24,14 @@ mod tests {
 
     #[test]
     fn edge_direction_formatting() {
-        let example_edge = EdgeDirection::Directed;
+        let example_edge = EdgeDirectionality::Directed;
 
         assert!(format!("{}", example_edge) == "Directed")
     }
 
     #[test]
     fn display_undirected() {
-        let example_edge = EdgeDirection::Undirected;
+        let example_edge = EdgeDirectionality::Undirected;
 
         let edge_string = format!("{}", example_edge);
 

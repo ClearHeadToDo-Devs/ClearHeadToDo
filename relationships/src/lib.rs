@@ -2,6 +2,7 @@ pub mod relationships;
 pub use crate::relationships::Relationship;
 pub use crate::relationships::RelationshipManagement;
 
+use std::error::Error;
 use uuid::Uuid;
 
 use im::Vector;
@@ -11,9 +12,9 @@ trait RelationshipListManagement {
     fn add_new(
         &self,
         target_variant: &str,
-        participant_1: Uuid,
-        participant_2: Uuid,
-    ) -> Result<Self::L, String>;
+        participant_1: &str,
+        participant_2: &str,
+    ) -> Result<Self::L, Box<dyn Error>>;
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
@@ -29,9 +30,9 @@ impl RelationshipListManagement for Vector<Relationship> {
     fn add_new(
         &self,
         target_variant: &str,
-        participant_1: Uuid,
-        participant_2: Uuid,
-    ) -> Result<Vector<Relationship>, String> {
+        participant_1: &str,
+        participant_2: &str,
+    ) -> Result<Vector<Relationship>, Box<dyn Error>> {
         let mut cloned_list = self.clone();
         let new_relationship =
             Relationship::create_new(target_variant, participant_1, participant_2)?;
@@ -89,9 +90,12 @@ mod tests {
     #[test]
     fn create_new_from_string() {
         let relationship_list: Vector<Relationship> = Vector::new();
+        let variant_string = "related".to_string();
+        let nil_uuid_string = Uuid::nil().to_string();
+        let nil_uuid_string_2 = Uuid::nil().to_string();
 
         let updated_list = relationship_list
-            .add_new("related", Uuid::nil(), Uuid::nil())
+            .add_new(&variant_string, &nil_uuid_string, &nil_uuid_string_2)
             .unwrap();
 
         assert!(updated_list.len() == 1)
