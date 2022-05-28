@@ -18,9 +18,9 @@ trait RelationshipListManagement {
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
 
-    fn remove_at_index(&self, index: usize) -> Self::L;
-
     fn return_index_from_id(&self, id: Uuid) -> Result<usize, String>;
+
+    fn remove_at_index(&self, index: usize) -> Self::L;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {

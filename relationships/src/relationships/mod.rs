@@ -25,13 +25,13 @@ pub trait RelationshipManagement {
     fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self::R;
     fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self::R;
 
-    fn change_variant(&self, target_variant: &str) -> Result<Self::R, String>;
-
     fn get_id(&self) -> Uuid;
     fn get_participant_1(&self) -> Uuid;
     fn get_participant_2(&self) -> Uuid;
     fn get_variant(&self) -> Self::V;
     fn get_edge_direction(&self) -> EdgeDirection;
+
+    fn change_variant(&self, target_variant: &str) -> Result<Self::R, String>;
 }
 
 impl RelationshipManagement for Relationship {
@@ -85,13 +85,6 @@ impl RelationshipManagement for Relationship {
         }
     }
 
-    fn change_variant(&self, target_variant: &str) -> Result<Self, String> {
-        return Ok(Relationship {
-            variant: RelationshipVariant::create_from_string(target_variant)?,
-            ..self.to_owned()
-        });
-    }
-
     fn get_id(&self) -> Uuid {
         return self.id;
     }
@@ -110,6 +103,13 @@ impl RelationshipManagement for Relationship {
 
     fn get_participant_2(&self) -> Uuid {
         return self.participant_2;
+    }
+
+    fn change_variant(&self, target_variant: &str) -> Result<Self, String> {
+        return Ok(Relationship {
+            variant: RelationshipVariant::create_from_string(target_variant)?,
+            ..self.to_owned()
+        });
     }
 }
 
