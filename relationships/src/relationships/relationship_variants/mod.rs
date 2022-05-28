@@ -16,32 +16,21 @@ pub trait RelationshipVariantManagement {
     type V: RelationshipVariantManagement;
     type E: EdgeDirectionManagement;
 
+    fn create_from_string(target_variant: &str) -> Result<Self::V, String>;
+
     fn create_related() -> Self::V;
     fn create_sequential() -> Self::V;
     fn create_parental() -> Self::V;
-    fn create_from_string(target_variant: &str) -> Result<Self::V, String>;
 
     fn get_edge_direction(&self) -> Self::E;
 
-    fn change_type(&self, target_variant: Self::V) -> Self::V;
+    fn convert_to_variant(self, target_variant: Self::V) -> Self::V;
 }
 
 #[allow(dead_code)]
 impl RelationshipVariantManagement for RelationshipVariant {
     type V = RelationshipVariant;
     type E = EdgeDirection;
-
-    fn create_related() -> RelationshipVariant {
-        return RelationshipVariant::Related(EdgeDirection::create_undirected());
-    }
-
-    fn create_sequential() -> RelationshipVariant {
-        return RelationshipVariant::Sequential(EdgeDirection::create_directed());
-    }
-
-    fn create_parental() -> RelationshipVariant {
-        return RelationshipVariant::Parental(EdgeDirection::create_directed());
-    }
 
     fn create_from_string(target_variant: &str) -> Result<RelationshipVariant, String> {
         match target_variant {
@@ -58,6 +47,18 @@ impl RelationshipVariantManagement for RelationshipVariant {
         }
     }
 
+    fn create_related() -> RelationshipVariant {
+        return RelationshipVariant::Related(EdgeDirection::create_undirected());
+    }
+
+    fn create_sequential() -> RelationshipVariant {
+        return RelationshipVariant::Sequential(EdgeDirection::create_directed());
+    }
+
+    fn create_parental() -> RelationshipVariant {
+        return RelationshipVariant::Parental(EdgeDirection::create_directed());
+    }
+
     fn get_edge_direction(&self) -> EdgeDirection {
         return match self {
             RelationshipVariant::Related(direction) => *direction,
@@ -66,7 +67,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
         };
     }
 
-    fn change_type(&self, target_variant: RelationshipVariant) -> RelationshipVariant {
+    fn convert_to_variant(self, target_variant: RelationshipVariant) -> RelationshipVariant {
         match target_variant {
             RelationshipVariant::Related(direction) => {
                 return RelationshipVariant::Related(direction)
@@ -183,8 +184,8 @@ mod tests {
     #[test]
     fn change_variant_type() {
         let example_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
-        let altered_variant =
-            example_variant.change_type(RelationshipVariant::Parental(EdgeDirection::Undirected));
+        let altered_variant = example_variant
+            .convert_to_variant(RelationshipVariant::Parental(EdgeDirection::Undirected));
 
         assert!(altered_variant == RelationshipVariant::Parental(EdgeDirection::Undirected))
     }
