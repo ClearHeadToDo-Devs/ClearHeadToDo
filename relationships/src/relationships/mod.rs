@@ -27,7 +27,7 @@ pub trait RelationshipManagement {
     fn get_participant_1(&self) -> Uuid;
     fn get_participant_2(&self) -> Uuid;
     fn get_variant(&self) -> Self::V;
-    fn get_edge_direction(&self) -> EdgeDirection;
+    fn get_edge_direction(&self) -> String;
 
     fn set_variant_with_string(&self, target_variant: &str) -> Result<Self::R, String>;
     fn set_variant(&self, target_variant: RelationshipVariant) -> Self::R;
@@ -102,7 +102,7 @@ impl RelationshipManagement for Relationship {
         return self.variant;
     }
 
-    fn get_edge_direction(&self) -> EdgeDirection {
+    fn get_edge_direction(&self) -> String {
         return self.variant.get_edge_direction();
     }
 
@@ -252,7 +252,7 @@ mod tests {
 
         let edge_direction = test_relationship.get_edge_direction();
 
-        assert!(edge_direction == EdgeDirection::Undirected)
+        assert!(edge_direction == "Undirected")
     }
 
     #[test]
@@ -292,7 +292,7 @@ mod tests {
 
         let edge_direction = test_relationship.get_edge_direction();
 
-        assert!(edge_direction == EdgeDirection::Undirected)
+        assert!(edge_direction == "Undirected")
     }
 
     #[test]

@@ -14,24 +14,19 @@ pub enum RelationshipVariant {
 
 pub trait RelationshipVariantManagement {
     type V: RelationshipVariantManagement;
-    type E: EdgeDirectionManagement;
 
     fn create_from_string(target_variant: &str) -> Result<Self::V, String>;
-    fn convert_using_string(self, target_variant: &str) -> Result<Self::V, String>;
 
     fn create_related() -> Self::V;
     fn create_sequential() -> Self::V;
     fn create_parental() -> Self::V;
 
-    fn get_edge_direction(&self) -> Self::E;
-
-    fn convert_to_variant(self, target_variant: Self::V) -> Self::V;
+    fn get_edge_direction(&self) -> String;
 }
 
 #[allow(dead_code)]
 impl RelationshipVariantManagement for RelationshipVariant {
     type V = RelationshipVariant;
-    type E = EdgeDirection;
 
     fn create_from_string(target_variant: &str) -> Result<RelationshipVariant, String> {
         match target_variant {
@@ -48,42 +43,24 @@ impl RelationshipVariantManagement for RelationshipVariant {
         }
     }
 
-    fn convert_using_string(self, target_variant: &str) -> Result<Self::V, String> {
-        RelationshipVariant::create_from_string(target_variant)
-    }
-
-    fn create_related() -> RelationshipVariant {
-        return RelationshipVariant::Related(EdgeDirection::create_undirected());
-    }
-
-    fn create_sequential() -> RelationshipVariant {
-        return RelationshipVariant::Sequential(EdgeDirection::create_directed());
-    }
-
-    fn create_parental() -> RelationshipVariant {
-        return RelationshipVariant::Parental(EdgeDirection::create_directed());
-    }
-
-    fn get_edge_direction(&self) -> EdgeDirection {
+    fn get_edge_direction(&self) -> String {
         return match self {
-            RelationshipVariant::Related(direction) => *direction,
-            RelationshipVariant::Parental(direction) => *direction,
-            RelationshipVariant::Sequential(direction) => *direction,
+            RelationshipVariant::Related(direction) => direction.to_string(),
+            RelationshipVariant::Parental(direction) => direction.to_string(),
+            RelationshipVariant::Sequential(direction) => direction.to_string(),
         };
     }
 
-    fn convert_to_variant(self, target_variant: RelationshipVariant) -> RelationshipVariant {
-        match target_variant {
-            RelationshipVariant::Related(direction) => {
-                return RelationshipVariant::Related(direction)
-            }
-            RelationshipVariant::Parental(direction) => {
-                return RelationshipVariant::Parental(direction)
-            }
-            RelationshipVariant::Sequential(direction) => {
-                return RelationshipVariant::Sequential(direction)
-            }
-        }
+    fn create_related() -> RelationshipVariant {
+        return RelationshipVariant::Related(EdgeDirection::Undirected);
+    }
+
+    fn create_sequential() -> RelationshipVariant {
+        return RelationshipVariant::Sequential(EdgeDirection::Directed);
+    }
+
+    fn create_parental() -> RelationshipVariant {
+        return RelationshipVariant::Parental(EdgeDirection::Directed);
     }
 }
 
@@ -131,26 +108,6 @@ mod tests {
             RelationshipVariant::create_from_string("bad variant").unwrap_err();
 
         assert!(relationship_error.to_string() == "invalid relationship variant")
-    }
-
-    #[test]
-    fn update_variant_using_string() {
-        let test_variant = RelationshipVariant::create_related();
-
-        let new_variant = test_variant.convert_using_string("parental").unwrap();
-
-        assert!(new_variant == RelationshipVariant::Parental(EdgeDirection::Directed))
-    }
-
-    #[test]
-    fn failed_update_variant_using_string() {
-        let test_variant = RelationshipVariant::create_related();
-
-        let new_variant = test_variant
-            .convert_using_string("bad variant")
-            .unwrap_err();
-
-        assert!(new_variant == "invalid relationship variant")
     }
 
     #[test]
@@ -203,15 +160,6 @@ mod tests {
 
         let edge_string = relationship_variant.get_edge_direction();
 
-        assert!(edge_string == EdgeDirection::Undirected)
-    }
-
-    #[test]
-    fn change_variant_type() {
-        let example_variant = RelationshipVariant::Related(EdgeDirection::Undirected);
-        let altered_variant = example_variant
-            .convert_to_variant(RelationshipVariant::Parental(EdgeDirection::Undirected));
-
-        assert!(altered_variant == RelationshipVariant::Parental(EdgeDirection::Undirected))
+        assert!(edge_string == "Undirected")
     }
 }
