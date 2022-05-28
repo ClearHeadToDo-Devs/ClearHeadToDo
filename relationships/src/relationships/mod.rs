@@ -32,6 +32,8 @@ pub trait RelationshipManagement {
     fn get_edge_direction(&self) -> EdgeDirection;
 
     fn change_variant(&self, target_variant: &str) -> Result<Self::R, String>;
+    fn set_participant_1(&self, new_id: Uuid) -> Self::R;
+    fn set_participant_2(&self, new_id: Uuid) -> Self::R;
 }
 
 impl RelationshipManagement for Relationship {
@@ -110,6 +112,20 @@ impl RelationshipManagement for Relationship {
             variant: RelationshipVariant::create_from_string(target_variant)?,
             ..self.to_owned()
         });
+    }
+
+    fn set_participant_1(&self, new_id: Uuid) -> Self::R {
+        return Relationship {
+            participant_1: new_id,
+            ..self.to_owned()
+        };
+    }
+
+    fn set_participant_2(&self, new_id: Uuid) -> Self::R {
+        return Relationship {
+            participant_2: new_id,
+            ..self.to_owned()
+        };
     }
 }
 
@@ -295,5 +311,25 @@ mod tests {
                     ..test_relationship
                 }
         )
+    }
+
+    #[test]
+    fn set_participant_1() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let new_uuid = Uuid::new_v4();
+
+        let updated_relationship = test_relationship.set_participant_1(new_uuid);
+
+        assert!(updated_relationship.participant_1 == new_uuid)
+    }
+
+    #[test]
+    fn set_participant_2() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let new_uuid = Uuid::new_v4();
+
+        let updated_relationship = test_relationship.set_participant_2(new_uuid);
+
+        assert!(updated_relationship.participant_2 == new_uuid)
     }
 }
