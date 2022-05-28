@@ -17,6 +17,7 @@ pub trait RelationshipVariantManagement {
     type E: EdgeDirectionManagement;
 
     fn create_from_string(target_variant: &str) -> Result<Self::V, String>;
+    fn convert_using_string(self, target_variant: &str) -> Result<Self::V, String>;
 
     fn create_related() -> Self::V;
     fn create_sequential() -> Self::V;
@@ -45,6 +46,10 @@ impl RelationshipVariantManagement for RelationshipVariant {
             }
             _ => return Err("invalid relationship variant".to_string()),
         }
+    }
+
+    fn convert_using_string(self, target_variant: &str) -> Result<Self::V, String> {
+        RelationshipVariant::create_from_string(target_variant)
     }
 
     fn create_related() -> RelationshipVariant {
@@ -100,29 +105,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn related_variant_creation() {
-        let related_variant = RelationshipVariant::create_related();
-
-        assert!(related_variant == RelationshipVariant::Related(EdgeDirection::Undirected))
-    }
-
-    #[test]
-    fn parent_child_variant_creation() {
-        let parent_child_variant = RelationshipVariant::create_parental();
-
-        assert!(parent_child_variant == RelationshipVariant::Parental(EdgeDirection::Directed))
-    }
-
-    #[test]
-    fn previous_subsequest_variant_creation() {
-        let previous_subsiquent_variant = RelationshipVariant::create_sequential();
-
-        assert!(
-            previous_subsiquent_variant == RelationshipVariant::Sequential(EdgeDirection::Directed)
-        )
-    }
-
-    #[test]
     fn create_parent_variant_from_string() {
         let test_variant = RelationshipVariant::create_from_string("parental").unwrap();
 
@@ -149,6 +131,49 @@ mod tests {
             RelationshipVariant::create_from_string("bad variant").unwrap_err();
 
         assert!(relationship_error.to_string() == "invalid relationship variant")
+    }
+
+    #[test]
+    fn update_variant_using_string() {
+        let test_variant = RelationshipVariant::create_related();
+
+        let new_variant = test_variant.convert_using_string("parental").unwrap();
+
+        assert!(new_variant == RelationshipVariant::Parental(EdgeDirection::Directed))
+    }
+
+    #[test]
+    fn failed_update_variant_using_string() {
+        let test_variant = RelationshipVariant::create_related();
+
+        let new_variant = test_variant
+            .convert_using_string("bad variant")
+            .unwrap_err();
+
+        assert!(new_variant == "invalid relationship variant")
+    }
+
+    #[test]
+    fn related_variant_creation() {
+        let related_variant = RelationshipVariant::create_related();
+
+        assert!(related_variant == RelationshipVariant::Related(EdgeDirection::Undirected))
+    }
+
+    #[test]
+    fn parent_child_variant_creation() {
+        let parent_child_variant = RelationshipVariant::create_parental();
+
+        assert!(parent_child_variant == RelationshipVariant::Parental(EdgeDirection::Directed))
+    }
+
+    #[test]
+    fn previous_subsequest_variant_creation() {
+        let previous_subsiquent_variant = RelationshipVariant::create_sequential();
+
+        assert!(
+            previous_subsiquent_variant == RelationshipVariant::Sequential(EdgeDirection::Directed)
+        )
     }
 
     #[test]
