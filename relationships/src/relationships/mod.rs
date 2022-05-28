@@ -3,7 +3,6 @@ pub use relationship_variants::*;
 
 use crate::Uuid;
 
-#[allow(dead_code)]
 #[derive(PartialEq, Debug, Clone)]
 pub struct Relationship {
     id: Uuid,
@@ -15,7 +14,6 @@ pub struct Relationship {
 pub trait RelationshipManagement {
     type R: RelationshipManagement;
     type V: RelationshipVariantManagement;
-    #[allow(dead_code)]
     fn create_new(
         variant_str: &str,
         participant_1: Uuid,
@@ -31,7 +29,8 @@ pub trait RelationshipManagement {
     fn get_variant(&self) -> Self::V;
     fn get_edge_direction(&self) -> EdgeDirection;
 
-    fn change_variant(&self, target_variant: &str) -> Result<Self::R, String>;
+    fn set_variant_with_string(&self, target_variant: &str) -> Result<Self::R, String>;
+    fn set_variant(&self, target_variant: RelationshipVariant) -> Self::R;
     fn set_participant_1(&self, new_id: Uuid) -> Self::R;
     fn set_participant_2(&self, new_id: Uuid) -> Self::R;
 }
@@ -47,16 +46,18 @@ impl RelationshipManagement for Relationship {
     ) -> Result<Self, String> {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_from_string(variant_str)?;
-        return Ok(Relationship {
+
+        Ok(Relationship {
             id,
             variant,
             participant_1,
             participant_2,
-        });
+        })
     }
     fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_related();
+
         Relationship {
             id,
             variant,
@@ -68,6 +69,7 @@ impl RelationshipManagement for Relationship {
     fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_sequential();
+
         Relationship {
             id,
             variant,
@@ -79,6 +81,7 @@ impl RelationshipManagement for Relationship {
     fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_parental();
+
         Relationship {
             id,
             variant,
@@ -107,11 +110,20 @@ impl RelationshipManagement for Relationship {
         return self.participant_2;
     }
 
-    fn change_variant(&self, target_variant: &str) -> Result<Self, String> {
-        return Ok(Relationship {
-            variant: RelationshipVariant::create_from_string(target_variant)?,
+    fn set_variant_with_string(&self, target_variant: &str) -> Result<Self::R, String> {
+        let variant = RelationshipVariant::create_from_string(target_variant)?;
+
+        Ok(Relationship {
+            variant,
             ..self.to_owned()
-        });
+        })
+    }
+
+    fn set_variant(&self, target_variant: RelationshipVariant) -> Self {
+        return Relationship {
+            variant: target_variant,
+            ..self.to_owned()
+        };
     }
 
     fn set_participant_1(&self, new_id: Uuid) -> Self::R {
@@ -287,7 +299,8 @@ mod tests {
     fn change_relationship_variant() {
         let test_relationship = Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
 
-        let updated_relationship = test_relationship.change_variant("parental").unwrap();
+        let updated_relationship =
+            test_relationship.set_variant(RelationshipVariant::Parental(EdgeDirection::Directed));
 
         assert!(
             updated_relationship
@@ -302,7 +315,8 @@ mod tests {
     fn change_undirected_to_directed() {
         let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
-        let updated_relationship = test_relationship.change_variant("parental").unwrap();
+        let updated_relationship =
+            test_relationship.set_variant(RelationshipVariant::Parental(EdgeDirection::Directed));
 
         assert!(
             updated_relationship
@@ -331,5 +345,22 @@ mod tests {
         let updated_relationship = test_relationship.set_participant_2(new_uuid);
 
         assert!(updated_relationship.participant_2 == new_uuid)
+    }
+
+    #[test]
+    fn set_variant_with_string() {
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+
+        let updated_relationship = test_relationship
+            .set_variant_with_string("parental")
+            .unwrap();
+
+        assert!(
+            updated_relationship
+                == Relationship {
+                    variant: RelationshipVariant::Parental(EdgeDirection::Directed),
+                    ..test_relationship
+                }
+        )
     }
 }
