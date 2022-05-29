@@ -17,8 +17,8 @@ pub trait RelationshipManagement {
     type V: RelationshipVariantManagement;
     fn create_new(
         variant_str: &str,
-        participant_1: &str,
-        participant_2: &str,
+        participant_1: Uuid,
+        participant_2: Uuid,
     ) -> Result<Self::R, Box<dyn Error>>;
     fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self::R;
     fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self::R;
@@ -42,13 +42,11 @@ impl RelationshipManagement for Relationship {
 
     fn create_new(
         variant_str: &str,
-        participant_1: &str,
-        participant_2: &str,
+        participant_1: Uuid,
+        participant_2: Uuid,
     ) -> Result<Self, Box<dyn Error>> {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_from_string(&variant_str)?;
-        let participant_1 = Uuid::try_parse(&participant_1)?;
-        let participant_2 = Uuid::try_parse(&participant_2)?;
 
         Ok(Relationship {
             id,
@@ -177,23 +175,23 @@ mod tests {
     #[test]
     fn ensure_unique_id() {
         let variant_string = "related".to_string();
-        let nil_uuid_string = Uuid::nil().to_string();
+        let nil_uuid_string = Uuid::nil();
 
         let relationship_1 =
-            Relationship::create_new(&variant_string, &nil_uuid_string, &nil_uuid_string).unwrap();
+            Relationship::create_new(&variant_string, nil_uuid_string, nil_uuid_string).unwrap();
         let relationship_2 =
-            Relationship::create_new(&variant_string, &nil_uuid_string, &nil_uuid_string).unwrap();
+            Relationship::create_new(&variant_string, nil_uuid_string, nil_uuid_string).unwrap();
 
         assert!(relationship_2.id != relationship_1.id);
     }
 
     #[test]
     fn invalid_relationship_variant_input() {
-        let nil_uuid_string = Uuid::nil().to_string();
+        let nil_uuid_string = Uuid::nil();
         let variant_string = "bad bariant".to_string();
 
         let invalid_relationship =
-            Relationship::create_new(&variant_string, &nil_uuid_string, &nil_uuid_string)
+            Relationship::create_new(&variant_string, nil_uuid_string, nil_uuid_string)
                 .unwrap_err()
                 .to_string();
 

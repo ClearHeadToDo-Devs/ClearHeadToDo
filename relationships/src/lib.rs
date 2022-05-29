@@ -34,8 +34,11 @@ impl RelationshipListManagement for Vector<Relationship> {
         participant_2: &str,
     ) -> Result<Vector<Relationship>, Box<dyn Error>> {
         let mut cloned_list = self.clone();
-        let new_relationship =
-            Relationship::create_new(target_variant, participant_1, participant_2)?;
+        let new_relationship = Relationship::create_new(
+            target_variant,
+            Uuid::try_parse(participant_1)?,
+            Uuid::try_parse(participant_2)?,
+        )?;
 
         cloned_list.push_back(new_relationship);
         return Ok(cloned_list);
