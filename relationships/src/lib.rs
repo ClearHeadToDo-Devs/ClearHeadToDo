@@ -40,6 +40,7 @@ impl RelationshipListManagement for Vector<Relationship> {
         cloned_list.push_back(new_relationship);
         return Ok(cloned_list);
     }
+
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let new_relationship = Relationship::create_new_related(participant_1, participant_2);
         let mut cloned_list = self.clone();
@@ -48,6 +49,7 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         return cloned_list;
     }
+
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let new_relationship = Relationship::create_new_sequential(participant_1, participant_2);
         let mut cloned_list = self.clone();
@@ -100,7 +102,7 @@ mod tests {
     }
 
     #[test]
-    fn add_related_relationship_to_list() {
+    fn add_related_to_list() {
         let relationship_list: Vector<Relationship> = Vector::new();
 
         let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
@@ -109,7 +111,7 @@ mod tests {
     }
 
     #[test]
-    fn add_sequential_relationship_to_list() {
+    fn add_sequential_to_list() {
         let relationship_list: Vector<Relationship> = Vector::new();
 
         let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
@@ -118,7 +120,7 @@ mod tests {
     }
 
     #[test]
-    fn add_parental_relationship_to_list() {
+    fn add_parental_to_list() {
         let relationship_list: Vector<Relationship> = Vector::new();
 
         let modified_list = relationship_list.add_parental(Uuid::nil(), Uuid::nil());
