@@ -22,6 +22,7 @@ trait RelationshipListManagement {
     fn return_index_from_id(&self, id: Uuid) -> Result<usize, String>;
 
     fn remove_at_index(&self, index: usize) -> Self::L;
+    fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -81,6 +82,15 @@ impl RelationshipListManagement for Vector<Relationship> {
             .iter()
             .position(|relationship| relationship.get_id() == id)
             .ok_or("cannot find this id within the relationship list".to_string());
+    }
+
+    fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String> {
+        let cloned_list = self.clone();
+        let target_index = cloned_list.return_index_from_id(id)?;
+
+        let updated_list = cloned_list.remove_at_index(target_index);
+
+        return Ok(updated_list);
     }
 }
 
@@ -169,5 +179,17 @@ mod tests {
             .unwrap_err();
 
         assert!(failed_id_query == "cannot find this id within the relationship list".to_string())
+    }
+
+    #[test]
+    fn remove_from_id() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let single_relationship_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let empty_list = single_relationship_list
+            .remove_with_id(single_relationship_list[0].get_id())
+            .unwrap();
+
+        assert!(empty_list.len() == 0)
     }
 }
