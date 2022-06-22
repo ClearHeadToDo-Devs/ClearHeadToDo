@@ -192,4 +192,13 @@ mod tests {
 
         assert!(empty_list.len() == 0)
     }
+
+    #[test]
+    fn failed_remove_from_id() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+
+        let failed_id_query = relationship_list.remove_with_id(Uuid::nil()).unwrap_err();
+
+        assert!(failed_id_query == "cannot find this id within the relationship list".to_string())
+    }
 }
