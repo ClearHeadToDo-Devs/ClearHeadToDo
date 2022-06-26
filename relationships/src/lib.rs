@@ -23,6 +23,8 @@ trait RelationshipListManagement {
 
     fn remove_at_index(&self, index: usize) -> Self::L;
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String>;
+
+    fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, String>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -91,6 +93,14 @@ impl RelationshipListManagement for Vector<Relationship> {
         let updated_list = cloned_list.remove_at_index(target_index);
 
         return Ok(updated_list);
+    }
+
+    fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, String> {
+        let mut cloned_list = self.clone();
+
+        cloned_list[index].set_variant(variant)?;
+
+        return Ok(cloned_list);
     }
 }
 
@@ -200,5 +210,15 @@ mod tests {
         let failed_id_query = relationship_list.remove_with_id(Uuid::nil()).unwrap_err();
 
         assert!(failed_id_query == "cannot find this id within the relationship list".to_string())
+    }
+
+    #[test]
+    fn change_related_to_parental() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let updated_list = test_list.change_variant(0, "parental").unwrap();
+
+        assert!(updated_list[0].get_variant() == "Parental: Directed")
     }
 }
