@@ -231,4 +231,14 @@ mod tests {
 
         assert!(updated_list[0].get_variant() == "Related: Undirected")
     }
+
+    #[test]
+    fn failed_change_variant() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let failed_output = test_list.change_variant(0, "bad variant").unwrap_err();
+
+        assert!(failed_output == "invalid relationship variant")
+    }
 }
