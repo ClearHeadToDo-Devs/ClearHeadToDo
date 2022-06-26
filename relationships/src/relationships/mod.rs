@@ -32,7 +32,7 @@ pub trait RelationshipManagement {
 
     fn set_variant(&mut self, target_variant: &str) -> Result<(), String>;
     fn set_participant_1(&mut self, new_id: Uuid);
-    fn set_participant_2(&self, new_id: Uuid) -> Self::R;
+    fn set_participant_2(&mut self, new_id: Uuid);
 }
 
 impl RelationshipManagement for Relationship {
@@ -122,11 +122,8 @@ impl RelationshipManagement for Relationship {
         self.participant_1 = new_id
     }
 
-    fn set_participant_2(&self, new_id: Uuid) -> Self::R {
-        return Relationship {
-            participant_2: new_id,
-            ..self.to_owned()
-        };
+    fn set_participant_2(&mut self, new_id: Uuid) {
+        self.participant_2 = new_id
     }
 }
 
@@ -336,11 +333,11 @@ mod tests {
 
     #[test]
     fn set_participant_2() {
-        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let mut test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
         let new_uuid = Uuid::new_v4();
 
-        let updated_relationship = test_relationship.set_participant_2(new_uuid);
+        test_relationship.set_participant_2(new_uuid);
 
-        assert!(updated_relationship.participant_2 == new_uuid)
+        assert!(test_relationship.participant_2 == new_uuid)
     }
 }

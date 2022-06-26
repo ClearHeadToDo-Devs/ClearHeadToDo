@@ -26,6 +26,7 @@ trait RelationshipListManagement {
 
     fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, String>;
     fn update_participant_1(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String>;
+    fn update_participant_2(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -109,6 +110,15 @@ impl RelationshipListManagement for Vector<Relationship> {
         let index = cloned_list.return_index_from_id(id)?;
 
         cloned_list[index].set_participant_1(new_id);
+
+        return Ok(cloned_list);
+    }
+
+    fn update_participant_2(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String> {
+        let mut cloned_list = self.clone();
+        let index = cloned_list.return_index_from_id(id)?;
+
+        cloned_list[index].set_participant_2(new_id);
 
         return Ok(cloned_list);
     }
@@ -262,5 +272,41 @@ mod tests {
             .unwrap();
 
         assert!(updated_list[0].get_participant_1() != Uuid::nil())
+    }
+
+    #[test]
+    fn failed_id_update_participant_1() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let bad_list_search = test_list
+            .update_participant_1(Uuid::new_v4(), Uuid::new_v4())
+            .unwrap_err();
+
+        assert!(bad_list_search == "cannot find this id within the relationship list")
+    }
+
+    #[test]
+    fn update_participant_2_id() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let updated_list = test_list
+            .update_participant_2(test_list[0].get_id(), Uuid::new_v4())
+            .unwrap();
+
+        assert!(updated_list[0].get_participant_2() != Uuid::nil())
+    }
+
+    #[test]
+    fn failed_id_update_participant_2() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let bad_list_search = test_list
+            .update_participant_2(Uuid::new_v4(), Uuid::new_v4())
+            .unwrap_err();
+
+        assert!(bad_list_search == "cannot find this id within the relationship list")
     }
 }
