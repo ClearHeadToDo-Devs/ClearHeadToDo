@@ -221,4 +221,14 @@ mod tests {
 
         assert!(updated_list[0].get_variant() == "Parental: Directed")
     }
+
+    #[test]
+    fn change_parental_to_related() {
+        let relationship_list: Vector<Relationship> = Vector::new();
+        let test_list = relationship_list.add_parental(Uuid::nil(), Uuid::nil());
+
+        let updated_list = test_list.change_variant(0, "related").unwrap();
+
+        assert!(updated_list[0].get_variant() == "Related: Undirected")
+    }
 }
