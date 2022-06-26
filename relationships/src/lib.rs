@@ -261,6 +261,6 @@ mod tests {
             .update_participant_1(test_list[0].get_id(), Uuid::new_v4())
             .unwrap();
 
-        assert!(updated_list[0].get_participant_1().is_nil())
+        assert!(updated_list[0].get_participant_1() != Uuid::nil())
     }
 }
