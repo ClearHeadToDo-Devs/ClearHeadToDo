@@ -63,6 +63,7 @@ mod tests {
     fn load_from_csv_sucessful() {
         let test_task_list = load_tasks_from_csv("successful_import_test.csv").unwrap();
         let test_task = &test_task_list[0];
+
         assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
         assert!(test_task.name == "test csv task");
         assert!(test_task.completed == false);
@@ -111,7 +112,10 @@ mod tests {
     #[test]
     fn load_from_csv_bad_file() {
         let error = load_tasks_from_csv("bad_file").unwrap_err();
-        assert_eq!(error.to_string(), "The system cannot find the file specified. (os error 2)");
+        assert_eq!(
+            error.to_string(),
+            "The system cannot find the file specified. (os error 2)"
+        );
     }
 
     #[cfg(not(target_os = "windows"))]
