@@ -1,11 +1,11 @@
 extern crate clap;
-use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
+use clap::{command, AppSettings, Arg, ArgMatches, SubCommand};
 
 use crate::Error;
 use clear_head_todo_core::Command;
 
-pub fn create_app() -> App<'static> {
-    App::new("Clear Head Todo")
+pub fn create_app() -> clap::Command<'static> {
+    command!()
         .author("Darrion Burgess <darrionburgess@gmail.com>")
         .version("0.1.0")
         .about("can be used to manage every part of your productive life!")
