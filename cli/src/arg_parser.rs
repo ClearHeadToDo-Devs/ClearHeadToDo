@@ -106,7 +106,7 @@ mod tests {
     fn cli_creation_name_test() {
         let app = create_app();
 
-        //assert_eq!(&app.get_matches_from.meta.name, &"Clear Head Todo");
+        assert_eq!(&app.get_name(), &"clear_head_todo_cli");
     }
 
     #[test]
