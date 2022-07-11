@@ -113,27 +113,27 @@ mod tests {
     fn cli_creation_author() {
         let app = create_app();
 
-        /* assert_eq!(
-            &app.p.meta.author.unwrap(),
+        assert_eq!(
+            &app.get_author().unwrap(),
             &"Darrion Burgess <darrionburgess@gmail.com>"
-        ); */
+        );
     }
 
     #[test]
     fn cli_creation_version() {
         let app = create_app();
 
-        //assert_eq!(app.p.meta.version.unwrap(), "0.1.0");
+        assert_eq!(app.get_version().unwrap(), "0.1.0");
     }
 
     #[test]
     fn cli_creation_about() {
         let app = create_app();
 
-        // assert_eq!(
-        //     app.p.meta.about.unwrap(),
-        //     "can be used to manage every part of your productive life!"
-        // );
+        assert_eq!(
+            app.get_about().unwrap(),
+            "can be used to manage every part of your productive life!"
+        );
     }
 
     #[test]
@@ -143,7 +143,10 @@ mod tests {
         let matches = app.get_matches_from_safe(&[""]);
         let error = matches.unwrap_err();
 
-        // assert_eq!(error.kind, ErrorKind::MissingArgumentOrSubcommand);
+        assert_eq!(
+            error.kind,
+            ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand
+        );
     }
 
     #[test]
