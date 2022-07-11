@@ -11,7 +11,11 @@ pub fn create_app() -> clap::Command<'static> {
         .about("can be used to manage every part of your productive life!")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(SubCommand::with_name("list_tasks").alias("lt"))
-        .subcommand(SubCommand::with_name("create_task").alias("create"))
+        .subcommand(
+            SubCommand::with_name("create_task")
+                .alias("create")
+                .arg(Arg::with_name("new_name").multiple(true)),
+        )
         .subcommand(
             SubCommand::with_name("complete_task")
                 .alias("complete")
@@ -79,13 +83,7 @@ impl ArgumentParsing for ArgMatches {
 
     fn parse_desired_name(&self, subcommand_name: String) -> Option<String> {
         match self.subcommand_matches(subcommand_name) {
-            Some(arg_matches) => Some(
-                arg_matches
-                    .get_many::<&str>("new_name")
-                    .expect("new name is required")
-                    .copied()
-                    .collect(),
-            ),
+            Some(arg_matches) => Some(arg_matches.get_one::<String>("new_name")?.to_string()),
             None => None,
         }
     }
@@ -169,10 +167,10 @@ mod tests {
     #[test]
     fn cli_create_task_successful_parse() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_task"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_task", "Test Task"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::CreateTask(None));
+        assert_eq!(result, Command::CreateTask(Some("Test Task".to_string())));
     }
 
     #[test]
@@ -224,7 +222,7 @@ mod tests {
     fn successful_cli_rename_task_parse() {
         let app = create_app();
         let test_matches =
-            app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test", "Rename"]);
+            app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test Rename"]);
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(
