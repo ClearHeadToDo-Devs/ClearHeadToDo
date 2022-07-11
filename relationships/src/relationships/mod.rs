@@ -30,8 +30,8 @@ pub trait RelationshipManagement {
     fn get_participant_2(&self) -> Uuid;
     fn get_edge_direction(&self) -> String;
 
-    fn set_variant(&mut self, target_variant: &str) -> Result<(), String>;
-    fn set_participant_1(&mut self, new_id: Uuid);
+    fn set_variant(&self, target_variant: &str) -> Result<Self::R, String>;
+    fn set_participant_1(&self, new_id: Uuid) -> Self::R;
     fn set_participant_2(&mut self, new_id: Uuid);
 }
 
@@ -110,16 +110,21 @@ impl RelationshipManagement for Relationship {
         return self.participant_2;
     }
 
-    fn set_variant(&mut self, target_variant: &str) -> Result<(), String> {
+    fn set_variant(&self, target_variant: &str) -> Result<Relationship, String> {
         let variant = RelationshipVariant::create_from_string(target_variant)?;
+        let mut cloned_relationship = self.clone();
 
-        self.variant = variant;
+        cloned_relationship.variant = variant;
 
-        Ok(())
+        Ok(cloned_relationship)
     }
 
-    fn set_participant_1(&mut self, new_id: Uuid) {
-        self.participant_1 = new_id
+    fn set_participant_1(&self, new_id: Uuid) -> Self::R {
+        let mut cloned_relationship = self.clone();
+
+        cloned_relationship.participant_1 = new_id;
+
+        return cloned_relationship;
     }
 
     fn set_participant_2(&mut self, new_id: Uuid) {
@@ -293,12 +298,12 @@ mod tests {
 
     #[test]
     fn change_relationship_variant() {
-        let mut test_relationship = Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
+        let test_relationship = Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
 
-        test_relationship.set_variant("parental").unwrap();
+        let updated_relationship = test_relationship.set_variant("parental").unwrap();
 
         assert!(
-            test_relationship
+            updated_relationship
                 == Relationship {
                     variant: RelationshipVariant::Parental(EdgeDirectionality::Directed),
                     ..test_relationship
@@ -308,12 +313,12 @@ mod tests {
 
     #[test]
     fn change_undirected_to_directed() {
-        let mut test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
 
-        test_relationship.set_variant("parental").unwrap();
+        let updated_relationship = test_relationship.set_variant("parental").unwrap();
 
         assert!(
-            test_relationship
+            updated_relationship
                 == Relationship {
                     variant: RelationshipVariant::Parental(EdgeDirectionality::Directed),
                     ..test_relationship
@@ -323,12 +328,12 @@ mod tests {
 
     #[test]
     fn set_participant_1() {
-        let mut test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
         let new_uuid = Uuid::new_v4();
 
-        test_relationship.set_participant_1(new_uuid);
+        let updated_relationship = test_relationship.set_participant_1(new_uuid);
 
-        assert!(test_relationship.participant_1 == new_uuid)
+        assert!(updated_relationship.participant_1 == new_uuid)
     }
 
     #[test]

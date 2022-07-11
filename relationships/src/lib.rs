@@ -98,18 +98,20 @@ impl RelationshipListManagement for Vector<Relationship> {
     }
 
     fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, String> {
+        let updated_relationship = self[index].set_variant(variant)?;
         let mut cloned_list = self.clone();
 
-        cloned_list[index].set_variant(variant)?;
+        cloned_list.set(index, updated_relationship);
 
         return Ok(cloned_list);
     }
 
     fn update_participant_1(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String> {
-        let mut cloned_list = self.clone();
-        let index = cloned_list.return_index_from_id(id)?;
+        let index = self.return_index_from_id(id)?;
+        let updated_relationship = self[index].set_participant_1(new_id);
 
-        cloned_list[index].set_participant_1(new_id);
+        let mut cloned_list = self.clone();
+        cloned_list.set(index, updated_relationship);
 
         return Ok(cloned_list);
     }
