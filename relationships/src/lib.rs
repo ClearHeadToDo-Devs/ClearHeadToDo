@@ -26,6 +26,7 @@ trait RelationshipListManagement {
     fn get_index_from_id(&self, id: Uuid) -> Result<usize, String>;
     fn get_id_from_index(&self, index: usize) -> Result<Uuid, String>;
     fn get_variant(&self, id: Uuid) -> Result<Self::V, String>;
+    fn get_participant_1(&self, id: Uuid) -> Result<Uuid, String>;
 
     fn remove_at_index(&self, index: usize) -> Self::L;
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String>;
@@ -100,6 +101,12 @@ impl RelationshipListManagement for Vector<Relationship> {
             .get(index)
             .ok_or("Unable to find relationship at given index")?
             .get_id())
+    }
+
+    fn get_participant_1(&self, id: Uuid) -> Result<Uuid, String> {
+        let index = self.get_index_from_id(id)?;
+
+        Ok(self[index].get_participant_1())
     }
 
     fn get_variant(&self, id: Uuid) -> Result<RelationshipVariant, String> {
@@ -274,6 +281,27 @@ mod tests {
         let id_error = test_list.get_variant(Uuid::nil()).unwrap_err();
 
         assert!(id_error == "cannot find this id within the relationship list");
+    }
+
+    #[test]
+    fn successfully_get_participant_1() {
+        let test_list: Vector<Relationship> = Vector::new();
+        let single_relationship_list = test_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let participant_1 = single_relationship_list
+            .get_participant_1(single_relationship_list[0].get_id())
+            .unwrap();
+
+        assert!(participant_1 == single_relationship_list[0].get_participant_1())
+    }
+
+    #[test]
+    fn failed_get_participant_1() {
+        let test_list: Vector<Relationship> = Vector::new();
+
+        let id_error = test_list.get_participant_1(Uuid::nil()).unwrap_err();
+
+        assert!(id_error == "cannot find this id within the relationship list")
     }
 
     #[test]
