@@ -25,7 +25,7 @@ pub trait RelationshipManagement {
     fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self::R;
 
     fn get_id(&self) -> Uuid;
-    fn get_variant(&self) -> String;
+    fn get_variant(&self) -> Self::V;
     fn get_participant_1(&self) -> Uuid;
     fn get_participant_2(&self) -> Uuid;
     fn get_edge_direction(&self) -> String;
@@ -94,8 +94,8 @@ impl RelationshipManagement for Relationship {
         return self.id;
     }
 
-    fn get_variant(&self) -> String {
-        return self.variant.to_string();
+    fn get_variant(&self) -> Self::V {
+        return self.variant;
     }
 
     fn get_edge_direction(&self) -> String {
@@ -140,6 +140,7 @@ impl RelationshipManagement for Relationship {
 mod tests {
 
     use super::*;
+    use relationship_variants::edge_direction::EdgeDirectionality;
 
     fn create_nil_relationship(
         variant: RelationshipVariant,
@@ -229,7 +230,7 @@ mod tests {
 
         let variant = example_relationship.get_variant();
 
-        assert!(variant == "Related: Undirected")
+        assert!(variant == RelationshipVariant::Related(EdgeDirectionality::Undirected));
     }
 
     #[test]
@@ -238,7 +239,7 @@ mod tests {
 
         let variant = new_related_relationship.get_variant();
 
-        assert!(variant == "Parental: Directed");
+        assert!(variant == RelationshipVariant::Parental(EdgeDirectionality::Directed));
     }
 
     #[test]
@@ -248,7 +249,7 @@ mod tests {
 
         let variant = new_related_relationship.get_variant();
 
-        assert!(variant == "Sequential: Directed")
+        assert!(variant == RelationshipVariant::Sequential(EdgeDirectionality::Directed))
     }
 
     #[test]

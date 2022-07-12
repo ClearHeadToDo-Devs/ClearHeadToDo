@@ -1,7 +1,10 @@
 pub mod relationships;
+
 pub use crate::relationships::Relationship;
 pub use crate::relationships::RelationshipManagement;
 
+use crate::relationships::RelationshipVariant;
+use crate::relationships::RelationshipVariantManagement;
 use std::error::Error;
 use uuid::Uuid;
 
@@ -9,6 +12,7 @@ use im::Vector;
 
 trait RelationshipListManagement {
     type L: RelationshipListManagement;
+    type V: RelationshipVariantManagement;
     fn add_new(
         &self,
         target_variant: &str,
@@ -21,6 +25,7 @@ trait RelationshipListManagement {
 
     fn get_index_from_id(&self, id: Uuid) -> Result<usize, String>;
     fn get_id_from_index(&self, index: usize) -> Result<Uuid, String>;
+    fn get_variant(&self, id: Uuid) -> Result<Self::V, String>;
 
     fn remove_at_index(&self, index: usize) -> Self::L;
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String>;
@@ -32,6 +37,7 @@ trait RelationshipListManagement {
 
 impl RelationshipListManagement for Vector<Relationship> {
     type L = Vector<Relationship>;
+    type V = RelationshipVariant;
 
     fn add_new(
         &self,
@@ -96,6 +102,12 @@ impl RelationshipListManagement for Vector<Relationship> {
             .get_id())
     }
 
+    fn get_variant(&self, id: Uuid) -> Result<RelationshipVariant, String> {
+        let index = self.get_index_from_id(id)?;
+
+        return Ok(self[index].get_variant());
+    }
+
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String> {
         let cloned_list = self.clone();
         let target_index = cloned_list.get_index_from_id(id)?;
@@ -137,6 +149,8 @@ impl RelationshipListManagement for Vector<Relationship> {
 
 #[cfg(test)]
 mod tests {
+
+    use crate::relationships::EdgeDirectionality;
 
     use super::*;
 
@@ -242,7 +256,28 @@ mod tests {
     }
 
     #[test]
-    fn remove_from_id() {
+    fn successfully_get_variant() {
+        let test_list: Vector<Relationship> = Vector::new();
+        let single_relationship_list = test_list.add_related(Uuid::new_v4(), Uuid::new_v4());
+
+        let variant = single_relationship_list
+            .get_variant(single_relationship_list[0].get_id())
+            .unwrap();
+
+        assert!(variant == RelationshipVariant::Related(EdgeDirectionality::Undirected));
+    }
+
+    #[test]
+    fn failed_get_variant() {
+        let test_list: Vector<Relationship> = Vector::new();
+
+        let id_error = test_list.get_variant(Uuid::nil()).unwrap_err();
+
+        assert!(id_error == "cannot find this id within the relationship list");
+    }
+
+    #[test]
+    fn successfully_remove_from_id() {
         let relationship_list: Vector<Relationship> = Vector::new();
         let single_relationship_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
@@ -269,7 +304,10 @@ mod tests {
 
         let updated_list = test_list.change_variant(0, "parental").unwrap();
 
-        assert!(updated_list[0].get_variant() == "Parental: Directed")
+        assert!(
+            updated_list[0].get_variant()
+                == RelationshipVariant::Parental(EdgeDirectionality::Directed)
+        );
     }
 
     #[test]
@@ -279,7 +317,10 @@ mod tests {
 
         let updated_list = test_list.change_variant(0, "related").unwrap();
 
-        assert!(updated_list[0].get_variant() == "Related: Undirected")
+        assert!(
+            updated_list[0].get_variant()
+                == RelationshipVariant::Related(EdgeDirectionality::Undirected)
+        )
     }
 
     #[test]
