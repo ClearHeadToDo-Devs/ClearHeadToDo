@@ -117,10 +117,11 @@ impl RelationshipListManagement for Vector<Relationship> {
     }
 
     fn update_participant_2(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String> {
+        let index = self.return_index_from_id(id)?;
+        let updated_relationship = self[index].set_participant_2(new_id);
         let mut cloned_list = self.clone();
-        let index = cloned_list.return_index_from_id(id)?;
 
-        cloned_list[index].set_participant_2(new_id);
+        cloned_list.set(index, updated_relationship);
 
         return Ok(cloned_list);
     }
