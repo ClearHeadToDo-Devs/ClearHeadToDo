@@ -19,7 +19,8 @@ trait RelationshipListManagement {
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
 
-    fn return_index_from_id(&self, id: Uuid) -> Result<usize, String>;
+    fn get_index_from_id(&self, id: Uuid) -> Result<usize, String>;
+    fn get_id_from_index(&self, index: usize) -> Result<Uuid, String>;
 
     fn remove_at_index(&self, index: usize) -> Self::L;
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String>;
@@ -79,7 +80,7 @@ impl RelationshipListManagement for Vector<Relationship> {
         return updated_list;
     }
 
-    fn return_index_from_id(&self, id: Uuid) -> Result<usize, String> {
+    fn get_index_from_id(&self, id: Uuid) -> Result<usize, String> {
         let cloned_list = self.clone();
 
         return cloned_list
@@ -88,9 +89,16 @@ impl RelationshipListManagement for Vector<Relationship> {
             .ok_or("cannot find this id within the relationship list".to_string());
     }
 
+    fn get_id_from_index(&self, index: usize) -> Result<Uuid, String> {
+        Ok(self
+            .get(index)
+            .ok_or("Unable to find relationship at given index")?
+            .get_id())
+    }
+
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String> {
         let cloned_list = self.clone();
-        let target_index = cloned_list.return_index_from_id(id)?;
+        let target_index = cloned_list.get_index_from_id(id)?;
 
         let updated_list = cloned_list.remove_at_index(target_index);
 
@@ -107,7 +115,7 @@ impl RelationshipListManagement for Vector<Relationship> {
     }
 
     fn update_participant_1(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String> {
-        let index = self.return_index_from_id(id)?;
+        let index = self.get_index_from_id(id)?;
         let updated_relationship = self[index].set_participant_1(new_id);
 
         let mut cloned_list = self.clone();
@@ -117,7 +125,7 @@ impl RelationshipListManagement for Vector<Relationship> {
     }
 
     fn update_participant_2(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String> {
-        let index = self.return_index_from_id(id)?;
+        let index = self.get_index_from_id(id)?;
         let updated_relationship = self[index].set_participant_2(new_id);
         let mut cloned_list = self.clone();
 
@@ -197,7 +205,7 @@ mod tests {
             Vector::new().add_related(Uuid::nil(), Uuid::nil());
 
         let relationship_id = relationship_list
-            .return_index_from_id(relationship_list[0].get_id())
+            .get_index_from_id(relationship_list[0].get_id())
             .unwrap();
 
         assert!(relationship_id == 0)
@@ -208,10 +216,29 @@ mod tests {
         let relationship_list: Vector<Relationship> = Vector::new();
 
         let failed_id_query = relationship_list
-            .return_index_from_id(Uuid::nil())
+            .get_index_from_id(Uuid::nil())
             .unwrap_err();
 
         assert!(failed_id_query == "cannot find this id within the relationship list".to_string())
+    }
+
+    #[test]
+    fn successfully_get_id() {
+        let test_list: Vector<Relationship> = Vector::new();
+        let single_relationship_list = test_list.add_related(Uuid::nil(), Uuid::nil());
+
+        let id = single_relationship_list.get_id_from_index(0).unwrap();
+
+        assert!(id == single_relationship_list[0].get_id())
+    }
+
+    #[test]
+    fn failed_get_id() {
+        let test_list: Vector<Relationship> = Vector::new();
+
+        let extraction_error = test_list.get_id_from_index(0).unwrap_err();
+
+        assert!(extraction_error == "Unable to find relationship at given index")
     }
 
     #[test]
