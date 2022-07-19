@@ -2,9 +2,11 @@ pub mod relationship_variants;
 pub use relationship_variants::*;
 
 use crate::Uuid;
+use serde::Deserialize;
+use serde::Serialize;
 use std::error::Error;
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct Relationship {
     id: Uuid,
     variant: RelationshipVariant,
@@ -141,6 +143,7 @@ mod tests {
 
     use super::*;
     use relationship_variants::edge_direction::EdgeDirectionality;
+    use serde_test::{assert_tokens, Configure, Token};
 
     fn create_nil_relationship(
         variant: RelationshipVariant,
@@ -349,5 +352,40 @@ mod tests {
         let updated_relationship = test_relationship.set_participant_2(new_uuid);
 
         assert!(updated_relationship.participant_2 == new_uuid)
+    }
+
+    #[test]
+    fn serialization_and_deserialization() {
+        let example_relationship = create_nil_relationship(
+            RelationshipVariant::create_related(),
+            Uuid::nil(),
+            Uuid::nil(),
+        );
+
+        assert_tokens(
+            &example_relationship.readable(),
+            &[
+                Token::Struct {
+                    name: "Relationship",
+                    len: 4,
+                },
+                Token::Str("id"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::Str("variant"),
+                Token::NewtypeVariant {
+                    name: "RelationshipVariant",
+                    variant: "Related",
+                },
+                Token::UnitVariant {
+                    name: "EdgeDirectionality",
+                    variant: "Undirected",
+                },
+                Token::Str("participant_1"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::Str("participant_2"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::StructEnd,
+            ],
+        )
     }
 }
