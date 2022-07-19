@@ -1,7 +1,9 @@
+use serde::Deserialize;
+use serde::Serialize;
 use std::fmt;
 
 #[allow(dead_code)]
-#[derive(PartialEq, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
 pub enum EdgeDirectionality {
     Directed,
     Undirected,
@@ -19,8 +21,9 @@ impl fmt::Display for EdgeDirectionality {
 #[cfg(test)]
 
 mod tests {
-
     use super::*;
+    use serde_test::assert_tokens;
+    use serde_test::Token;
 
     #[test]
     fn edge_direction_formatting() {
@@ -36,5 +39,18 @@ mod tests {
         let edge_string = format!("{}", example_edge);
 
         assert!(edge_string == "Undirected")
+    }
+
+    #[test]
+    fn serialization() {
+        let example_edge = EdgeDirectionality::Undirected;
+
+        assert_tokens(
+            &example_edge,
+            &[Token::UnitVariant {
+                name: "EdgeDirectionality",
+                variant: "Undirected",
+            }],
+        )
     }
 }
