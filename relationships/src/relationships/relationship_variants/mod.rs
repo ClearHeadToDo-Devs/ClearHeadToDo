@@ -1,10 +1,12 @@
+use serde::Deserialize;
+use serde::Serialize;
 use std::fmt;
 
 pub mod edge_direction;
 pub use edge_direction::*;
 
 #[allow(dead_code)]
-#[derive(PartialEq, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
 #[non_exhaustive]
 pub enum RelationshipVariant {
     Parental(EdgeDirectionality),
@@ -80,6 +82,8 @@ impl fmt::Display for RelationshipVariant {
 mod tests {
 
     use super::*;
+    use serde_test::assert_tokens;
+    use serde_test::Token;
 
     #[test]
     fn create_parent_variant_from_string() {
@@ -162,5 +166,24 @@ mod tests {
         let edge_string = relationship_variant.get_edge_direction();
 
         assert!(edge_string == "Undirected")
+    }
+
+    #[test]
+    fn serialization_and_deserialization() {
+        let example_edge = RelationshipVariant::create_related();
+
+        assert_tokens(
+            &example_edge,
+            &[
+                Token::NewtypeVariant {
+                    name: "RelationshipVariant",
+                    variant: "Related",
+                },
+                Token::UnitVariant {
+                    name: "EdgeDirectionality",
+                    variant: "Undirected",
+                },
+            ],
+        )
     }
 }

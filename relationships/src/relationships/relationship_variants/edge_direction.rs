@@ -42,7 +42,7 @@ mod tests {
     }
 
     #[test]
-    fn serialization() {
+    fn serialization_and_deserialization() {
         let example_edge = EdgeDirectionality::Undirected;
 
         assert_tokens(
