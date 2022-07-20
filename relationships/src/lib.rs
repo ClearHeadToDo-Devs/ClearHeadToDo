@@ -163,9 +163,22 @@ impl RelationshipListManagement for Vector<Relationship> {
 #[cfg(test)]
 mod tests {
 
+    use super::*;
     use crate::relationships::EdgeDirectionality;
 
-    use super::*;
+    fn add_nil_relationship_to_vector(list: Vector<Relationship>) -> Vector<Relationship> {
+        let nil_relationship = Relationship {
+            id: Uuid::nil(),
+            variant: RelationshipVariant::Related(EdgeDirectionality::Undirected),
+            participant_1: Uuid::nil(),
+            participant_2: Uuid::nil(),
+        };
+        let mut cloned_list = list.clone();
+
+        cloned_list.push_back(nil_relationship);
+
+        return cloned_list;
+    }
 
     #[test]
     fn create_new_from_string() {
@@ -434,5 +447,10 @@ mod tests {
             .unwrap_err();
 
         assert!(bad_list_search == "cannot find this id within the relationship list")
+    }
+
+    #[test]
+    fn serialize_and_deserialize() {
+        let relationship_list: Vector<Relationship> = Vector::new();
     }
 }
