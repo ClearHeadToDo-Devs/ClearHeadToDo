@@ -164,7 +164,7 @@ impl RelationshipListManagement for Vector<Relationship> {
 #[cfg(test)]
 mod tests {
 
-    use serde_test::{assert_tokens, Token};
+    use serde_test::{assert_tokens, Configure, Token};
 
     use super::*;
     use crate::{
@@ -444,6 +444,32 @@ mod tests {
     fn serialize_and_deserialize() {
         let relationship_list: Vector<Relationship> = Vector::new();
         let single_list = add_nil_relationship_to_vector(relationship_list);
-        assert_tokens(&single_list, &[Token::Seq { len: Some(1) }])
+        assert_tokens(
+            &single_list.readable(),
+            &[
+                Token::Seq { len: Some(1) },
+                Token::Struct {
+                    name: "Relationship",
+                    len: 4,
+                },
+                Token::Str("id"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::Str("variant"),
+                Token::NewtypeVariant {
+                    name: "RelationshipVariant",
+                    variant: "Related",
+                },
+                Token::UnitVariant {
+                    name: "EdgeDirectionality",
+                    variant: "Undirected",
+                },
+                Token::Str("participant_1"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::Str("participant_2"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::StructEnd,
+                Token::SeqEnd,
+            ],
+        )
     }
 }
