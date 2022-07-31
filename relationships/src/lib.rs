@@ -1,5 +1,4 @@
 pub mod relationships;
-pub mod test_utilities;
 
 pub use crate::relationships::Relationship;
 pub use crate::relationships::RelationshipManagement;
@@ -163,13 +162,23 @@ impl RelationshipListManagement for Vector<Relationship> {
 
 #[cfg(test)]
 mod tests {
-
+    use super::*;
+    use crate::relationships::edge_direction::EdgeDirectionality;
+    use relationships::tests::create_nil_relationship;
     use serde_test::{assert_tokens, Configure, Token};
 
-    use super::*;
-    use crate::{
-        relationships::EdgeDirectionality, test_utilities::add_nil_relationship_to_vector,
-    };
+    pub fn add_nil_relationship_to_vector(list: Vector<Relationship>) -> Vector<Relationship> {
+        let nil_relationship = create_nil_relationship(
+            RelationshipVariant::Related(EdgeDirectionality::Undirected),
+            Uuid::nil(),
+            Uuid::nil(),
+        );
+        let mut cloned_list = list.clone();
+
+        cloned_list.push_back(nil_relationship);
+
+        return cloned_list;
+    }
 
     #[test]
     fn create_new_from_string() {

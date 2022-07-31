@@ -1,8 +1,6 @@
 pub mod relationship_variants;
 pub use relationship_variants::*;
 
-pub mod test_utilities;
-
 use crate::Uuid;
 use serde::Deserialize;
 use serde::Serialize;
@@ -141,13 +139,25 @@ impl RelationshipManagement for Relationship {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
 
     use super::*;
     use relationship_variants::edge_direction::EdgeDirectionality;
     use serde_test::{assert_tokens, Configure, Token};
 
-    use test_utilities::*;
+    pub fn create_nil_relationship(
+        variant: RelationshipVariant,
+        participant_1: Uuid,
+        participant_2: Uuid,
+    ) -> Relationship {
+        let id = Uuid::nil();
+        return Relationship {
+            id,
+            variant,
+            participant_1,
+            participant_2,
+        };
+    }
 
     #[test]
     fn id_creation() {
