@@ -166,19 +166,19 @@ mod tests {
     use super::*;
     use crate::relationships::EdgeDirectionality;
 
-    fn add_nil_relationship_to_vector(list: Vector<Relationship>) -> Vector<Relationship> {
-        let nil_relationship = Relationship {
-            id: Uuid::nil(),
-            variant: RelationshipVariant::Related(EdgeDirectionality::Undirected),
-            participant_1: Uuid::nil(),
-            participant_2: Uuid::nil(),
-        };
-        let mut cloned_list = list.clone();
-
-        cloned_list.push_back(nil_relationship);
-
-        return cloned_list;
-    }
+    // fn add_nil_relationship_to_vector(list: Vector<Relationship>) -> Vector<Relationship> {
+    //     let nil_relationship = Relationship {
+    //         id: Uuid::nil(),
+    //         variant: RelationshipVariant::Related(EdgeDirectionality::Undirected),
+    //         participant_1: Uuid::nil(),
+    //         participant_2: Uuid::nil(),
+    //     };
+    //     let mut cloned_list = list.clone();
+    //
+    //     cloned_list.push_back(nil_relationship);
+    //
+    //     return cloned_list;
+    // }
 
     #[test]
     fn create_new_from_string() {
