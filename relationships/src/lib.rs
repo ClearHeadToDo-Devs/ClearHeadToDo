@@ -142,8 +142,8 @@ impl RelationshipListManagement for Vector<Relationship> {
     fn update_participant_1(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String> {
         let index = self.get_index_from_id(id)?;
         let updated_relationship = self[index].set_participant_1(new_id);
-
         let mut cloned_list = self.clone();
+
         cloned_list.set(index, updated_relationship);
 
         return Ok(cloned_list);
