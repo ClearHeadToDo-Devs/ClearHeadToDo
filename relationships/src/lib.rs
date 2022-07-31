@@ -1,4 +1,5 @@
 pub mod relationships;
+pub mod test_utilities;
 
 pub use crate::relationships::Relationship;
 pub use crate::relationships::RelationshipManagement;
@@ -163,22 +164,12 @@ impl RelationshipListManagement for Vector<Relationship> {
 #[cfg(test)]
 mod tests {
 
-    use super::*;
-    use crate::relationships::EdgeDirectionality;
+    use serde_test::{assert_tokens, Token};
 
-    // fn add_nil_relationship_to_vector(list: Vector<Relationship>) -> Vector<Relationship> {
-    //     let nil_relationship = Relationship {
-    //         id: Uuid::nil(),
-    //         variant: RelationshipVariant::Related(EdgeDirectionality::Undirected),
-    //         participant_1: Uuid::nil(),
-    //         participant_2: Uuid::nil(),
-    //     };
-    //     let mut cloned_list = list.clone();
-    //
-    //     cloned_list.push_back(nil_relationship);
-    //
-    //     return cloned_list;
-    // }
+    use super::*;
+    use crate::{
+        relationships::EdgeDirectionality, test_utilities::add_nil_relationship_to_vector,
+    };
 
     #[test]
     fn create_new_from_string() {
@@ -452,5 +443,7 @@ mod tests {
     #[test]
     fn serialize_and_deserialize() {
         let relationship_list: Vector<Relationship> = Vector::new();
+        let single_list = add_nil_relationship_to_vector(relationship_list);
+        assert_tokens(&single_list, &[Token::Seq { len: Some(1) }])
     }
 }

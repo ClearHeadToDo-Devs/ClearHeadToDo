@@ -1,6 +1,8 @@
 pub mod relationship_variants;
 pub use relationship_variants::*;
 
+pub mod test_utilities;
+
 use crate::Uuid;
 use serde::Deserialize;
 use serde::Serialize;
@@ -145,7 +147,6 @@ mod tests {
     use relationship_variants::edge_direction::EdgeDirectionality;
     use serde_test::{assert_tokens, Configure, Token};
 
-    pub mod test_utilities;
     use test_utilities::*;
 
     #[test]
