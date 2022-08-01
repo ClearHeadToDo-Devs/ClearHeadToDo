@@ -1,4 +1,5 @@
 pub mod relationships;
+pub mod storage;
 
 pub use crate::relationships::Relationship;
 pub use crate::relationships::RelationshipManagement;
@@ -161,7 +162,7 @@ impl RelationshipListManagement for Vector<Relationship> {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
     use crate::relationships::edge_direction::EdgeDirectionality;
     use relationships::tests::create_nil_relationship;
