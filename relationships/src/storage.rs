@@ -1,6 +1,7 @@
+use crate::Relationship;
+
 use std::{error::Error, path::Path};
 
-use crate::Relationship;
 use im::Vector;
 pub trait CsvStorage {
     fn write_to_csv(&self, file_path: &Path) -> Result<(), Box<dyn Error>>;
@@ -9,8 +10,7 @@ pub trait CsvStorage {
 impl CsvStorage for Vector<Relationship> {
     fn write_to_csv(&self, file_path: &Path) -> Result<(), Box<dyn Error>> {
         let mut file = csv::Writer::from_path(file_path)?;
-        file.serialize(self)?;
-        Ok(())
+        Ok(file.serialize(self)?)
     }
 }
 
