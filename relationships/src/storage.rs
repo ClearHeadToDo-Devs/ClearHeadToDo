@@ -1,16 +1,32 @@
 use crate::Relationship;
+use crate::RelationshipListManagement;
 
 use std::{error::Error, path::Path};
 
 use im::Vector;
+use serde::Deserialize;
+
 pub trait CsvStorage {
+    type L: RelationshipListManagement;
     fn write_to_csv(&self, file_path: &Path) -> Result<(), Box<dyn Error>>;
+    fn read_from_csv(file_path: &Path) -> Result<Self::L, Box<dyn Error>>;
 }
 
 impl CsvStorage for Vector<Relationship> {
+    type L = Vector<Relationship>;
     fn write_to_csv(&self, file_path: &Path) -> Result<(), Box<dyn Error>> {
         let mut file = csv::Writer::from_path(file_path)?;
         Ok(file.serialize(self)?)
+    }
+    fn read_from_csv(file_path: &Path) -> Result<Self::L, Box<dyn Error>> {
+        let mut file = csv::Reader::from_path(file_path)?;
+        let reader_results: Vector<Relationship> = file
+            .deserialize()
+            .next()
+            .ok_or("nothing here")
+            .unwrap()
+            .unwrap();
+        Ok(reader_results)
     }
 }
 
@@ -34,6 +50,7 @@ mod test {
             .unwrap()
             .read_to_string(&mut file_contents)
             .unwrap();
+
         assert_eq!(file_contents,"id,variant,participant_1,participant_2\n00000000-0000-0000-0000-000000000000,Undirected,00000000-0000-0000-0000-000000000000,00000000-0000-0000-0000-000000000000\n")
     }
 
@@ -49,5 +66,11 @@ mod test {
             directory_error.to_string(),
             "No such file or directory (os error 2)"
         )
+    }
+    #[test]
+    fn successful_relationship_list_read() {
+        let file_path = Path::new("data/test_relationship.csv");
+
+        let relationship_list: Vector<Relationship> = Vector::read_from_csv(file_path).unwrap();
     }
 }
