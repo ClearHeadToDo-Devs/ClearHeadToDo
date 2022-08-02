@@ -21,10 +21,12 @@ impl CsvStorage for Vector<Relationship> {
     fn read_from_csv(file_path: &Path) -> Result<Self::L, Box<dyn Error>> {
         let mut file_reader = csv::Reader::from_path(file_path)?;
         let mut relationship_list: Vector<Relationship> = Vector::new();
+
         for result in file_reader.deserialize() {
             let record: Relationship = result?;
             relationship_list.push_back(record)
         }
+
         Ok(relationship_list)
     }
 }
