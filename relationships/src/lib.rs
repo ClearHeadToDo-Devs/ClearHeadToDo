@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 use im::Vector;
 
-trait RelationshipListManagement {
+pub trait RelationshipListManagement {
     type L: RelationshipListManagement;
     type V: RelationshipVariantManagement;
     fn add_new(

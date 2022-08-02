@@ -20,12 +20,8 @@ impl CsvStorage for Vector<Relationship> {
     }
     fn read_from_csv(file_path: &Path) -> Result<Self::L, Box<dyn Error>> {
         let mut file = csv::Reader::from_path(file_path)?;
-        let reader_results: Vector<Relationship> = file
-            .deserialize()
-            .next()
-            .ok_or("nothing here")
-            .unwrap()
-            .unwrap();
+        let reader_results: Vector<Relationship> =
+            file.deserialize().next().ok_or("nothing here")??;
         Ok(reader_results)
     }
 }
@@ -69,7 +65,7 @@ mod test {
     }
     #[test]
     fn successful_relationship_list_read() {
-        let file_path = Path::new("data/test_relationship.csv");
+        let file_path = Path::new("data/successful_relationship_list_read_test.csv");
 
         let relationship_list: Vector<Relationship> = Vector::read_from_csv(file_path).unwrap();
     }
