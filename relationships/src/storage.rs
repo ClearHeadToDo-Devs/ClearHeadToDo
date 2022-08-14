@@ -2,7 +2,7 @@ use crate::Relationship;
 use crate::RelationshipListManagement;
 
 use std::fs::File;
-use std::io::BufWriter;
+use std::io::{BufWriter, Write};
 use std::{error::Error, path::Path};
 
 use im::Vector;
@@ -41,10 +41,11 @@ impl CsvStorage for Vector<Relationship> {
 impl JSONStorage for Vector<Relationship> {
     type L = Vector<Relationship>;
     fn write_to_json(&self, file_path: &Path) -> Result<(), Box<dyn Error>> {
-        let file = File::open(file_path)?;
-        let file_writer = BufWriter::new(file);
+        let file = File::create(file_path)?;
+        let mut file_writer = BufWriter::new(file);
 
-        serde_json::to_writer(file_writer, &self)?;
+        serde_json::to_writer(&mut file_writer, &self)?;
+        file_writer.flush()?;
 
         Ok(())
     }
