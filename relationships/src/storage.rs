@@ -110,6 +110,6 @@ mod test {
             .read_to_string(&mut file_contents)
             .unwrap();
 
-        assert_eq!(file_contents,"id,variant,participant_1,participant_2\n00000000-0000-0000-0000-000000000000,Undirected,00000000-0000-0000-0000-000000000000,00000000-0000-0000-0000-000000000000\n")
+        assert_eq!(file_contents,"[{\"id\":\"00000000-0000-0000-0000-000000000000\",\"variant\":{\"Related\":\"Undirected\"},\"participant_1\":\"00000000-0000-0000-0000-000000000000\",\"participant_2\":\"00000000-0000-0000-0000-000000000000\"}]")
     }
 }
