@@ -167,4 +167,14 @@ mod test {
 
         assert_eq!(file_list, add_nil_relationship_to_vector(Vector::new()))
     }
+
+    #[test]
+    fn successfully_read_pretty_json() {
+        let file_list = Vector::<Relationship>::read_from_json(Path::new(
+            "data/test_read_pretty_relationship.json",
+        ))
+        .unwrap();
+
+        assert_eq!(file_list, add_nil_relationship_to_vector(Vector::new()))
+    }
 }
