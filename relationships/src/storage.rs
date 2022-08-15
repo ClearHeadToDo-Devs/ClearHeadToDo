@@ -2,7 +2,7 @@ use crate::Relationship;
 use crate::RelationshipListManagement;
 
 use std::fs::File;
-use std::io::{BufWriter, Write};
+use std::io::{BufReader, BufWriter, Write};
 use std::{error::Error, path::Path};
 
 use im::Vector;
@@ -16,6 +16,7 @@ pub trait CsvStorage {
 pub trait JSONStorage {
     type L: RelationshipListManagement;
     fn write_to_json(&self, file_path: &Path, pretty_print: bool) -> Result<(), Box<dyn Error>>;
+    fn read_from_json(file_path: &Path) -> Result<Self::L, Box<dyn Error>>;
 }
 
 impl CsvStorage for Vector<Relationship> {
@@ -52,6 +53,15 @@ impl JSONStorage for Vector<Relationship> {
         }
 
         Ok(())
+    }
+
+    fn read_from_json(file_path: &Path) -> Result<Self::L, Box<dyn Error>> {
+        let file = File::open(file_path)?;
+        let file_reader = BufReader::new(file);
+
+        let new_list = serde_json::from_reader(file_reader)?;
+
+        Ok(new_list)
     }
 }
 
@@ -101,7 +111,7 @@ mod test {
     }
 
     #[test]
-    fn successfully_read_pretty_json() {
+    fn successfully_write_pretty_json() {
         let empty_list: Vector<Relationship> = Vector::new();
         let single_list = add_nil_relationship_to_vector(empty_list);
         let file_path = Path::new("data/test_pretty_relationship.json");
@@ -130,7 +140,7 @@ mod test {
     }
 
     #[test]
-    fn successfully_read_json() {
+    fn successfully_write_json() {
         let empty_list: Vector<Relationship> = Vector::new();
         let single_list = add_nil_relationship_to_vector(empty_list);
         let file_path = Path::new("data/test_relationship.json");
@@ -147,5 +157,14 @@ mod test {
             file_contents,
             "[{\"id\":\"00000000-0000-0000-0000-000000000000\",\"variant\":{\"Related\":\"Undirected\"},\"participant_1\":\"00000000-0000-0000-0000-000000000000\",\"participant_2\":\"00000000-0000-0000-0000-000000000000\"}]"
         )
+    }
+
+    #[test]
+    fn successfully_read_json() {
+        let file_list =
+            Vector::<Relationship>::read_from_json(Path::new("data/test_read_relationship.json"))
+                .unwrap();
+
+        assert_eq!(file_list, add_nil_relationship_to_vector(Vector::new()))
     }
 }
