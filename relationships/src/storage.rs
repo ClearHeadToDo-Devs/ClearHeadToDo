@@ -44,7 +44,7 @@ impl JSONStorage for Vector<Relationship> {
         let file = File::create(file_path)?;
         let mut file_writer = BufWriter::new(file);
 
-        serde_json::to_writer(&mut file_writer, &self)?;
+        serde_json::to_writer_pretty(&mut file_writer, &self)?;
         file_writer.flush()?;
 
         Ok(())
@@ -112,10 +112,16 @@ mod test {
 
         assert_eq!(
             file_contents,
-            "[{\"id\":\"00000000-0000-0000-0000-000000000000\",
-            \"variant\":{\"Related\":\"Undirected\"},
-            \"participant_1\":\"00000000-0000-0000-0000-000000000000\",
-            \"participant_2\":\"00000000-0000-0000-0000-000000000000\"}]"
+            "[
+  {
+    \"id\": \"00000000-0000-0000-0000-000000000000\",
+    \"variant\": {
+      \"Related\": \"Undirected\"
+    },
+    \"participant_1\": \"00000000-0000-0000-0000-000000000000\",
+    \"participant_2\": \"00000000-0000-0000-0000-000000000000\"
+  }
+]"
         )
     }
 }
