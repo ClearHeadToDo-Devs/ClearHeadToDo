@@ -15,7 +15,7 @@ pub trait CsvStorage {
 
 pub trait JSONStorage {
     type L: RelationshipListManagement;
-    fn write_to_json(&self, file_path: &Path) -> Result<(), Box<dyn Error>>;
+    fn write_to_json_pretty(&self, file_path: &Path) -> Result<(), Box<dyn Error>>;
 }
 
 impl CsvStorage for Vector<Relationship> {
@@ -40,7 +40,7 @@ impl CsvStorage for Vector<Relationship> {
 
 impl JSONStorage for Vector<Relationship> {
     type L = Vector<Relationship>;
-    fn write_to_json(&self, file_path: &Path) -> Result<(), Box<dyn Error>> {
+    fn write_to_json_pretty(&self, file_path: &Path) -> Result<(), Box<dyn Error>> {
         let file = File::create(file_path)?;
         let mut file_writer = BufWriter::new(file);
 
@@ -103,7 +103,7 @@ mod test {
         let file_path = Path::new("data/test_relationship.json");
         let mut file_contents = String::new();
 
-        single_list.write_to_json(file_path).unwrap();
+        single_list.write_to_json_pretty(file_path).unwrap();
 
         fs::File::open(file_path)
             .unwrap()
