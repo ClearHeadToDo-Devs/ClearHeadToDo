@@ -15,7 +15,7 @@ pub trait CsvStorage {
 
 pub trait JSONStorage {
     type L: RelationshipListManagement;
-    fn write_to_json_pretty(&self, file_path: &Path) -> Result<(), Box<dyn Error>>;
+    fn write_to_json(&self, file_path: &Path, pretty_print: bool) -> Result<(), Box<dyn Error>>;
 }
 
 impl CsvStorage for Vector<Relationship> {
@@ -40,12 +40,16 @@ impl CsvStorage for Vector<Relationship> {
 
 impl JSONStorage for Vector<Relationship> {
     type L = Vector<Relationship>;
-    fn write_to_json_pretty(&self, file_path: &Path) -> Result<(), Box<dyn Error>> {
+    fn write_to_json(&self, file_path: &Path, pretty_print: bool) -> Result<(), Box<dyn Error>> {
         let file = File::create(file_path)?;
         let mut file_writer = BufWriter::new(file);
 
-        serde_json::to_writer_pretty(&mut file_writer, &self)?;
-        file_writer.flush()?;
+        if pretty_print == true {
+            serde_json::to_writer_pretty(&mut file_writer, &self)?;
+            file_writer.flush()?;
+        } else {
+            serde_json::to_writer(&mut file_writer, &self)?;
+        }
 
         Ok(())
     }
@@ -97,13 +101,13 @@ mod test {
     }
 
     #[test]
-    fn successfully_read_json() {
+    fn successfully_read_pretty_json() {
         let empty_list: Vector<Relationship> = Vector::new();
         let single_list = add_nil_relationship_to_vector(empty_list);
-        let file_path = Path::new("data/test_relationship.json");
+        let file_path = Path::new("data/test_pretty_relationship.json");
         let mut file_contents = String::new();
 
-        single_list.write_to_json_pretty(file_path).unwrap();
+        single_list.write_to_json(file_path, true).unwrap();
 
         fs::File::open(file_path)
             .unwrap()
@@ -122,6 +126,26 @@ mod test {
     \"participant_2\": \"00000000-0000-0000-0000-000000000000\"
   }
 ]"
+        )
+    }
+
+    #[test]
+    fn successfully_read_json() {
+        let empty_list: Vector<Relationship> = Vector::new();
+        let single_list = add_nil_relationship_to_vector(empty_list);
+        let file_path = Path::new("data/test_relationship.json");
+        let mut file_contents = String::new();
+
+        single_list.write_to_json(file_path, false).unwrap();
+
+        fs::File::open(file_path)
+            .unwrap()
+            .read_to_string(&mut file_contents)
+            .unwrap();
+
+        assert_eq!(
+            file_contents,
+            "[{\"id\":\"00000000-0000-0000-0000-000000000000\",\"variant\":{\"Related\":\"Undirected\"},\"participant_1\":\"00000000-0000-0000-0000-000000000000\",\"participant_2\":\"00000000-0000-0000-0000-000000000000\"}]"
         )
     }
 }
