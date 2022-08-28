@@ -2,18 +2,18 @@ use crate::Action;
 
 use csv::Reader;
 use csv::Writer;
-use im::vector;
 use std::error::Error;
 use std::{env, path::PathBuf};
 
 pub fn load_action_from_csv(file_name: &str) -> Result<im::Vector<Action>, Box<dyn Error>> {
-    let mut import_list = vector!();
     let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
-    for record_result in rdr.deserialize() {
-        let record = record_result?;
-        //let new_task = record.parse_task()?;
-        import_list.push_back(record);
-    }
+
+    let import_list: im::Vector<Action> = rdr.deserialize().map(|record| record.unwrap()).collect();
+
+    // for record_result in rdr.deserialize() {
+    //     let record = record_result?;
+    //     import_list.push_back(record);
+    // }
     Ok(import_list)
 }
 
@@ -53,6 +53,7 @@ fn create_file_writer_to_data_folder(
 mod tests {
     use super::*;
     use crate::helper::add_nil_task;
+    use im::vector;
     use crate::PriEnum;
     use std::str::FromStr;
     use uuid::Uuid;
