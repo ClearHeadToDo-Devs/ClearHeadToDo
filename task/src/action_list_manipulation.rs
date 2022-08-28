@@ -3,8 +3,8 @@ use std::error::Error;
 use uuid::Uuid;
 pub trait ActionListManipulation {
     type Child: ActionManipulation;
-    fn create_action(&self) -> Self;
-    fn print_task_list(&self) -> Result<String, Box<dyn Error>>;
+    fn create_new(&self) -> Self;
+    fn print_list(&self) -> Result<String, Box<dyn Error>>;
     fn remove_task(&self, index: usize) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized;

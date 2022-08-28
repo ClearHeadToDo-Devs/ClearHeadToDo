@@ -34,14 +34,14 @@ pub struct ActionList {
 impl ActionListManipulation for im::Vector<Action> {
     type Child = Action;
 
-    fn create_action(&self) -> Self {
+    fn create_new(&self) -> Self {
         let mut new_list = self.clone();
         new_list.push_back(Action::create_default_task());
 
         return new_list;
     }
 
-    fn print_task_list(&self) -> Result<String, Box<dyn Error>> {
+    fn print_list(&self) -> Result<String, Box<dyn Error>> {
         let mut task_list_string = "name,priority,completed,ID\n".to_string();
 
         if self.is_empty() == true {
