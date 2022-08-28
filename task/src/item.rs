@@ -5,9 +5,9 @@ use crate::action_manipulation::ActionManipulation;
 use std::error::Error;
 use uuid::Uuid;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Debug, Clone, Deserialize)]
+#[derive(PartialEq, Debug, Clone, Deserialize, Serialize)]
 pub struct Action {
     pub id: Uuid,
     pub name: String,

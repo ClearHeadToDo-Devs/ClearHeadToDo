@@ -1,25 +1,7 @@
-use crate::Action;
-
-use serde::ser::{Serialize, SerializeStruct, Serializer};
-
-impl Serialize for Action {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut s = serializer.serialize_struct("Action", 4)?;
-        s.serialize_field("name", &self.name)?;
-        s.serialize_field("priority", &self.priority)?;
-        s.serialize_field("completed", &self.completed)?;
-        s.serialize_field("id", &self.id)?;
-        s.end()
-    }
-}
-
 #[cfg(test)]
 mod tests {
 
-    use super::*;
+    use crate::Action;
     use serde_test::{assert_de_tokens, assert_ser_tokens, Configure, Token};
     use uuid::Uuid;
 
