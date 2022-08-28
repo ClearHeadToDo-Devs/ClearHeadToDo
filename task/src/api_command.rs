@@ -23,7 +23,7 @@ impl Command {
                 return Ok(task_list.clone());
             }
             Command::CreateTask(name) => {
-                let updated_task_list = task_list.create_task();
+                let updated_task_list = task_list.create_action();
                 if let Some(name) = name {
                     return updated_task_list
                         .rename_task(updated_task_list.len() - 1, name.to_string());
@@ -131,7 +131,7 @@ mod tests {
     #[test]
     fn generate_create_task_success_message() {
         let empty_task_list = vector!();
-        let single_task_list = empty_task_list.create_task();
+        let single_task_list = empty_task_list.create_action();
 
         let message =
             Command::CreateTask(None).create_end_user_message(&empty_task_list, &single_task_list);
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn generate_complete_task_message() {
-        let single_task_list = vector!().create_task();
+        let single_task_list = vector!().create_action();
         let updated_task_list = single_task_list.toggle_task_completion_status(0).unwrap();
 
         let message = Command::ToggleTaskCompletion(0)
@@ -198,7 +198,7 @@ mod tests {
     #[test]
     fn cli_remove_task_successful_run_test() {
         let empty_task_list = vector!();
-        let single_task_list = empty_task_list.create_task();
+        let single_task_list = empty_task_list.create_action();
 
         let result = Command::RemoveTask(0).run_subcommand(&single_task_list);
         assert_eq!(result.unwrap(), vector!());
@@ -206,7 +206,7 @@ mod tests {
 
     #[test]
     fn generate_remove_task_message() {
-        let single_task_list = vector!().create_task();
+        let single_task_list = vector!().create_action();
         let updated_task_list = single_task_list.remove_task(0).unwrap();
 
         let message =
@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn generate_rename_task_message() {
-        let single_task_list = vector!().create_task();
+        let single_task_list = vector!().create_action();
         let updated_task_list = single_task_list
             .rename_task(0, "New Name".to_string())
             .unwrap();
@@ -294,7 +294,7 @@ mod tests {
 
     #[test]
     fn generate_reprioritize_task_message() {
-        let single_task_list = vector!().create_task();
+        let single_task_list = vector!().create_action();
         let updated_task_list = single_task_list
             .change_task_priority(0, "low".to_string())
             .unwrap();

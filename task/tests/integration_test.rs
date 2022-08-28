@@ -166,7 +166,7 @@ fn failing_task_removal_test() {
 #[test]
 fn successful_task_removal_test() {
     let empty_task_list: im::Vector<Action> = vector!();
-    let single_task_list = &empty_task_list.create_task();
+    let single_task_list = &empty_task_list.create_action();
     let good_result = &single_task_list.remove_task(0).unwrap();
     assert!(good_result.is_empty());
 }
@@ -183,7 +183,7 @@ fn failing_task_completion_bad_index_test() {
 #[test]
 fn successful_task_completion_test() {
     let empty_task_list: im::Vector<Action> = vector!();
-    let single_task_list = &empty_task_list.create_task();
+    let single_task_list = &empty_task_list.create_action();
     let good_result = &single_task_list.toggle_task_completion_status(0).unwrap();
     assert!(good_result[0].completed == true);
 }
@@ -211,7 +211,7 @@ fn failing_task_rename_bad_index_test() {
 #[test]
 fn successful_task_rename_test() {
     let empty_task_list: im::Vector<Action> = vector!();
-    let single_task_list = &empty_task_list.create_task();
+    let single_task_list = &empty_task_list.create_action();
     let good_result = &single_task_list
         .rename_task(0, "Changed Task".to_string())
         .unwrap();
@@ -230,7 +230,7 @@ fn failing_task_reprioritize_bad_index_test() {
 #[test]
 fn failing_task_reprioritize_bad_priority_test() {
     let empty_task_list: im::Vector<Action> = vector!();
-    let single_task_list = &empty_task_list.create_task();
+    let single_task_list = &empty_task_list.create_action();
     let error = &single_task_list
         .change_task_priority(0, "bad priority".to_string())
         .unwrap_err();
@@ -240,7 +240,7 @@ fn failing_task_reprioritize_bad_priority_test() {
 #[test]
 fn successful_task_reprioritize_test() {
     let empty_task_list: im::Vector<Action> = vector!();
-    let single_task_list = &empty_task_list.create_task();
+    let single_task_list = &empty_task_list.create_action();
     let changed_task_list = &single_task_list
         .change_task_priority(0, "low".to_string())
         .unwrap();

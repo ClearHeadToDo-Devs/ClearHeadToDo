@@ -34,7 +34,7 @@ pub struct ActionList {
 impl ActionListManipulation for im::Vector<Action> {
     type Child = Action;
 
-    fn create_task(&self) -> Self {
+    fn create_action(&self) -> Self {
         let mut new_list = self.clone();
         new_list.push_back(Action::create_default_task());
 
