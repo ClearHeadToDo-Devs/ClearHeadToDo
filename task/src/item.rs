@@ -58,7 +58,7 @@ impl ActionManipulation for Action {
         )
     }
 
-    fn create_default_task() -> Action {
+    fn create_default() -> Action {
         Action {
             ..Default::default()
         }

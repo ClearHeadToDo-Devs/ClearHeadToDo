@@ -32,15 +32,15 @@ fn print_task_content() {
 
 #[test]
 fn task_creation_unique_id() {
-    let first_test_task = Action::create_default_task();
-    let second_test_task = Action::create_default_task();
+    let first_test_task = Action::create_default();
+    let second_test_task = Action::create_default();
 
     assert!(first_test_task.id != second_test_task.id);
 }
 
 #[test]
 fn rename() {
-    let test_task = Action::create_default_task();
+    let test_task = Action::create_default();
     let renamed_task = &test_task.rename(&"Changed Name".to_string());
 
     assert!(renamed_task.name == "Changed Name");
@@ -48,7 +48,7 @@ fn rename() {
 
 #[test]
 fn completion() -> Result<(), Box<dyn Error>> {
-    let test_task = Action::create_default_task();
+    let test_task = Action::create_default();
     let test_successful_completion_task = &test_task.toggle_completion_status();
 
     assert!(test_successful_completion_task.completed == true);
@@ -57,7 +57,7 @@ fn completion() -> Result<(), Box<dyn Error>> {
 
 #[test]
 fn reopen() -> () {
-    let test_task = Action::create_default_task();
+    let test_task = Action::create_default();
     let test_first_completion_task = &test_task.toggle_completion_status();
     let reopened_task = &test_first_completion_task.toggle_completion_status();
     assert_eq!(reopened_task.completed, false);
@@ -65,7 +65,7 @@ fn reopen() -> () {
 
 #[test]
 fn failing_reprioritize() -> Result<(), Box<dyn Error>> {
-    let test_task = Action::create_default_task();
+    let test_task = Action::create_default();
     let error = &test_task.change_priority("6").unwrap_err();
     assert_eq!(error.to_string(), "invalid priority");
     return Ok(());
@@ -73,7 +73,7 @@ fn failing_reprioritize() -> Result<(), Box<dyn Error>> {
 
 #[test]
 fn successful_reprioritize() -> Result<(), Box<dyn Error>> {
-    let priority_5_test_task = Action::create_default_task();
+    let priority_5_test_task = Action::create_default();
 
     let priority_4_test_task = &priority_5_test_task.change_priority("4")?;
     assert!(priority_4_test_task.priority == priority::PriEnum::Low);

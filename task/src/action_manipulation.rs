@@ -7,7 +7,7 @@ pub trait ActionManipulation {
     where
         Self: Sized;
     fn export_fields_as_string(&self) -> String;
-    fn create_default_task() -> Self;
+    fn create_default() -> Self;
 }
 
 #[cfg(test)]
@@ -77,7 +77,7 @@ mod tests {
             )
         }
 
-        fn create_default_task() -> Self {
+        fn create_default() -> Self {
             Self {
                 name: "default task".to_string(),
                 completed: false,
@@ -88,7 +88,7 @@ mod tests {
 
     #[test]
     fn successful_default_task_creation() {
-        let test_task = TestStruct::create_default_task();
+        let test_task = TestStruct::create_default();
         assert_eq!(test_task.name, "default task");
         assert_eq!(test_task.completed, false);
         assert_eq!(test_task.priority, "low");
@@ -96,13 +96,13 @@ mod tests {
 
     #[test]
     fn successful_field_export() {
-        let test_export = TestStruct::create_default_task().export_fields_as_string();
+        let test_export = TestStruct::create_default().export_fields_as_string();
         assert_eq!(test_export, "default task,false,low")
     }
 
     #[test]
     fn successful_reprioritization() {
-        let test_task = TestStruct::create_default_task()
+        let test_task = TestStruct::create_default()
             .change_priority("high")
             .unwrap();
         assert_eq!(test_task.priority, "high");
@@ -110,7 +110,7 @@ mod tests {
 
     #[test]
     fn failed_reprioritization() {
-        let test_task_error = TestStruct::create_default_task()
+        let test_task_error = TestStruct::create_default()
             .change_priority("bad_priority")
             .unwrap_err();
         assert_eq!(test_task_error.to_string(), "invalid priority".to_string());
@@ -118,13 +118,13 @@ mod tests {
 
     #[test]
     fn successfully_completing_task() {
-        let test_task = TestStruct::create_default_task().toggle_completion_status();
+        let test_task = TestStruct::create_default().toggle_completion_status();
         assert_eq!(test_task.completed, true);
     }
 
     #[test]
     fn successfully_reopen_task() {
-        let test_task = TestStruct::create_default_task()
+        let test_task = TestStruct::create_default()
             .toggle_completion_status()
             .toggle_completion_status();
         assert_eq!(test_task.completed, false);
@@ -132,7 +132,7 @@ mod tests {
 
     #[test]
     fn rename_task() {
-        let test_task = TestStruct::create_default_task().rename("rename test");
+        let test_task = TestStruct::create_default().rename("rename test");
         assert_eq!(test_task.name, "rename test");
     }
 }
