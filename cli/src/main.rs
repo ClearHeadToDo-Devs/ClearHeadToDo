@@ -2,8 +2,8 @@ mod arg_parser;
 use arg_parser::create_app;
 use arg_parser::ArgumentParsing;
 
-use clear_head_todo_core::list_storage::load_csv_with_task_data;
-use clear_head_todo_core::list_storage::load_tasks_from_csv;
+use clear_head_todo_core::list_storage::load_action_from_csv;
+use clear_head_todo_core::list_storage::load_csv_with_action_data;
 use clear_head_todo_core::api_command::Command;
 use clear_head_todo_core::Action;
 use clear_head_todo_core::ActionListManipulation;
@@ -11,7 +11,7 @@ use im::vector;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let task_list = load_tasks_from_csv("tasks.csv")?;
+    let task_list = load_action_from_csv("tasks.csv")?;
 
     let mut _updated_task_list: im::Vector<Action> = vector!();
 
@@ -28,7 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     } else {
         let updated_task_list = &subcommand.run_subcommand(&task_list)?;
-        load_csv_with_task_data(&updated_task_list, "tasks.csv")?;
+        load_csv_with_action_data(&updated_task_list, "tasks.csv")?;
         println!(
             "{}",
             &subcommand.create_end_user_message(&task_list, &updated_task_list)

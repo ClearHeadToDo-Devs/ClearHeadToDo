@@ -6,7 +6,7 @@ use im::vector;
 use std::error::Error;
 use std::{env, path::PathBuf};
 
-pub fn load_tasks_from_csv(file_name: &str) -> Result<im::Vector<Action>, Box<dyn Error>> {
+pub fn load_action_from_csv(file_name: &str) -> Result<im::Vector<Action>, Box<dyn Error>> {
     let mut import_list = vector!();
     let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
     for record_result in rdr.deserialize() {
@@ -17,7 +17,7 @@ pub fn load_tasks_from_csv(file_name: &str) -> Result<im::Vector<Action>, Box<dy
     Ok(import_list)
 }
 
-pub fn load_csv_with_task_data(
+pub fn load_csv_with_action_data(
     task_list: &im::Vector<Action>,
     file_name: &str,
 ) -> Result<(), Box<dyn Error>> {
@@ -61,7 +61,7 @@ mod tests {
 
     #[test]
     fn load_from_csv_sucessful() {
-        let test_task_list = load_tasks_from_csv("successful_import_test.csv").unwrap();
+        let test_task_list = load_action_from_csv("successful_import_test.csv").unwrap();
         let test_task = &test_task_list[0];
 
         assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
@@ -75,7 +75,7 @@ mod tests {
         let empty_task_list = vector!();
         let single_nil_task_list = add_nil_task(empty_task_list);
 
-        load_csv_with_task_data(&single_nil_task_list, "successful_export_test.csv")?;
+        load_csv_with_action_data(&single_nil_task_list, "successful_export_test.csv")?;
         let rdr = Reader::from_path(
             env::current_dir()?
                 .join("data")
@@ -104,14 +104,14 @@ mod tests {
     #[cfg(not(target_os = "windows"))]
     #[test]
     fn load_from_csv_bad_file() {
-        let error = load_tasks_from_csv("bad_file").unwrap_err();
+        let error = load_action_from_csv("bad_file").unwrap_err();
         assert_eq!(error.to_string(), "No such file or directory (os error 2)");
     }
 
     #[cfg(target_os = "windows")]
     #[test]
     fn load_from_csv_bad_file() {
-        let error = load_tasks_from_csv("bad_file").unwrap_err();
+        let error = load_action_from_csv("bad_file").unwrap_err();
         assert_eq!(
             error.to_string(),
             "The system cannot find the file specified. (os error 2)"
@@ -121,7 +121,7 @@ mod tests {
     #[cfg(not(target_os = "windows"))]
     #[test]
     fn load_from_csv_bad_completion_status() {
-        let error = load_tasks_from_csv("bad_completion_status.csv").unwrap_err();
+        let error = load_action_from_csv("bad_completion_status.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
             "CSV deserialize error: record 1 (line: 2, byte: 26): missing field `completed`"
@@ -131,7 +131,7 @@ mod tests {
     #[cfg(target_os = "windows")]
     #[test]
     fn load_from_csv_bad_completion_status() {
-        let error = load_tasks_from_csv("bad_completion_status.csv").unwrap_err();
+        let error = load_action_from_csv("bad_completion_status.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
             "CSV deserialize error: record 1 (line: 1, byte: 26): missing field `completed`"
@@ -141,7 +141,7 @@ mod tests {
     #[cfg(not(target_os = "windows"))]
     #[test]
     fn load_from_csv_bad_priority() {
-        let error = load_tasks_from_csv("bad_priority_test.csv").unwrap_err();
+        let error = load_action_from_csv("bad_priority_test.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
             "CSV deserialize error: record 1 (line: 2, byte: 28): unknown variant `bad priority`, expected one of `Critical`, `High`, `Medium`, `Low`, `Optional`"
@@ -151,7 +151,7 @@ mod tests {
     #[cfg(target_os = "windows")]
     #[test]
     fn load_from_csv_bad_priority() {
-        let error = load_tasks_from_csv("bad_priority_test.csv").unwrap_err();
+        let error = load_action_from_csv("bad_priority_test.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
             "CSV deserialize error: record 1 (line: 1, byte: 28): unknown variant `bad priority`, expected one of `Critical`, `High`, `Medium`, `Low`, `Optional`"
@@ -161,7 +161,7 @@ mod tests {
     #[cfg(not(target_os = "windows"))]
     #[test]
     fn load_from_csv_bad_id() {
-        let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();
+        let error = load_action_from_csv("bad_id_test.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
             "CSV deserialize error: record 1 (line: 2, byte: 28): missing field `id`"
@@ -171,7 +171,7 @@ mod tests {
     #[cfg(target_os = "windows")]
     #[test]
     fn load_from_csv_bad_id() {
-        let error = load_tasks_from_csv("bad_id_test.csv").unwrap_err();
+        let error = load_action_from_csv("bad_id_test.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
             "CSV deserialize error: record 1 (line: 1, byte: 28): missing field `id`"
