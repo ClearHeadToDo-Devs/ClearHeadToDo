@@ -26,11 +26,6 @@ use std::error::Error;
 use std::io::{Error as OtherError, ErrorKind};
 use uuid::Uuid;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct ActionList {
-    pub tasks: im::Vector<Action>,
-}
-
 impl ActionListManipulation for im::Vector<Action> {
     type Child = Action;
 
