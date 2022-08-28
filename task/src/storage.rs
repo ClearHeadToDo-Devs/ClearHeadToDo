@@ -7,7 +7,7 @@ impl Serialize for Action {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("Task", 4)?;
+        let mut s = serializer.serialize_struct("Action", 4)?;
         s.serialize_field("name", &self.name)?;
         s.serialize_field("priority", &self.priority)?;
         s.serialize_field("completed", &self.completed)?;
@@ -34,7 +34,7 @@ mod tests {
             &test_task.readable(),
             &[
                 Token::Struct {
-                    name: "Task",
+                    name: "Action",
                     len: 4,
                 },
                 Token::Str("name"),
@@ -60,7 +60,7 @@ mod tests {
             ..Default::default()
         };
     assert_de_tokens(&test_task.readable(), &[
-        Token::Struct {name: "Task", len:5},
+        Token::Struct {name: "Action", len:5},
         Token::Str("name"),
         Token::Str("Default Task"),
         Token::Str("priority"),
