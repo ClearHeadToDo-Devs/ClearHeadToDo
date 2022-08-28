@@ -1,6 +1,6 @@
 use std::error::Error;
 
-pub trait TaskManipulation {
+pub trait ActionManipulation {
     fn rename(&self, new_task_name: &str) -> Self;
     fn toggle_completion_status(&self) -> Self;
     fn change_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>>
@@ -32,7 +32,7 @@ mod tests {
         }
     }
 
-    impl TaskManipulation for TestStruct {
+    impl ActionManipulation for TestStruct {
         fn rename(&self, new_task_name: &str) -> Self {
             TestStruct {
                 name: new_task_name.to_string(),

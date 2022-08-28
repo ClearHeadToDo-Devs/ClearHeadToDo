@@ -1,6 +1,6 @@
 use crate::priority::*;
 
-use crate::task_manipulation::TaskManipulation;
+use crate::task_manipulation::ActionManipulation;
 
 use std::error::Error;
 use uuid::Uuid;
@@ -26,7 +26,7 @@ impl Default for Action {
     }
 }
 
-impl TaskManipulation for Action {
+impl ActionManipulation for Action {
     fn rename(&self, new_task_name: &str) -> Action {
         return Action {
             name: new_task_name.to_owned(),

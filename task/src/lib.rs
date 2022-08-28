@@ -2,7 +2,7 @@ pub mod priority;
 pub use priority::*;
 
 pub mod task_manipulation;
-pub use task_manipulation::TaskManipulation;
+pub use task_manipulation::ActionManipulation;
 
 pub mod storage;
 pub use storage::*;
