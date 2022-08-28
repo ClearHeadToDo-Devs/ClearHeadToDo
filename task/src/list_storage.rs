@@ -10,10 +10,6 @@ pub fn load_action_from_csv(file_name: &str) -> Result<im::Vector<Action>, Box<d
 
     let import_list: im::Vector<Action> = rdr.deserialize().map(|record| record.unwrap()).collect();
 
-    // for record_result in rdr.deserialize() {
-    //     let record = record_result?;
-    //     import_list.push_back(record);
-    // }
     Ok(import_list)
 }
 
