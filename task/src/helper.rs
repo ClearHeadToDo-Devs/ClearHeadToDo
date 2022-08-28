@@ -1,9 +1,9 @@
-use crate::item::Task;
+use crate::item::Action;
 use uuid::Uuid;
 
-pub fn add_nil_task(task_list: im::Vector<Task>) -> im::Vector<Task> {
+pub fn add_nil_task(task_list: im::Vector<Action>) -> im::Vector<Action> {
     let mut new_list = task_list.clone();
-    let new_task: Task = Task {
+    let new_task: Action = Action {
         id: Uuid::nil(),
         ..Default::default()
     };

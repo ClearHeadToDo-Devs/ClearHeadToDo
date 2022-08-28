@@ -5,7 +5,7 @@ use arg_parser::ArgumentParsing;
 use clear_head_todo_core::list_storage::load_csv_with_task_data;
 use clear_head_todo_core::list_storage::load_tasks_from_csv;
 use clear_head_todo_core::api_command::Command;
-use clear_head_todo_core::Task;
+use clear_head_todo_core::Action;
 use clear_head_todo_core::TaskListManipulation;
 use im::vector;
 use std::error::Error;
@@ -13,7 +13,7 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
     let task_list = load_tasks_from_csv("tasks.csv")?;
 
-    let mut _updated_task_list: im::Vector<Task> = vector!();
+    let mut _updated_task_list: im::Vector<Action> = vector!();
 
     let app = create_app();
     let matches = app.get_matches();

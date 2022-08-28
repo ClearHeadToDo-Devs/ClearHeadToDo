@@ -1,4 +1,4 @@
-use crate::Task;
+use crate::Action;
 
 use csv::Reader;
 use csv::Writer;
@@ -6,7 +6,7 @@ use im::vector;
 use std::error::Error;
 use std::{env, path::PathBuf};
 
-pub fn load_tasks_from_csv(file_name: &str) -> Result<im::Vector<Task>, Box<dyn Error>> {
+pub fn load_tasks_from_csv(file_name: &str) -> Result<im::Vector<Action>, Box<dyn Error>> {
     let mut import_list = vector!();
     let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
     for record_result in rdr.deserialize() {
@@ -18,7 +18,7 @@ pub fn load_tasks_from_csv(file_name: &str) -> Result<im::Vector<Task>, Box<dyn 
 }
 
 pub fn load_csv_with_task_data(
-    task_list: &im::Vector<Task>,
+    task_list: &im::Vector<Action>,
     file_name: &str,
 ) -> Result<(), Box<dyn Error>> {
     let mut csv_writer: Writer<std::fs::File> = create_file_writer_to_data_folder(file_name)?;

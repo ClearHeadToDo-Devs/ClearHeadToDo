@@ -28,15 +28,15 @@ use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TaskList {
-    pub tasks: im::Vector<Task>,
+    pub tasks: im::Vector<Action>,
 }
 
-impl TaskListManipulation for im::Vector<Task> {
-    type Child = Task;
+impl TaskListManipulation for im::Vector<Action> {
+    type Child = Action;
 
     fn create_task(&self) -> Self {
         let mut new_list = self.clone();
-        new_list.push_back(Task::create_default_task());
+        new_list.push_back(Action::create_default_task());
 
         return new_list;
     }
@@ -55,7 +55,7 @@ impl TaskListManipulation for im::Vector<Task> {
         Ok(task_list_string.to_owned())
     }
 
-    fn remove_task(&self, index: usize) -> Result<im::Vector<Task>, Box<dyn Error>> {
+    fn remove_task(&self, index: usize) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(_task_ref) => {
                 let (mut left_side, mut right_side) = self.clone().split_at(index);
@@ -74,7 +74,7 @@ impl TaskListManipulation for im::Vector<Task> {
         &self,
         index: usize,
         new_name: String,
-    ) -> Result<im::Vector<Task>, Box<dyn Error>> {
+    ) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(task_ref) => return Ok(self.update(index, task_ref.rename(&new_name))),
 
@@ -88,7 +88,7 @@ impl TaskListManipulation for im::Vector<Task> {
     fn toggle_task_completion_status(
         &self,
         index: usize,
-    ) -> Result<im::Vector<Task>, Box<dyn Error>> {
+    ) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(task_ref) => Ok(self.update(index, task_ref.clone().toggle_completion_status())),
             None => Err(Box::new(OtherError::new(
@@ -102,7 +102,7 @@ impl TaskListManipulation for im::Vector<Task> {
         &self,
         index: usize,
         new_priority: String,
-    ) -> Result<im::Vector<Task>, Box<dyn Error>> {
+    ) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(task_ref) => {
                 Ok(self.update(index, task_ref.clone().change_priority(&new_priority)?))
@@ -114,7 +114,7 @@ impl TaskListManipulation for im::Vector<Task> {
         }
     }
 
-    fn select_task_by_id(&self, id: Uuid) -> Result<Task, Box<dyn Error>> {
+    fn select_task_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {
         let search_task = self.clone().into_iter().find(|tasks| tasks.id == id);
         match search_task {
             Some(task) => return Ok(task.clone().to_owned()),

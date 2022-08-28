@@ -1,8 +1,8 @@
-use crate::Task;
+use crate::Action;
 
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
-impl Serialize for Task {
+impl Serialize for Action {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -25,7 +25,7 @@ mod tests {
 
     #[test]
     fn successfully_serialize_task() {
-        let test_task = Task {
+        let test_task = Action {
             id: Uuid::nil(),
             ..Default::default()
         };
@@ -55,7 +55,7 @@ mod tests {
 
     #[test]
     fn successfully_deserializing_task() {
-        let test_task =  Task {
+        let test_task =  Action {
             id: Uuid::nil(),
             ..Default::default()
         };

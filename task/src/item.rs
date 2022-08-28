@@ -8,16 +8,16 @@ use uuid::Uuid;
 use serde::Deserialize;
 
 #[derive(PartialEq, Debug, Clone, Deserialize)]
-pub struct Task {
+pub struct Action {
     pub id: Uuid,
     pub name: String,
     pub completed: bool,
     pub priority: PriEnum,
 }
 
-impl Default for Task {
-    fn default() -> Task {
-        Task {
+impl Default for Action {
+    fn default() -> Action {
+        Action {
             id: Uuid::new_v4(),
             name: "Default Task".to_string(),
             completed: false,
@@ -26,23 +26,23 @@ impl Default for Task {
     }
 }
 
-impl TaskManipulation for Task {
-    fn rename(&self, new_task_name: &str) -> Task {
-        return Task {
+impl TaskManipulation for Action {
+    fn rename(&self, new_task_name: &str) -> Action {
+        return Action {
             name: new_task_name.to_owned(),
             ..self.to_owned()
         };
     }
-    fn toggle_completion_status(&self) -> Task {
-        Task {
+    fn toggle_completion_status(&self) -> Action {
+        Action {
             completed: !self.completed,
             ..self.to_owned()
         }
     }
 
-    fn change_priority(&self, new_priority: &str) -> Result<Task, Box<dyn Error>> {
+    fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
         let new_pri: PriEnum = PriEnum::parse_priority(new_priority)?;
-        return Ok(Task {
+        return Ok(Action {
             priority: new_pri.clone(),
             ..self.to_owned()
         });
@@ -58,8 +58,8 @@ impl TaskManipulation for Task {
         )
     }
 
-    fn create_default_task() -> Task {
-        Task {
+    fn create_default_task() -> Action {
+        Action {
             ..Default::default()
         }
     }

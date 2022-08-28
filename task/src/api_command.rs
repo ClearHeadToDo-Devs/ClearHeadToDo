@@ -1,4 +1,4 @@
-use crate::item::Task;
+use crate::item::Action;
 use crate::TaskListManipulation;
 use std::error::Error;
 
@@ -15,8 +15,8 @@ pub enum Command {
 impl Command {
     pub fn run_subcommand(
         &self,
-        task_list: &im::Vector<Task>,
-    ) -> Result<im::Vector<Task>, Box<dyn Error>> {
+        task_list: &im::Vector<Action>,
+    ) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self {
             Command::ListTasks => {
                 task_list.print_task_list()?;
@@ -55,8 +55,8 @@ impl Command {
 
     pub fn create_end_user_message(
         &self,
-        previous_task_list: &im::Vector<Task>,
-        updated_task_list: &im::Vector<Task>,
+        previous_task_list: &im::Vector<Action>,
+        updated_task_list: &im::Vector<Action>,
     ) -> String {
         match self {
             Command::CreateTask(_name) => {
@@ -104,7 +104,7 @@ mod tests {
     use super::*;
     use crate::helper::add_nil_task;
     use crate::PriEnum;
-    use crate::Task;
+    use crate::Action;
     use im::vector;
     use uuid::Uuid;
 
@@ -146,7 +146,7 @@ mod tests {
 
         assert_eq!(
             result.unwrap(),
-            vector![Task {
+            vector![Action {
                 completed: true,
                 id: Uuid::nil(),
                 ..Default::default()
@@ -156,7 +156,7 @@ mod tests {
 
     #[test]
     fn reopen_task_successful_run() {
-        let single_completed_task_list = vector![Task {
+        let single_completed_task_list = vector![Action {
             completed: true,
             id: Uuid::nil(),
             ..Default::default()
@@ -166,7 +166,7 @@ mod tests {
             Command::ToggleTaskCompletion(0).run_subcommand(&single_completed_task_list);
         assert_eq!(
             updated_task_list.unwrap(),
-            vector![Task {
+            vector![Action {
                 id: Uuid::nil(),
                 ..Default::default()
             }]
@@ -236,7 +236,7 @@ mod tests {
 
         assert_eq!(
             result.unwrap(),
-            vector![Task {
+            vector![Action {
                 name: "Test Rename".to_string(),
                 id: Uuid::nil(),
                 ..Default::default()
@@ -284,7 +284,7 @@ mod tests {
         .run_subcommand(&single_task_list);
         assert_eq!(
             result.as_ref().unwrap(),
-            &vector![Task {
+            &vector![Action {
                 priority: PriEnum::High,
                 id: Uuid::nil(),
                 ..Default::default()
