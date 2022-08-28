@@ -26,20 +26,20 @@ impl Command {
                 let updated_task_list = task_list.create_new();
                 if let Some(name) = name {
                     return updated_task_list
-                        .rename_task(updated_task_list.len() - 1, name.to_string());
+                        .rename(updated_task_list.len() - 1, name.to_string());
                 }
                 Ok(updated_task_list)
             }
             Command::ToggleTaskCompletion(index) => {
-                let updated_task_list = task_list.toggle_task_completion_status(*index)?;
+                let updated_task_list = task_list.toggle_completion_status(*index)?;
                 Ok(updated_task_list)
             }
             Command::RemoveTask(index) => {
-                let updated_task_list = task_list.remove_task(*index)?;
+                let updated_task_list = task_list.remove(*index)?;
                 Ok(updated_task_list)
             }
             Command::RenameTask { index, new_name } => {
-                let updated_task_list = task_list.rename_task(*index, new_name.to_string())?;
+                let updated_task_list = task_list.rename(*index, new_name.to_string())?;
                 Ok(updated_task_list)
             }
             Command::Reprioritize {
@@ -47,7 +47,7 @@ impl Command {
                 new_priority,
             } => {
                 let updated_task_list =
-                    task_list.change_task_priority(*index, new_priority.to_string())?;
+                    task_list.change_priority(*index, new_priority.to_string())?;
                 Ok(updated_task_list)
             }
         }
@@ -176,7 +176,7 @@ mod tests {
     #[test]
     fn generate_complete_task_message() {
         let single_task_list = vector!().create_new();
-        let updated_task_list = single_task_list.toggle_task_completion_status(0).unwrap();
+        let updated_task_list = single_task_list.toggle_completion_status(0).unwrap();
 
         let message = Command::ToggleTaskCompletion(0)
             .create_end_user_message(&single_task_list, &updated_task_list);
@@ -207,7 +207,7 @@ mod tests {
     #[test]
     fn generate_remove_task_message() {
         let single_task_list = vector!().create_new();
-        let updated_task_list = single_task_list.remove_task(0).unwrap();
+        let updated_task_list = single_task_list.remove(0).unwrap();
 
         let message =
             Command::RemoveTask(0).create_end_user_message(&single_task_list, &updated_task_list);
@@ -248,7 +248,7 @@ mod tests {
     fn generate_rename_task_message() {
         let single_task_list = vector!().create_new();
         let updated_task_list = single_task_list
-            .rename_task(0, "New Name".to_string())
+            .rename(0, "New Name".to_string())
             .unwrap();
 
         let message = Command::RenameTask {
@@ -296,7 +296,7 @@ mod tests {
     fn generate_reprioritize_task_message() {
         let single_task_list = vector!().create_new();
         let updated_task_list = single_task_list
-            .change_task_priority(0, "low".to_string())
+            .change_priority(0, "low".to_string())
             .unwrap();
 
         let message = Command::Reprioritize {

@@ -55,7 +55,7 @@ impl ActionListManipulation for im::Vector<Action> {
         Ok(task_list_string.to_owned())
     }
 
-    fn remove_task(&self, index: usize) -> Result<im::Vector<Action>, Box<dyn Error>> {
+    fn remove(&self, index: usize) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(_task_ref) => {
                 let (mut left_side, mut right_side) = self.clone().split_at(index);
@@ -70,7 +70,7 @@ impl ActionListManipulation for im::Vector<Action> {
         }
     }
 
-    fn rename_task(
+    fn rename(
         &self,
         index: usize,
         new_name: String,
@@ -85,7 +85,7 @@ impl ActionListManipulation for im::Vector<Action> {
         }
     }
 
-    fn toggle_task_completion_status(
+    fn toggle_completion_status(
         &self,
         index: usize,
     ) -> Result<im::Vector<Action>, Box<dyn Error>> {
@@ -98,7 +98,7 @@ impl ActionListManipulation for im::Vector<Action> {
         }
     }
 
-    fn change_task_priority(
+    fn change_priority(
         &self,
         index: usize,
         new_priority: String,

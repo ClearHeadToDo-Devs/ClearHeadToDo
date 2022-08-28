@@ -159,7 +159,7 @@ fn task_print_successful_test() {
 #[test]
 fn failing_task_removal_test() {
     let empty_task_list: im::Vector<Action> = vector!();
-    let error = &empty_task_list.remove_task(0).unwrap_err();
+    let error = &empty_task_list.remove(0).unwrap_err();
     assert_eq!(error.to_string(), "No Task at Given Index");
 }
 
@@ -167,7 +167,7 @@ fn failing_task_removal_test() {
 fn successful_task_removal_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let single_task_list = &empty_task_list.create_new();
-    let good_result = &single_task_list.remove_task(0).unwrap();
+    let good_result = &single_task_list.remove(0).unwrap();
     assert!(good_result.is_empty());
 }
 
@@ -175,7 +175,7 @@ fn successful_task_removal_test() {
 fn failing_task_completion_bad_index_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let error = &empty_task_list
-        .toggle_task_completion_status(0)
+        .toggle_completion_status(0)
         .unwrap_err();
     assert_eq!(error.to_string(), "No Task at Given Index");
 }
@@ -184,7 +184,7 @@ fn failing_task_completion_bad_index_test() {
 fn successful_task_completion_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let single_task_list = &empty_task_list.create_new();
-    let good_result = &single_task_list.toggle_task_completion_status(0).unwrap();
+    let good_result = &single_task_list.toggle_completion_status(0).unwrap();
     assert!(good_result[0].completed == true);
 }
 
@@ -195,7 +195,7 @@ fn successful_task_reopen_test() {
         completed: true,
         ..Default::default()
     });
-    let updated_task_list = &empty_task_list.toggle_task_completion_status(0).unwrap();
+    let updated_task_list = &empty_task_list.toggle_completion_status(0).unwrap();
     assert_eq!(updated_task_list[0].completed, false);
 }
 
@@ -203,7 +203,7 @@ fn successful_task_reopen_test() {
 fn failing_task_rename_bad_index_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let error = &empty_task_list
-        .rename_task(0, "Change Test".to_string())
+        .rename(0, "Change Test".to_string())
         .unwrap_err();
     assert_eq!(error.to_string(), "No Task at Given Index");
 }
@@ -213,7 +213,7 @@ fn successful_task_rename_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let single_task_list = &empty_task_list.create_new();
     let good_result = &single_task_list
-        .rename_task(0, "Changed Task".to_string())
+        .rename(0, "Changed Task".to_string())
         .unwrap();
     assert!(good_result[0].name == "Changed Task".to_string());
 }
@@ -222,7 +222,7 @@ fn successful_task_rename_test() {
 fn failing_task_reprioritize_bad_index_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let error = &empty_task_list
-        .change_task_priority(0, "Optional".to_string())
+        .change_priority(0, "Optional".to_string())
         .unwrap_err();
     assert_eq!(error.to_string(), "No Task at Given Index");
 }
@@ -232,7 +232,7 @@ fn failing_task_reprioritize_bad_priority_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let single_task_list = &empty_task_list.create_new();
     let error = &single_task_list
-        .change_task_priority(0, "bad priority".to_string())
+        .change_priority(0, "bad priority".to_string())
         .unwrap_err();
     assert_eq!(error.to_string(), "invalid priority".to_string());
 }
@@ -242,7 +242,7 @@ fn successful_task_reprioritize_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let single_task_list = &empty_task_list.create_new();
     let changed_task_list = &single_task_list
-        .change_task_priority(0, "low".to_string())
+        .change_priority(0, "low".to_string())
         .unwrap();
     assert_eq!(changed_task_list[0].priority, PriEnum::Low);
 }
