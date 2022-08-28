@@ -113,7 +113,7 @@ fn child_task_addition() -> Result<(), Box<dyn Error>> {
 fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
     let empty_task_list: im::Vector<Action> = vector!();
     let single_nil_task_list = add_nil_task(empty_task_list);
-    let test_search_task = single_nil_task_list.select_task_by_id(Uuid::nil());
+    let test_search_task = single_nil_task_list.select_by_id(Uuid::nil());
     assert!(
         test_search_task.unwrap()
             == Action {
@@ -131,7 +131,7 @@ fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
 fn task_failed_search_by_id_test() -> Result<(), Box<dyn Error>> {
     let empty_task_list: im::Vector<Action> = vector!();
     let test_search_task = empty_task_list
-        .select_task_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
+        .select_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
     assert!(test_search_task.unwrap_err().to_string() == "No Task with given ID");
     return Ok(());
 }

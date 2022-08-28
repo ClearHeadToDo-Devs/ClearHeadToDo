@@ -21,5 +21,5 @@ pub trait ActionListManipulation {
     ) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized;
-    fn select_task_by_id(&self, id: Uuid) -> Result<Self::Child, Box<dyn Error>>;
+    fn select_by_id(&self, id: Uuid) -> Result<Self::Child, Box<dyn Error>>;
 }

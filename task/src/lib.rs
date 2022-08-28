@@ -114,7 +114,7 @@ impl ActionListManipulation for im::Vector<Action> {
         }
     }
 
-    fn select_task_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {
+    fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {
         let search_task = self.clone().into_iter().find(|tasks| tasks.id == id);
         match search_task {
             Some(task) => return Ok(task.clone().to_owned()),
