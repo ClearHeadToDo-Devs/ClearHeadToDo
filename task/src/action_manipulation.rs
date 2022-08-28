@@ -33,9 +33,9 @@ mod tests {
     }
 
     impl ActionManipulation for TestStruct {
-        fn rename(&self, new_task_name: &str) -> Self {
+        fn rename(&self, new_name: &str) -> Self {
             TestStruct {
-                name: new_task_name.to_string(),
+                name: new_name.to_string(),
                 completed: self.completed.clone(),
                 priority: self.priority.clone(),
             }

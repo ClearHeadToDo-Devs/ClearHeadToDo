@@ -2,8 +2,8 @@ mod arg_parser;
 use arg_parser::create_app;
 use arg_parser::ArgumentParsing;
 
-use clear_head_todo_core::list_storage::load_action_from_csv;
-use clear_head_todo_core::list_storage::load_csv_with_action_data;
+use clear_head_todo_core::storage::load_action_from_csv;
+use clear_head_todo_core::storage::load_csv_with_action_data;
 use clear_head_todo_core::api_command::Command;
 use clear_head_todo_core::Action;
 use clear_head_todo_core::ActionListManipulation;
