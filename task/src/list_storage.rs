@@ -23,9 +23,7 @@ pub fn load_csv_with_action_data(
 ) -> Result<(), Box<dyn Error>> {
     let mut csv_writer: Writer<std::fs::File> = create_file_writer_to_data_folder(file_name)?;
 
-    for task in task_list {
-        csv_writer.serialize(task)?;
-    }
+    csv_writer.serialize(task_list)?;
     Ok(())
 }
 
