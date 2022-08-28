@@ -3,6 +3,17 @@
 version = 3
 
 [[package]]
+name = "action"
+version = "0.1.0"
+dependencies = [
+ "csv",
+ "im",
+ "serde",
+ "serde_test",
+ "uuid",
+]
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -91,11 +102,11 @@ dependencies = [
 name = "clear_head_todo_core"
 version = "0.1.0"
 dependencies = [
+ "action",
  "csv",
  "im",
  "relationships",
  "serde",
- "task",
  "uuid",
 ]
 
@@ -372,17 +383,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "task"
-version = "0.1.0"
-dependencies = [
- "csv",
- "im",
- "serde",
- "serde_test",
- "uuid",
 ]
 
 [[package]]

@@ -10,7 +10,7 @@ edition = "2018"
 csv = "1.1"
 serde = { version = "1.0.137", features = ["derive"] }
 im = "*"
-task = { path = "../task"}
+action = { path = "../action"}
 relationships = { path = "../relationships"}
 
 [dependencies.uuid]
