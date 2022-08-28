@@ -1,4 +1,5 @@
 use clear_head_todo_core::*;
+use clear_head_todo_core::helper::add_nil_task;
 use im::vector;
 use std::error::Error;
 use std::str::FromStr;
