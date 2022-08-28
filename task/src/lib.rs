@@ -27,7 +27,7 @@ use std::io::{Error as OtherError, ErrorKind};
 use uuid::Uuid;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct TaskList {
+pub struct ActionList {
     pub tasks: im::Vector<Action>,
 }
 
