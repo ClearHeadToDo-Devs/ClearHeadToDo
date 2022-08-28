@@ -17,7 +17,7 @@ pub mod list_storage;
 pub use storage::*;
 
 pub mod task_list_manipulation;
-pub use task_list_manipulation::TaskListManipulation;
+pub use task_list_manipulation::ActionListManipulation;
 
 pub mod api_command;
 pub use api_command::*;
@@ -31,7 +31,7 @@ pub struct TaskList {
     pub tasks: im::Vector<Action>,
 }
 
-impl TaskListManipulation for im::Vector<Action> {
+impl ActionListManipulation for im::Vector<Action> {
     type Child = Action;
 
     fn create_task(&self) -> Self {

@@ -6,7 +6,7 @@ use clear_head_todo_core::list_storage::load_csv_with_task_data;
 use clear_head_todo_core::list_storage::load_tasks_from_csv;
 use clear_head_todo_core::api_command::Command;
 use clear_head_todo_core::Action;
-use clear_head_todo_core::TaskListManipulation;
+use clear_head_todo_core::ActionListManipulation;
 use im::vector;
 use std::error::Error;
 

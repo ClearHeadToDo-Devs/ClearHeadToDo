@@ -1,7 +1,7 @@
 use crate::task_manipulation::ActionManipulation;
 use std::error::Error;
 use uuid::Uuid;
-pub trait TaskListManipulation {
+pub trait ActionListManipulation {
     type Child: ActionManipulation;
     fn create_task(&self) -> Self;
     fn print_task_list(&self) -> Result<String, Box<dyn Error>>;
