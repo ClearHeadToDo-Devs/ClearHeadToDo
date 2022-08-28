@@ -1,8 +1,8 @@
 pub mod priority;
 pub use priority::*;
 
-pub mod task_manipulation;
-pub use task_manipulation::ActionManipulation;
+pub mod action_manipulation;
+pub use action_manipulation::ActionManipulation;
 
 pub mod storage;
 pub use storage::*;
@@ -16,8 +16,8 @@ pub use helper::*;
 pub mod list_storage;
 pub use storage::*;
 
-pub mod task_list_manipulation;
-pub use task_list_manipulation::ActionListManipulation;
+pub mod action_list_manipulation;
+pub use action_list_manipulation::ActionListManipulation;
 
 pub mod api_command;
 pub use api_command::*;
