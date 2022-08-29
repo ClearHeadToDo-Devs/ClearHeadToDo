@@ -16,9 +16,6 @@ pub use storage::*;
 pub mod action_list_manipulation;
 pub use action_list_manipulation::ActionListManipulation;
 
-pub mod api_command;
-pub use api_command::*;
-
 use std::error::Error;
 use std::io::{Error as OtherError, ErrorKind};
 use uuid::Uuid;
