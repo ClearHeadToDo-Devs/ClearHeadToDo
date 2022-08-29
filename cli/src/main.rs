@@ -11,7 +11,7 @@ use im::vector;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let task_list = load_action_from_csv("tasks.csv")?;
+    let task_list = load_action_from_csv("actions.csv")?;
 
     let mut _updated_task_list: im::Vector<Action> = vector!();
 
