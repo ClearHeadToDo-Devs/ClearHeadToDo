@@ -103,7 +103,7 @@ impl Command {
 mod tests {
     use super::*;
     use crate::helper::add_nil_action;
-    use crate::PriEnum;
+    use crate::Priority;
     use crate::Action;
     use im::vector;
     use uuid::Uuid;
@@ -124,7 +124,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(result[0].name, "Default Action".to_string());
-        assert_eq!(result[0].priority, PriEnum::Optional);
+        assert_eq!(result[0].priority, Priority::Optional);
         assert_eq!(result[0].completed, false);
     }
 
@@ -285,7 +285,7 @@ mod tests {
         assert_eq!(
             result.as_ref().unwrap(),
             &vector![Action {
-                priority: PriEnum::High,
+                priority: Priority::High,
                 id: Uuid::nil(),
                 ..Default::default()
             }]

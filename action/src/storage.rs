@@ -55,7 +55,7 @@ mod tests {
     use super::*;
     use crate::helper::add_nil_action;
     use im::vector;
-    use crate::PriEnum;
+    use crate::Priority;
     use std::str::FromStr;
     use uuid::Uuid;
 
@@ -67,7 +67,7 @@ mod tests {
         assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
         assert!(test_task.name == "test csv task");
         assert!(test_task.completed == false);
-        assert!(test_task.priority == PriEnum::Optional);
+        assert!(test_task.priority == Priority::Optional);
     }
 
     #[test]

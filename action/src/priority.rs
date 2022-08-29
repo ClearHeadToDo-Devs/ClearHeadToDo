@@ -6,7 +6,7 @@ use std::io::{Error as OtherError, ErrorKind};
 
 #[repr(u8)]
 #[derive(Serialize, Deserialize, Copy, Clone, PartialEq, Debug)]
-pub enum PriEnum {
+pub enum Priority {
     Critical = 1,
     High = 2,
     Medium = 3,
@@ -14,15 +14,15 @@ pub enum PriEnum {
     Optional = 5,
 }
 
-impl PriEnum {
-    pub fn parse_priority(expr: &str) -> Result<PriEnum, Box<dyn Error>> {
+impl Priority {
+    pub fn parse_priority(expr: &str) -> Result<Priority, Box<dyn Error>> {
         match expr.to_ascii_lowercase().trim() {
-            "1" | "critical" | "crit" | "c" => Ok(PriEnum::Critical),
-            "2" | "high" | "hi" | "h" => Ok(PriEnum::High),
-            "3" | "medium" | "med" | "m" => Ok(PriEnum::Medium),
-            "4" | "low" | "lo" | "l" => Ok(PriEnum::Low),
-            "5" | "optional" | "opt" | "o" => Ok(PriEnum::Optional),
-            "" => Ok(PriEnum::Optional), //defaults to this
+            "1" | "critical" | "crit" | "c" => Ok(Priority::Critical),
+            "2" | "high" | "hi" | "h" => Ok(Priority::High),
+            "3" | "medium" | "med" | "m" => Ok(Priority::Medium),
+            "4" | "low" | "lo" | "l" => Ok(Priority::Low),
+            "5" | "optional" | "opt" | "o" => Ok(Priority::Optional),
+            "" => Ok(Priority::Optional), //defaults to this
             _ => Err(Box::new(OtherError::new(
                 ErrorKind::Other,
                 "invalid priority",
@@ -31,20 +31,20 @@ impl PriEnum {
     }
 }
 
-impl Default for PriEnum {
+impl Default for Priority {
     fn default() -> Self {
-        PriEnum::Optional
+        Priority::Optional
     }
 }
 
-impl fmt::Display for PriEnum {
+impl fmt::Display for Priority {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         let printable: &str = match *self {
-            PriEnum::Critical => "Critical",
-            PriEnum::High => "High",
-            PriEnum::Medium => "Medium",
-            PriEnum::Low => "Low",
-            PriEnum::Optional => "Optional",
+            Priority::Critical => "Critical",
+            Priority::High => "High",
+            Priority::Medium => "Medium",
+            Priority::Low => "Low",
+            Priority::Optional => "Optional",
         };
         write!(formatter, "{}", printable)
     }
@@ -56,19 +56,19 @@ mod tests {
 
     #[test]
     fn create_default_priority() {
-        let test_priority = PriEnum::default();
-        assert_eq!(test_priority, PriEnum::Optional);
+        let test_priority = Priority::default();
+        assert_eq!(test_priority, Priority::Optional);
     }
 
     #[test]
     fn successfully_parse_priority() {
-        let test_priority = PriEnum::parse_priority("optional").unwrap();
-        assert_eq!(test_priority, PriEnum::Optional);
+        let test_priority = Priority::parse_priority("optional").unwrap();
+        assert_eq!(test_priority, Priority::Optional);
     }
 
     #[test]
     fn failed_parse_priority() {
-        let test_priority_error = PriEnum::parse_priority("bad priority").unwrap_err();
+        let test_priority_error = Priority::parse_priority("bad priority").unwrap_err();
         assert_eq!(
             test_priority_error.to_string(),
             "invalid priority".to_string()
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn priority_display_test() {
-        let test_priority = PriEnum::default();
+        let test_priority = Priority::default();
         assert_eq!(test_priority.to_string(), "Optional".to_string())
     }
 }

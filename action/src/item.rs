@@ -12,7 +12,7 @@ pub struct Action {
     pub id: Uuid,
     pub name: String,
     pub completed: bool,
-    pub priority: PriEnum,
+    pub priority: Priority,
 }
 
 impl Default for Action {
@@ -41,7 +41,7 @@ impl ActionManipulation for Action {
     }
 
     fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
-        let new_pri: PriEnum = PriEnum::parse_priority(new_priority)?;
+        let new_pri: Priority = Priority::parse_priority(new_priority)?;
         return Ok(Action {
             priority: new_pri.clone(),
             ..self.to_owned()
@@ -83,7 +83,7 @@ mod tests{
     fn default_task_creation() {
         let test_task = create_nil_action();
         assert!(test_task.name == "Default Action".to_string());
-        assert!(test_task.priority == PriEnum::Optional);
+        assert!(test_task.priority == Priority::Optional);
         assert!(test_task.completed == false);
         assert!(test_task.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
     }
@@ -144,16 +144,16 @@ mod tests{
         let priority_5_test_task = Action::create_default();
 
         let priority_4_test_task = &priority_5_test_task.change_priority("4")?;
-        assert!(priority_4_test_task.priority == PriEnum::Low);
+        assert!(priority_4_test_task.priority == Priority::Low);
 
         let priority_3_test_task = &priority_4_test_task.change_priority("3")?;
-        assert!(priority_3_test_task.priority == PriEnum::Medium);
+        assert!(priority_3_test_task.priority == Priority::Medium);
 
         let priority_2_test_task = &priority_3_test_task.change_priority("2")?;
-        assert!(priority_2_test_task.priority == PriEnum::High);
+        assert!(priority_2_test_task.priority == Priority::High);
 
         let priority_1_test_task = &priority_2_test_task.change_priority("1")?;
-        assert!(priority_1_test_task.priority == PriEnum::Critical);
+        assert!(priority_1_test_task.priority == Priority::Critical);
 
         return Ok(());
     }
@@ -182,7 +182,7 @@ mod tests{
                 Token::Bool(false),
                 Token::Str("priority"),
                 Token::UnitVariant {
-                    name: "PriEnum",
+                    name: "Priority",
                     variant: "Optional",
                 },
                 Token::StructEnd,
@@ -202,7 +202,7 @@ mod tests{
         Token::Str("Default Action"),
         Token::Str("priority"),
         Token::UnitVariant {
-            name: "PriEnum",
+            name: "Priority",
             variant: "Optional",
         },
         Token::Str("completed"),

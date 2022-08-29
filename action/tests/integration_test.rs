@@ -19,7 +19,7 @@ fn child_task_addition() -> Result<(), Box<dyn Error>> {
     let test_task = &single_task_list[0];
     assert!(test_task.name == "Default Action");
     assert!(test_task.completed == false);
-    assert!(test_task.priority == PriEnum::Optional);
+    assert!(test_task.priority == Priority::Optional);
     assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
     assert!(&single_task_list[0] == test_task);
     return Ok(());
@@ -36,7 +36,7 @@ fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
                 id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap(),
                 name: String::from("Default Action"),
                 completed: false,
-                priority: PriEnum::Optional,
+                priority: Priority::Optional,
             }
     );
 
@@ -160,5 +160,5 @@ fn successful_task_reprioritize_test() {
     let changed_task_list = &single_task_list
         .change_priority(0, "low".to_string())
         .unwrap();
-    assert_eq!(changed_task_list[0].priority, PriEnum::Low);
+    assert_eq!(changed_task_list[0].priority, Priority::Low);
 }
