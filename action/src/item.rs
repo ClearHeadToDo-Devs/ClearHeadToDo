@@ -27,9 +27,9 @@ impl Default for Action {
 }
 
 impl ActionManipulation for Action {
-    fn rename(&self, new_task_name: &str) -> Action {
+    fn rename(&self, new_action_name: &str) -> Action {
         return Action {
-            name: new_task_name.to_owned(),
+            name: new_action_name.to_owned(),
             ..self.to_owned()
         };
     }
@@ -80,80 +80,80 @@ mod tests{
     }
 
     #[test]
-    fn default_task_creation() {
-        let test_task = create_nil_action();
-        assert!(test_task.name == "Default Action".to_string());
-        assert!(test_task.priority == Priority::Optional);
-        assert!(test_task.completed == false);
-        assert!(test_task.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
+    fn default_action_creation() {
+        let test_action = create_nil_action();
+        assert!(test_action.name == "Default Action".to_string());
+        assert!(test_action.priority == Priority::Optional);
+        assert!(test_action.completed == false);
+        assert!(test_action.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
     }
 
     #[test]
-    fn print_task_content() {
-        let test_task = create_nil_action();
-        let test_task_string = test_task.export_fields_as_string();
+    fn print_action_content() {
+        let test_action = create_nil_action();
+        let test_action_string = test_action.export_fields_as_string();
         assert_eq!(
-            test_task_string,
+            test_action_string,
             "Default Action,Optional,false,00000000-0000-0000-0000-000000000000\n",
         );
     }
 
     #[test]
-    fn task_creation_unique_id() {
-        let first_test_task = Action::create_default();
-        let second_test_task = Action::create_default();
+    fn action_creation_unique_id() {
+        let first_test_action = Action::create_default();
+        let second_test_action = Action::create_default();
 
-        assert!(first_test_task.id != second_test_task.id);
+        assert!(first_test_action.id != second_test_action.id);
     }
 
     #[test]
     fn rename() {
-        let test_task = Action::create_default();
-        let renamed_task = &test_task.rename(&"Changed Name".to_string());
+        let test_action = Action::create_default();
+        let renamed_action = &test_action.rename(&"Changed Name".to_string());
 
-        assert!(renamed_task.name == "Changed Name");
+        assert!(renamed_action.name == "Changed Name");
     }
 
     #[test]
     fn completion() -> Result<(), Box<dyn Error>> {
-        let test_task = Action::create_default();
-        let test_successful_completion_task = &test_task.toggle_completion_status();
+        let test_action = Action::create_default();
+        let test_successful_completion_action = &test_action.toggle_completion_status();
 
-        assert!(test_successful_completion_task.completed == true);
+        assert!(test_successful_completion_action.completed == true);
         return Ok(());
     }
 
     #[test]
     fn reopen() -> () {
-        let test_task = Action::create_default();
-        let test_first_completion_task = &test_task.toggle_completion_status();
-        let reopened_task = &test_first_completion_task.toggle_completion_status();
-        assert_eq!(reopened_task.completed, false);
+        let test_action = Action::create_default();
+        let test_first_completion_action = &test_action.toggle_completion_status();
+        let reopened_action = &test_first_completion_action.toggle_completion_status();
+        assert_eq!(reopened_action.completed, false);
     }
 
     #[test]
     fn failing_reprioritize() -> Result<(), Box<dyn Error>> {
-        let test_task = Action::create_default();
-        let error = &test_task.change_priority("6").unwrap_err();
+        let test_action = Action::create_default();
+        let error = &test_action.change_priority("6").unwrap_err();
         assert_eq!(error.to_string(), "6 is an Invalid Priority Option");
         return Ok(());
     }
 
     #[test]
     fn successful_reprioritize() -> Result<(), Box<dyn Error>> {
-        let priority_5_test_task = Action::create_default();
+        let priority_5_test_action = Action::create_default();
 
-        let priority_4_test_task = &priority_5_test_task.change_priority("4")?;
-        assert!(priority_4_test_task.priority == Priority::Low);
+        let priority_4_test_action = &priority_5_test_action.change_priority("4")?;
+        assert!(priority_4_test_action.priority == Priority::Low);
 
-        let priority_3_test_task = &priority_4_test_task.change_priority("3")?;
-        assert!(priority_3_test_task.priority == Priority::Medium);
+        let priority_3_test_action = &priority_4_test_action.change_priority("3")?;
+        assert!(priority_3_test_action.priority == Priority::Medium);
 
-        let priority_2_test_task = &priority_3_test_task.change_priority("2")?;
-        assert!(priority_2_test_task.priority == Priority::High);
+        let priority_2_test_action = &priority_3_test_action.change_priority("2")?;
+        assert!(priority_2_test_action.priority == Priority::High);
 
-        let priority_1_test_task = &priority_2_test_task.change_priority("1")?;
-        assert!(priority_1_test_task.priority == Priority::Critical);
+        let priority_1_test_action = &priority_2_test_action.change_priority("1")?;
+        assert!(priority_1_test_action.priority == Priority::Critical);
 
         return Ok(());
     }
@@ -161,14 +161,14 @@ mod tests{
 
 
     #[test]
-    fn successfully_serialize_task() {
-        let test_task = Action {
+    fn successfully_serialize_action() {
+        let test_action = Action {
             id: Uuid::nil(),
             ..Default::default()
         };
 
         assert_ser_tokens(
-            &test_task.readable(),
+            &test_action.readable(),
             &[
                 Token::Struct {
                     name: "Action",
@@ -191,12 +191,12 @@ mod tests{
     }
 
     #[test]
-    fn successfully_deserializing_task() {
-        let test_task =  Action {
+    fn successfully_deserializing_action() {
+        let test_action =  Action {
             id: Uuid::nil(),
             ..Default::default()
         };
-    assert_de_tokens(&test_task.readable(), &[
+    assert_de_tokens(&test_action.readable(), &[
         Token::Struct {name: "Action", len:5},
         Token::Str("name"),
         Token::Str("Default Action"),

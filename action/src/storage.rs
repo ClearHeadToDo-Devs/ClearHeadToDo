@@ -19,12 +19,12 @@ pub fn load_action_from_csv(file_name: &str) -> Result<im::Vector<Action>, Box<d
 }
 
 pub fn load_csv_with_action_data(
-    task_list: &im::Vector<Action>,
+    action_list: &im::Vector<Action>,
     file_name: &str,
 ) -> Result<(), Box<dyn Error>> {
     let mut csv_writer: Writer<std::fs::File> = create_file_writer_to_data_folder(file_name)?;
 
-    csv_writer.serialize(task_list)?;
+    csv_writer.serialize(action_list)?;
     Ok(())
 }
 
@@ -61,21 +61,21 @@ mod tests {
 
     #[test]
     fn load_from_csv_sucessful() {
-        let test_task_list = load_action_from_csv("successful_import_test.csv").unwrap();
-        let test_task = &test_task_list[0];
+        let test_action_list = load_action_from_csv("successful_import_test.csv").unwrap();
+        let test_action = &test_action_list[0];
 
-        assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
-        assert!(test_task.name == "test csv task");
-        assert!(test_task.completed == false);
-        assert!(test_task.priority == Priority::Optional);
+        assert!(test_action.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
+        assert!(test_action.name == "test csv action");
+        assert!(test_action.completed == false);
+        assert!(test_action.priority == Priority::Optional);
     }
 
     #[test]
     fn load_action_data_to_csv_successful() -> Result<(), Box<dyn Error>> {
-        let empty_task_list = vector!();
-        let single_nil_task_list = add_nil_action(empty_task_list);
+        let empty_action_list = vector!();
+        let single_nil_action_list = add_nil_action(empty_action_list);
 
-        load_csv_with_action_data(&single_nil_task_list, "successful_export_test.csv")?;
+        load_csv_with_action_data(&single_nil_action_list, "successful_export_test.csv")?;
         let rdr = Reader::from_path(
             env::current_dir()?
                 .join("data")
