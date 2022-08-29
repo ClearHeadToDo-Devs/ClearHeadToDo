@@ -1,9 +1,11 @@
 use std::fmt::Display;
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub enum ActionError {
     InvalidPriority(String),
     InvalidIndex(usize),
+    InvalidId(Uuid),
 }
 
 impl Display for ActionError {
@@ -13,6 +15,8 @@ impl Display for ActionError {
                 write!(f, "{} is an Invalid Priority Option", bad_priority),
             ActionError::InvalidIndex(bad_index) => 
                 write!(f, "No Action at Index {}", bad_index),
+            ActionError::InvalidId(bad_id) => 
+                write!(f, "No Action with Id {}", bad_id),
         }
     }
 }

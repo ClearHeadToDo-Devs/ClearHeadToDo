@@ -99,10 +99,7 @@ impl ActionListManipulation for im::Vector<Action> {
         match search_task {
             Some(task) => return Ok(task.clone().to_owned()),
             None => {
-                return Err(Box::new(OtherError::new(
-                    ErrorKind::Other,
-                    "No Action with given ID",
-                )))
+                return Err(ActionError::InvalidId(id).into())
             }
         }
     }

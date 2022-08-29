@@ -48,7 +48,9 @@ fn task_failed_search_by_id_test() -> Result<(), Box<dyn Error>> {
     let empty_task_list: im::Vector<Action> = vector!();
     let test_search_task = empty_task_list
         .select_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
-    assert!(test_search_task.unwrap_err().to_string() == "No Action with given ID");
+    
+    let error_message = test_search_task.unwrap_err().to_string();
+    assert_eq!(error_message,"No Action with Id 00000000-0000-0000-0000-000000000000");
     return Ok(());
 }
 
