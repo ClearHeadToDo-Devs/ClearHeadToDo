@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let subcommand = matches.parse_command()?;
 
-    if subcommand == Command::ListTasks {
+    if subcommand == Command::List {
         let task_list_string_result = task_list.print_list();
         match task_list_string_result {
             Ok(s) => println!("{}", s),

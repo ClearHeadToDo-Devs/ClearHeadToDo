@@ -46,17 +46,17 @@ pub trait ArgumentParsing {
 impl ArgumentParsing for ArgMatches {
     fn parse_command(&self) -> Result<Command, Box<dyn Error>> {
         match self.subcommand_name() {
-            Some("list") => Ok(Command::ListTasks),
-            Some("create") => Ok(Command::CreateTask(
+            Some("list") => Ok(Command::List),
+            Some("create") => Ok(Command::Create(
                 self.parse_desired_name("create".to_string()),
             )),
-            Some("complete") => Ok(Command::ToggleTaskCompletion(
+            Some("complete") => Ok(Command::ToggleCompletion(
                 self.parse_index_for_subcommand("complete".to_string())?,
             )),
-            Some("remove") => Ok(Command::RemoveTask(
+            Some("remove") => Ok(Command::Remove(
                 self.parse_index_for_subcommand("remove".to_string())?,
             )),
-            Some("rename") => Ok(Command::RenameTask {
+            Some("rename") => Ok(Command::Rename {
                 index: self.parse_index_for_subcommand("rename".to_string())?,
                 new_name: self.parse_desired_name("rename".to_string()).unwrap(),
             }),
@@ -151,7 +151,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "list"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::ListTasks);
+        assert_eq!(result, Command::List);
     }
 
     #[test]
@@ -160,7 +160,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "lt"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::ListTasks);
+        assert_eq!(result, Command::List);
     }
 
     #[test]
@@ -169,7 +169,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create", "Test Task"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::CreateTask(Some("Test Task".to_string())));
+        assert_eq!(result, Command::Create(Some("Test Task".to_string())));
     }
 
     #[test]
@@ -178,7 +178,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::CreateTask(None));
+        assert_eq!(result, Command::Create(None));
     }
 
     #[test]
@@ -187,7 +187,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "0"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::ToggleTaskCompletion(0));
+        assert_eq!(result, Command::ToggleCompletion(0));
     }
 
     #[test]
@@ -196,7 +196,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "1"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::ToggleTaskCompletion(1));
+        assert_eq!(result, Command::ToggleCompletion(1));
     }
 
     #[test]
@@ -205,7 +205,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "1"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::RemoveTask(1));
+        assert_eq!(result, Command::Remove(1));
     }
 
     #[test]
@@ -214,7 +214,7 @@ mod tests {
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "0"]);
 
         let result = test_matches.parse_command().unwrap();
-        assert_eq!(result, Command::RemoveTask(0));
+        assert_eq!(result, Command::Remove(0));
     }
 
     #[test]
@@ -226,7 +226,7 @@ mod tests {
         let result = test_matches.parse_command().unwrap();
         assert_eq!(
             result,
-            Command::RenameTask {
+            Command::Rename {
                 index: 0,
                 new_name: "Test Rename".to_string()
             }
@@ -242,7 +242,7 @@ mod tests {
         let result = test_matches.parse_command().unwrap();
         assert_eq!(
             result,
-            Command::RenameTask {
+            Command::Rename {
                 index: 0,
                 new_name: "Test Rename".to_string()
             }
