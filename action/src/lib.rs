@@ -55,10 +55,7 @@ impl ActionListManipulation for im::Vector<Action> {
                 left_side.append(right_side);
                 Ok(left_side)
             }
-            None => Err(Box::new(OtherError::new(
-                ErrorKind::Other,
-                "No Action at Given Index",
-            ))),
+            None => Err(ActionError::InvalidIndex(index).into()),
         }
     }
 
@@ -70,10 +67,7 @@ impl ActionListManipulation for im::Vector<Action> {
         match self.iter().nth(index) {
             Some(task_ref) => return Ok(self.update(index, task_ref.rename(&new_name))),
 
-            None => Err(Box::new(OtherError::new(
-                ErrorKind::Other,
-                "No Action at Given Index",
-            ))),
+            None => Err(ActionError::InvalidIndex(index).into()),
         }
     }
 
@@ -83,10 +77,7 @@ impl ActionListManipulation for im::Vector<Action> {
     ) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(task_ref) => Ok(self.update(index, task_ref.clone().toggle_completion_status())),
-            None => Err(Box::new(OtherError::new(
-                ErrorKind::Other,
-                "No Action at Given Index",
-            ))),
+            None => Err(ActionError::InvalidIndex(index).into()),
         }
     }
 
@@ -99,10 +90,7 @@ impl ActionListManipulation for im::Vector<Action> {
             Some(task_ref) => {
                 Ok(self.update(index, task_ref.clone().change_priority(&new_priority)?))
             }
-            None => Err(Box::new(OtherError::new(
-                ErrorKind::Other,
-                "No Action at Given Index",
-            ))),
+            None => Err(ActionError::InvalidIndex(index).into()),
         }
     }
 

@@ -2,7 +2,6 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::error::Error;
 use std::fmt;
-use std::io::{Error as OtherError, ErrorKind};
 
 use crate::error::ActionError;
 

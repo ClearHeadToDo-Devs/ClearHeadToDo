@@ -76,7 +76,7 @@ fn task_print_successful_test() {
 fn failing_task_removal_test() {
     let empty_task_list: im::Vector<Action> = vector!();
     let error = &empty_task_list.remove(0).unwrap_err();
-    assert_eq!(error.to_string(), "No Action at Given Index");
+    assert_eq!(error.to_string(), "No Action at Index 0");
 }
 
 #[test]
@@ -93,7 +93,7 @@ fn failing_task_completion_bad_index_test() {
     let error = &empty_task_list
         .toggle_completion_status(0)
         .unwrap_err();
-    assert_eq!(error.to_string(), "No Action at Given Index");
+    assert_eq!(error.to_string(), "No Action at Index 0");
 }
 
 #[test]
@@ -121,7 +121,7 @@ fn failing_task_rename_bad_index_test() {
     let error = &empty_task_list
         .rename(0, "Change Test".to_string())
         .unwrap_err();
-    assert_eq!(error.to_string(), "No Action at Given Index");
+    assert_eq!(error.to_string(), "No Action at Index 0");
 }
 
 #[test]
@@ -140,7 +140,7 @@ fn failing_task_reprioritize_bad_index_test() {
     let error = &empty_task_list
         .change_priority(0, "Optional".to_string())
         .unwrap_err();
-    assert_eq!(error.to_string(), "No Action at Given Index");
+    assert_eq!(error.to_string(), "No Action at Index 0");
 }
 
 #[test]

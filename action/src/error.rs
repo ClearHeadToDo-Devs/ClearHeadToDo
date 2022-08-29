@@ -3,7 +3,7 @@ use std::fmt::Display;
 #[derive(Debug)]
 pub enum ActionError {
     InvalidPriority(String),
-
+    InvalidIndex(usize),
 }
 
 impl Display for ActionError {
@@ -11,6 +11,8 @@ impl Display for ActionError {
         match self {
             ActionError::InvalidPriority(bad_priority) => 
                 write!(f, "{} is an Invalid Priority Option", bad_priority),
+            ActionError::InvalidIndex(bad_index) => 
+                write!(f, "No Action at Index {}", bad_index),
         }
     }
 }
