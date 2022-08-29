@@ -10,25 +10,21 @@ pub fn create_app() -> clap::Command<'static> {
         .version("0.1.0")
         .about("can be used to manage every part of your productive life!")
         .setting(AppSettings::SubcommandRequiredElseHelp)
-        .subcommand(SubCommand::with_name("list_tasks").alias("lt"))
+        .subcommand(SubCommand::with_name("list").alias("lt"))
         .subcommand(
-            SubCommand::with_name("create_task")
-                .alias("create")
+            SubCommand::with_name("create")
                 .arg(Arg::with_name("new_name").multiple(true)),
         )
         .subcommand(
-            SubCommand::with_name("complete_task")
-                .alias("complete")
+            SubCommand::with_name("complete")
                 .arg(Arg::with_name("index").required(true)),
         )
         .subcommand(
-            SubCommand::with_name("remove_task")
-                .alias("remove")
+            SubCommand::with_name("remove")
                 .arg(Arg::with_name("index").required(true)),
         )
         .subcommand(
-            SubCommand::with_name("rename_task")
-                .alias("rename")
+            SubCommand::with_name("rename")
                 .arg(Arg::with_name("index").required(true))
                 .arg(Arg::with_name("new_name").required(true).multiple(true)),
         )
@@ -50,19 +46,19 @@ pub trait ArgumentParsing {
 impl ArgumentParsing for ArgMatches {
     fn parse_command(&self) -> Result<Command, Box<dyn Error>> {
         match self.subcommand_name() {
-            Some("list_tasks") => Ok(Command::ListTasks),
-            Some("create_task") => Ok(Command::CreateTask(
-                self.parse_desired_name("create_task".to_string()),
+            Some("list") => Ok(Command::ListTasks),
+            Some("create") => Ok(Command::CreateTask(
+                self.parse_desired_name("create".to_string()),
             )),
-            Some("complete_task") => Ok(Command::ToggleTaskCompletion(
-                self.parse_index_for_subcommand("complete_task".to_string())?,
+            Some("complete") => Ok(Command::ToggleTaskCompletion(
+                self.parse_index_for_subcommand("complete".to_string())?,
             )),
-            Some("remove_task") => Ok(Command::RemoveTask(
-                self.parse_index_for_subcommand("remove_task".to_string())?,
+            Some("remove") => Ok(Command::RemoveTask(
+                self.parse_index_for_subcommand("remove".to_string())?,
             )),
-            Some("rename_task") => Ok(Command::RenameTask {
-                index: self.parse_index_for_subcommand("rename_task".to_string())?,
-                new_name: self.parse_desired_name("rename_task".to_string()).unwrap(),
+            Some("rename") => Ok(Command::RenameTask {
+                index: self.parse_index_for_subcommand("rename".to_string())?,
+                new_name: self.parse_desired_name("rename".to_string()).unwrap(),
             }),
             Some("reprioritize") => Ok(Command::Reprioritize {
                 index: self.parse_index_for_subcommand("reprioritize".to_string())?,
@@ -150,16 +146,16 @@ mod tests {
     }
 
     #[test]
-    fn cli_list_task_successful_match() {
+    fn cli_list_successful_match() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "list_tasks"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "list"]);
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::ListTasks);
     }
 
     #[test]
-    fn cli_list_task_alias() {
+    fn cli_list_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "lt"]);
 
@@ -168,16 +164,16 @@ mod tests {
     }
 
     #[test]
-    fn cli_create_task_successful_parse() {
+    fn cli_create_successful_parse() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_task", "Test Task"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create", "Test Task"]);
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::CreateTask(Some("Test Task".to_string())));
     }
 
     #[test]
-    fn cli_create_task_alias() {
+    fn cli_create_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create"]);
 
@@ -186,16 +182,16 @@ mod tests {
     }
 
     #[test]
-    fn cli_complete_task_successful_parse() {
+    fn cli_complete_successful_parse() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete_task", "0"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "0"]);
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::ToggleTaskCompletion(0));
     }
 
     #[test]
-    fn cli_complete_task_alias() {
+    fn cli_complete_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "complete", "1"]);
 
@@ -204,16 +200,16 @@ mod tests {
     }
 
     #[test]
-    fn cli_remove_task_successful_parse() {
+    fn cli_remove_successful_parse() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove_task", "1"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "1"]);
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::RemoveTask(1));
     }
 
     #[test]
-    fn cli_remove_task_alias() {
+    fn cli_remove_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "remove", "0"]);
 
@@ -222,10 +218,10 @@ mod tests {
     }
 
     #[test]
-    fn successful_cli_rename_task_parse() {
+    fn successful_cli_rename_parse() {
         let app = create_app();
         let test_matches =
-            app.get_matches_from(vec!["ClearHeadToDo", "rename_task", "0", "Test Rename"]);
+            app.get_matches_from(vec!["ClearHeadToDo", "rename", "0", "Test Rename"]);
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(
@@ -238,7 +234,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_rename_task_alias() {
+    fn cli_rename_alias() {
         let app = create_app();
         let test_matches =
             app.get_matches_from(vec!["ClearHeadToDo", "rename", "0", "Test Rename"]);
@@ -269,7 +265,7 @@ mod tests {
     }
 
     #[test]
-    fn cli_reprioritize_task_alias() {
+    fn cli_reprioritize_alias() {
         let app = create_app();
         let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "rp", "1", "High"]);
 
