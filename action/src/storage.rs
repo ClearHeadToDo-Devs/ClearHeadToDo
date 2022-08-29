@@ -2,15 +2,20 @@ use crate::Action;
 
 use csv::Reader;
 use csv::Writer;
+use im::Vector;
 use std::error::Error;
 use std::{env, path::PathBuf};
 
 pub fn load_action_from_csv(file_name: &str) -> Result<im::Vector<Action>, Box<dyn Error>> {
     let mut rdr: Reader<std::fs::File> = create_file_reader_from_data_folder(file_name)?;
+    let mut action_list = Vector::new();
 
-    let import_list: im::Vector<Action> = rdr.deserialize().map(|record| record.unwrap()).collect();
+    for record in rdr.deserialize() {
+        let action: Action = record?;
+        action_list.push_back(action);
+    }
 
-    Ok(import_list)
+    Ok(action_list)
 }
 
 pub fn load_csv_with_action_data(
@@ -66,7 +71,7 @@ mod tests {
     }
 
     #[test]
-    fn load_task_data_to_csv_successful() -> Result<(), Box<dyn Error>> {
+    fn load_action_data_to_csv_successful() -> Result<(), Box<dyn Error>> {
         let empty_task_list = vector!();
         let single_nil_task_list = add_nil_action(empty_task_list);
 
@@ -84,10 +89,10 @@ mod tests {
             assert_eq!(
                 record,
                 vec![
-                    "Default Task",
-                    "Optional",
+                    "00000000-0000-0000-0000-000000000000",
+                    "Default Action",
                     "false",
-                    "00000000-0000-0000-0000-000000000000"
+                    "Optional"
                 ]
             );
         } else {
@@ -159,7 +164,7 @@ mod tests {
         let error = load_action_from_csv("bad_id_test.csv").unwrap_err();
         assert_eq!(
             error.to_string(),
-            "CSV deserialize error: record 1 (line: 2, byte: 28): missing field `id`"
+            "CSV deserialize error: record 1 (line: 2, byte: 29): missing field `id`"
         );
     }
 

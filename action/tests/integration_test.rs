@@ -17,7 +17,7 @@ fn child_task_addition() -> Result<(), Box<dyn Error>> {
     let empty_task_list: im::Vector<Action> = vector!();
     let single_task_list = add_nil_action(empty_task_list);
     let test_task = &single_task_list[0];
-    assert!(test_task.name == "Default Task");
+    assert!(test_task.name == "Default Action");
     assert!(test_task.completed == false);
     assert!(test_task.priority == PriEnum::Optional);
     assert!(test_task.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
@@ -34,7 +34,7 @@ fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
         test_search_task.unwrap()
             == Action {
                 id: Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap(),
-                name: String::from("Default Task"),
+                name: String::from("Default Action"),
                 completed: false,
                 priority: PriEnum::Optional,
             }
@@ -68,7 +68,7 @@ fn task_print_successful_test() {
 
     assert_eq!(
                 format!("{}", success.to_string()),
-                "name,priority,completed,ID\nDefault Task,Optional,false,00000000-0000-0000-0000-000000000000\n"
+                "name,priority,completed,ID\nDefault Action,Optional,false,00000000-0000-0000-0000-000000000000\n"
             );
 }
 
