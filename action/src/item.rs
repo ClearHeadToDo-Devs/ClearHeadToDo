@@ -72,7 +72,7 @@ mod tests{
     use serde_test::{assert_de_tokens, assert_ser_tokens, Configure, Token};
     use uuid::Uuid;
 
-    pub fn create_nil_task() -> Action {
+    pub fn create_nil_action() -> Action {
         Action {
             id: Uuid::nil(),
             ..Default::default()
@@ -81,7 +81,7 @@ mod tests{
 
     #[test]
     fn default_task_creation() {
-        let test_task = create_nil_task();
+        let test_task = create_nil_action();
         assert!(test_task.name == "Default Task".to_string());
         assert!(test_task.priority == PriEnum::Optional);
         assert!(test_task.completed == false);
@@ -90,7 +90,7 @@ mod tests{
 
     #[test]
     fn print_task_content() {
-        let test_task = create_nil_task();
+        let test_task = create_nil_action();
         let test_task_string = test_task.export_fields_as_string();
         assert_eq!(
             test_task_string,
@@ -174,17 +174,17 @@ mod tests{
                     name: "Action",
                     len: 4,
                 },
+                Token::Str("id"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
                 Token::Str("name"),
                 Token::Str("Default Task"),
+                Token::Str("completed"),
+                Token::Bool(false),
                 Token::Str("priority"),
                 Token::UnitVariant {
                     name: "PriEnum",
                     variant: "Optional",
                 },
-                Token::Str("completed"),
-                Token::Bool(false),
-                Token::Str("id"),
-                Token::Str("00000000-0000-0000-0000-000000000000"),
                 Token::StructEnd,
             ],
         );
