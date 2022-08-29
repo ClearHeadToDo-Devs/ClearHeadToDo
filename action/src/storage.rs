@@ -48,7 +48,7 @@ fn create_file_writer_to_data_folder(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helper::add_nil_task;
+    use crate::helper::add_nil_action;
     use im::vector;
     use crate::PriEnum;
     use std::str::FromStr;
@@ -68,7 +68,7 @@ mod tests {
     #[test]
     fn load_task_data_to_csv_successful() -> Result<(), Box<dyn Error>> {
         let empty_task_list = vector!();
-        let single_nil_task_list = add_nil_task(empty_task_list);
+        let single_nil_task_list = add_nil_action(empty_task_list);
 
         load_csv_with_action_data(&single_nil_task_list, "successful_export_test.csv")?;
         let rdr = Reader::from_path(

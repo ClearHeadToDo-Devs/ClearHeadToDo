@@ -102,7 +102,7 @@ impl Command {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helper::add_nil_task;
+    use crate::helper::add_nil_action;
     use crate::PriEnum;
     use crate::Action;
     use im::vector;
@@ -123,7 +123,7 @@ mod tests {
             .run_subcommand(&empty_task_list)
             .unwrap();
 
-        assert_eq!(result[0].name, "Default Task".to_string());
+        assert_eq!(result[0].name, "Default Action".to_string());
         assert_eq!(result[0].priority, PriEnum::Optional);
         assert_eq!(result[0].completed, false);
     }
@@ -135,12 +135,12 @@ mod tests {
 
         let message =
             Command::CreateTask(None).create_end_user_message(&empty_task_list, &single_task_list);
-        assert_eq!(message, "Created Task Default Task");
+        assert_eq!(message, "Created Task Default Action");
     }
 
     #[test]
     fn complete_task_successful_run() {
-        let single_task_list = add_nil_task(im::vector!());
+        let single_task_list = add_nil_action(im::vector!());
 
         let result = Command::ToggleTaskCompletion(0).run_subcommand(&single_task_list);
 
@@ -183,7 +183,7 @@ mod tests {
 
         assert_eq!(
             message,
-            "Default Task had its\' completion status toggled to true"
+            "Default Action had its\' completion status toggled to true"
         );
     }
 
@@ -212,7 +212,7 @@ mod tests {
         let message =
             Command::RemoveTask(0).create_end_user_message(&single_task_list, &updated_task_list);
 
-        assert_eq!(message, "Default Task was removed from your Task List");
+        assert_eq!(message, "Default Action was removed from your Task List");
     }
 
     #[test]
@@ -226,7 +226,7 @@ mod tests {
     #[test]
     fn cli_rename_task_successful_run_test() {
         let empty_task_list = vector!();
-        let single_task_list = add_nil_task(empty_task_list);
+        let single_task_list = add_nil_action(empty_task_list);
 
         let result = Command::RenameTask {
             index: 0,
@@ -257,7 +257,7 @@ mod tests {
         }
         .create_end_user_message(&single_task_list, &updated_task_list);
 
-        assert_eq!(message, "New Name was changed from Default Task");
+        assert_eq!(message, "New Name was changed from Default Action");
     }
 
     #[test]
@@ -275,7 +275,7 @@ mod tests {
     #[test]
     fn cli_change_priority_successful_run_test() {
         let empty_task_list = vector!();
-        let single_task_list = add_nil_task(empty_task_list);
+        let single_task_list = add_nil_action(empty_task_list);
 
         let result = Command::Reprioritize {
             index: 0,
@@ -307,7 +307,7 @@ mod tests {
 
         assert_eq!(
             message,
-            "Default Task was changed from a priority of: Optional\n to a priority of: low"
+            "Default Action was changed from a priority of: Optional\n to a priority of: low"
         );
     }
 

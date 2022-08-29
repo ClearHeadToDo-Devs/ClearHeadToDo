@@ -15,7 +15,7 @@ fn task_list_creation() {
 #[test]
 fn child_task_addition() -> Result<(), Box<dyn Error>> {
     let empty_task_list: im::Vector<Action> = vector!();
-    let single_task_list = add_nil_task(empty_task_list);
+    let single_task_list = add_nil_action(empty_task_list);
     let test_task = &single_task_list[0];
     assert!(test_task.name == "Default Task");
     assert!(test_task.completed == false);
@@ -28,7 +28,7 @@ fn child_task_addition() -> Result<(), Box<dyn Error>> {
 #[test]
 fn task_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
     let empty_task_list: im::Vector<Action> = vector!();
-    let single_nil_task_list = add_nil_task(empty_task_list);
+    let single_nil_task_list = add_nil_action(empty_task_list);
     let test_search_task = single_nil_task_list.select_by_id(Uuid::nil());
     assert!(
         test_search_task.unwrap()
@@ -62,7 +62,7 @@ fn task_print_fail_test() {
 #[test]
 fn task_print_successful_test() {
     let empty_task_list: im::Vector<Action> = vector!();
-    let single_task_list = add_nil_task(empty_task_list);
+    let single_task_list = add_nil_action(empty_task_list);
 
     let success = &single_task_list.print_list().unwrap();
 

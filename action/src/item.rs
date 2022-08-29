@@ -19,7 +19,7 @@ impl Default for Action {
     fn default() -> Action {
         Action {
             id: Uuid::new_v4(),
-            name: "Default Task".to_string(),
+            name: "Default Action".to_string(),
             completed: false,
             priority: Default::default(),
         }
@@ -82,7 +82,7 @@ mod tests{
     #[test]
     fn default_task_creation() {
         let test_task = create_nil_action();
-        assert!(test_task.name == "Default Task".to_string());
+        assert!(test_task.name == "Default Action".to_string());
         assert!(test_task.priority == PriEnum::Optional);
         assert!(test_task.completed == false);
         assert!(test_task.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
@@ -94,7 +94,7 @@ mod tests{
         let test_task_string = test_task.export_fields_as_string();
         assert_eq!(
             test_task_string,
-            "Default Task,Optional,false,00000000-0000-0000-0000-000000000000\n",
+            "Default Action,Optional,false,00000000-0000-0000-0000-000000000000\n",
         );
     }
 
@@ -177,7 +177,7 @@ mod tests{
                 Token::Str("id"),
                 Token::Str("00000000-0000-0000-0000-000000000000"),
                 Token::Str("name"),
-                Token::Str("Default Task"),
+                Token::Str("Default Action"),
                 Token::Str("completed"),
                 Token::Bool(false),
                 Token::Str("priority"),
@@ -199,7 +199,7 @@ mod tests{
     assert_de_tokens(&test_task.readable(), &[
         Token::Struct {name: "Action", len:5},
         Token::Str("name"),
-        Token::Str("Default Task"),
+        Token::Str("Default Action"),
         Token::Str("priority"),
         Token::UnitVariant {
             name: "PriEnum",
