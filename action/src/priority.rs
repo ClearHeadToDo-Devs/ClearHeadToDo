@@ -4,6 +4,8 @@ use std::error::Error;
 use std::fmt;
 use std::io::{Error as OtherError, ErrorKind};
 
+use crate::error::ActionError;
+
 #[repr(u8)]
 #[derive(Serialize, Deserialize, Copy, Clone, PartialEq, Debug)]
 pub enum Priority {
@@ -15,18 +17,15 @@ pub enum Priority {
 }
 
 impl Priority {
-    pub fn parse_priority(expr: &str) -> Result<Priority, Box<dyn Error>> {
-        match expr.to_ascii_lowercase().trim() {
+    pub fn parse_priority(priority_str: &str) -> Result<Priority, Box<dyn Error>> {
+        match priority_str.to_ascii_lowercase().trim() {
             "1" | "critical" | "crit" | "c" => Ok(Priority::Critical),
             "2" | "high" | "hi" | "h" => Ok(Priority::High),
             "3" | "medium" | "med" | "m" => Ok(Priority::Medium),
             "4" | "low" | "lo" | "l" => Ok(Priority::Low),
             "5" | "optional" | "opt" | "o" => Ok(Priority::Optional),
             "" => Ok(Priority::Optional), //defaults to this
-            _ => Err(Box::new(OtherError::new(
-                ErrorKind::Other,
-                "invalid priority",
-            ))),
+            _ => Err(ActionError::InvalidPriority(priority_str.to_owned()).into()),
         }
     }
 }
@@ -71,7 +70,7 @@ mod tests {
         let test_priority_error = Priority::parse_priority("bad priority").unwrap_err();
         assert_eq!(
             test_priority_error.to_string(),
-            "invalid priority".to_string()
+            "bad priority is an Invalid Priority Option".to_string()
         );
     }
 

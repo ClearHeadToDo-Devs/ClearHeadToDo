@@ -150,7 +150,7 @@ fn failing_task_reprioritize_bad_priority_test() {
     let error = &single_task_list
         .change_priority(0, "bad priority".to_string())
         .unwrap_err();
-    assert_eq!(error.to_string(), "invalid priority".to_string());
+    assert_eq!(error.to_string(), "bad priority is an Invalid Priority Option".to_string());
 }
 
 #[test]

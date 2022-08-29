@@ -135,7 +135,7 @@ mod tests{
     fn failing_reprioritize() -> Result<(), Box<dyn Error>> {
         let test_task = Action::create_default();
         let error = &test_task.change_priority("6").unwrap_err();
-        assert_eq!(error.to_string(), "invalid priority");
+        assert_eq!(error.to_string(), "6 is an Invalid Priority Option");
         return Ok(());
     }
 
