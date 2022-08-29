@@ -192,7 +192,7 @@ mod tests {
         let empty_task_list = vector!();
 
         let error = Command::ToggleTaskCompletion(1).run_subcommand(&empty_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Action at Given Index");
     }
 
     #[test]
@@ -220,7 +220,7 @@ mod tests {
         let test_task_list = vector!();
 
         let error = Command::RemoveTask(0).run_subcommand(&test_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Action at Given Index");
     }
 
     #[test]
@@ -269,7 +269,7 @@ mod tests {
             new_name: "Test Rename".to_string(),
         }
         .run_subcommand(&test_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Action at Given Index");
     }
 
     #[test]
@@ -320,6 +320,6 @@ mod tests {
             new_priority: "High".to_string(),
         }
         .run_subcommand(&empty_task_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Task at Given Index");
+        assert_eq!(error.unwrap_err().to_string(), "No Action at Given Index");
     }
 }

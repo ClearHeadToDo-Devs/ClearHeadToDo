@@ -57,7 +57,7 @@ impl ActionListManipulation for im::Vector<Action> {
             }
             None => Err(Box::new(OtherError::new(
                 ErrorKind::Other,
-                "No Task at Given Index",
+                "No Action at Given Index",
             ))),
         }
     }
@@ -72,7 +72,7 @@ impl ActionListManipulation for im::Vector<Action> {
 
             None => Err(Box::new(OtherError::new(
                 ErrorKind::Other,
-                "No Task at Given Index",
+                "No Action at Given Index",
             ))),
         }
     }
@@ -85,7 +85,7 @@ impl ActionListManipulation for im::Vector<Action> {
             Some(task_ref) => Ok(self.update(index, task_ref.clone().toggle_completion_status())),
             None => Err(Box::new(OtherError::new(
                 ErrorKind::Other,
-                "No Task at Given Index",
+                "No Action at Given Index",
             ))),
         }
     }
@@ -101,7 +101,7 @@ impl ActionListManipulation for im::Vector<Action> {
             }
             None => Err(Box::new(OtherError::new(
                 ErrorKind::Other,
-                "No Task at Given Index",
+                "No Action at Given Index",
             ))),
         }
     }
@@ -113,7 +113,7 @@ impl ActionListManipulation for im::Vector<Action> {
             None => {
                 return Err(Box::new(OtherError::new(
                     ErrorKind::Other,
-                    "No Task with given ID",
+                    "No Action with given ID",
                 )))
             }
         }
