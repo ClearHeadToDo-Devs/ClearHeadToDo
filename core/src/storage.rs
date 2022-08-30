@@ -45,12 +45,14 @@ mod tests{
     use crate::ClearHeadApp;
     use std::path::Path;
     use std::fs::File;
+    use std::io::Read;
     use super::*;
 
     #[test]
     fn successfully_write_json_file() {
         let test_app: ClearHeadApp = Default::default();
         let file_path = Path::new("data/test_clearheadApp_write.json");
+        let mut file_contents = String::new();
 
         test_app.write_to_json(file_path, true).unwrap();
 
@@ -71,6 +73,8 @@ mod tests{
     \"participant_2\": \"00000000-0000-0000-0000-000000000000\"
   }
 ]"
+        );
+    
 
     }
 }
