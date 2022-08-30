@@ -57,7 +57,7 @@ fn action_failed_search_by_id_test() -> Result<(), Box<dyn Error>> {
 #[test]
 fn action_print_fail_test() {
     let empty_action_list: im::Vector<Action> = vector!();
-    let error = &empty_action_list.print_list().unwrap_err();
+    let error = &empty_action_list.get_list().unwrap_err();
     assert_eq!(error.to_string(), "list is empty");
 }
 
@@ -66,7 +66,7 @@ fn action_print_successful_test() {
     let empty_action_list: im::Vector<Action> = vector!();
     let single_action_list = add_nil_action(empty_action_list);
 
-    let success = &single_action_list.print_list().unwrap();
+    let success = &single_action_list.get_list().unwrap();
 
     assert_eq!(
                 format!("{}", success.to_string()),

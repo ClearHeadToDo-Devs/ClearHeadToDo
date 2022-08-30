@@ -19,7 +19,7 @@ impl Command {
     ) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self {
             Command::List => {
-                task_list.print_list()?;
+                task_list.get_list()?;
                 return Ok(task_list.clone());
             }
             Command::Create(name) => {

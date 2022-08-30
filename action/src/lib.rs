@@ -33,7 +33,7 @@ impl ActionListManipulation for im::Vector<Action> {
         return new_list;
     }
 
-    fn print_list(&self) -> Result<String, Box<dyn Error>> {
+    fn get_list(&self) -> Result<String, Box<dyn Error>> {
         let mut action_list_string = "name,priority,completed,ID\n".to_string();
 
         if self.is_empty() == true {

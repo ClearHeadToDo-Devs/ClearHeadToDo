@@ -62,6 +62,10 @@ impl ClearHeadApp {
         Ok(cloned_list)
         }
 
+    fn get_list(&self) -> Result<String, Box<dyn Error>> {
+        Ok(self.action_list.get_list()?)
+    }
+
     fn create_relationship(&self, variant: &str, participant_1: Uuid, participant_2: Uuid) -> Result<ClearHeadApp, Box<dyn Error>> {
         let mut cloned_list = self.clone();
 
@@ -138,6 +142,16 @@ mod tests {
         let updated_app = default_action_app.change_action_priority(0, 1.to_string()).unwrap();
 
         assert_eq!(updated_app.action_list.get(0).unwrap().priority, Priority::Critical);
+    }
+
+    #[test]
+    fn list_all_actions(){
+        let test_app: ClearHeadApp = Default::default();
+        let default_action_app = test_app.create_action();
+
+        let all_actions = default_action_app.get_list().unwrap();
+
+        assert_eq!(all_actions, "name,priority,completed,ID\nDefault Action,Optional,false,72d271e9-546b-4eeb-9a56-6b7a6efa3e1e\n");
     }
 
     #[test]
