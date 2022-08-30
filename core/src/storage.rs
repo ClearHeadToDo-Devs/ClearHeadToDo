@@ -1,13 +1,9 @@
+use std::fs::File;
 use crate::functionality::ClearHeadApp;
 
-
-use crate::Relationship;
-
-use std::fs::File;
 use std::io::{BufReader, BufWriter, Write};
 use std::{error::Error, path::Path};
 
-use im::Vector;
 use serde_json;
 
 pub trait JSONStorage {
@@ -42,8 +38,8 @@ impl JSONStorage for ClearHeadApp {
 
 #[cfg(test)]
 mod tests{
-    use crate::{ClearHeadApp, functionality};
-    use std::path::Path;
+    use crate::ClearHeadApp;
+use std::path::Path;
     use std::fs::File;
     use std::io::Read;
     use super::JSONStorage;
