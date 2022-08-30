@@ -18,16 +18,6 @@ mod tests {
     use im::Vector;
 
     #[test]
-    fn app_creation() {
-        let test_app: ClearHeadApp<Vector<Action>, Vector<Relationship>> = ClearHeadApp {
-            action_list: Vector::new(),
-            relationship_list: Vector::new(),
-        };
-        assert_eq!(test_app.action_list, Vector::new());
-        assert_eq!(test_app.relationship_list, Vector::new());
-    }
-
-    #[test]
     fn default_app_creation() {
         let test_app: ClearHeadApp<Vector<Action>, Vector<Relationship>> = Default::default();
         assert_eq!(test_app.action_list, Vector::new());
