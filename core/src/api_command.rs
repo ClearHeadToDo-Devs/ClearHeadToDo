@@ -1,11 +1,16 @@
-use crate::item::Action;
-use crate::{ActionListManipulation, ClearHeadApp};
+use crate::ClearHeadApp;
 use std::error::Error;
+use uuid::Uuid;
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
     List,
     Create(Option<String>),
+    CreateRelationship {
+        variant: String,
+        participant_1: Uuid,
+        participant_2: Uuid,
+    },
     ToggleCompletion(usize),
     Remove(usize),
     Rename { index: usize, new_name: String },
@@ -28,6 +33,14 @@ impl Command {
                     return updated_list
                         .rename_action(updated_list.action_list.len() - 1, name.to_string());
                 }
+                Ok(updated_list)
+            }
+            Command::CreateRelationship {
+                variant,
+                participant_1,
+                participant_2,
+            } => {
+                let updated_list = app.create_relationship(variant, participant_1.to_owned(), participant_2.to_owned())?;
                 Ok(updated_list)
             }
             Command::ToggleCompletion(index) => {
@@ -63,6 +76,16 @@ impl Command {
                 format!(
                     "Created Action {}",
                     updated_app.action_list[updated_app.action_list.len() - 1].name
+                )
+            }
+            Command::CreateRelationship {
+                variant,
+                participant_1,
+                participant_2,
+            } => {
+                format!(
+                    "Created {} Relationship from {} to {}",
+                    variant, participant_1, participant_2
                 )
             }
             Command::ToggleCompletion(index) => {
@@ -307,5 +330,18 @@ mod tests {
         }
         .run_subcommand(&empty_list);
         assert_eq!(error.unwrap_err().to_string(), "No Action at Index 1");
+    }
+
+    #[test]
+    fn cli_create_relationship_successful_run_test() {
+        let empty_list: ClearHeadApp = Default::default();
+
+        let result = Command::CreateRelationship {
+            variant: "related".to_string(),
+            participant_1: Uuid::nil(),
+            participant_2: Uuid::nil(),
+        }
+        .run_subcommand(&empty_list).unwrap();
+        assert_eq!(result.relationship_list.len(), 1);
     }
 }
