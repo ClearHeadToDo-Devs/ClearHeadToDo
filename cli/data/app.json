@@ -2,7 +2,7 @@
   "action_list": [
     {
       "id": "deee7a90-19ff-4a30-8179-9683e0ae19c1",
-      "name": "Default Action",
+      "name": "stuff",
       "completed": false,
       "priority": "Optional"
     }
