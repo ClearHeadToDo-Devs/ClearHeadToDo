@@ -1,11 +1,12 @@
 use action::action_list_manipulation::ActionListManipulation;
 use relationships::RelationshipListManagement;
+use serde::{Serialize, Deserialize};
 
 use std::fmt::Debug;
 use std::cmp::PartialEq;
 use std::error::Error;
 
-#[derive(Debug, PartialEq, Default, Clone)]
+#[derive(Debug, PartialEq, Default, Clone, Serialize, Deserialize)]
 struct ClearHeadApp<A: ActionListManipulation + Clone, R: RelationshipListManagement + Clone>  {
     action_list: A,
     relationship_list: R,
