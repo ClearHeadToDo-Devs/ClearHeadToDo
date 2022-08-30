@@ -12,17 +12,21 @@ struct ClearHeadApp<A: ActionListManipulation + Clone, R: RelationshipListManage
 }
 
 impl <A: ActionListManipulation + Clone,R: RelationshipListManagement + Clone>ClearHeadApp<A, R> {
-    fn create(&self) -> Result<ClearHeadApp<A, R>, Box<dyn Error>>  {
-        let cloned_app = self.clone();
+    fn create(&self) -> ClearHeadApp<A, R>  {
+        let mut cloned_list = self.clone();
+
         let new_action_list = self.action_list.create_new();
+        cloned_list.action_list = new_action_list;
 
-        Ok(ClearHeadApp {
-            action_list: new_action_list,
-            relationship_list: cloned_app.relationship_list,
-        })
-    }
-
+        cloned_list
+        }
 }
+
+enum ItemType {
+    Action,
+    Relationship,
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -41,8 +45,9 @@ mod tests {
     #[test]
     fn create_action() {
         let test_app: ClearHeadApp<Vector<Action>, Vector<Relationship>> = Default::default();
-        let updated_app = test_app.create().unwrap();
+        let updated_app = test_app.create();
 
         assert_eq!(updated_app.action_list.len(), 1);
     }
+
 }
