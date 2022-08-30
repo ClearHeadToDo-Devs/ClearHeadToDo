@@ -61,7 +61,7 @@ impl Command {
         match self {
             Command::Create(_name) => {
                 format!(
-                    "Created Task {}",
+                    "Created Action {}",
                     updated_list[updated_list.len() - 1].name
                 )
             }
@@ -73,7 +73,7 @@ impl Command {
             }
             Command::Remove(index) => {
                 format!(
-                    "{} was removed from your Task List",
+                    "{} was removed from your Action List",
                     previous_list[*index].name
                 )
             }
@@ -135,7 +135,7 @@ mod tests {
 
         let message =
             Command::Create(None).create_end_user_message(&empty_list, &single_list);
-        assert_eq!(message, "Created Task Default Action");
+        assert_eq!(message, "Created Action Default Action");
     }
 
     #[test]
@@ -212,7 +212,7 @@ mod tests {
         let message =
             Command::Remove(0).create_end_user_message(&single_list, &updated_list);
 
-        assert_eq!(message, "Default Action was removed from your Task List");
+        assert_eq!(message, "Default Action was removed from your Action List");
     }
 
     #[test]

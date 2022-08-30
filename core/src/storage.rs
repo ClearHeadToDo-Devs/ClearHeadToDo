@@ -38,12 +38,12 @@ impl JSONStorage for ClearHeadApp {
 
 #[cfg(test)]
 mod tests{
+    use super::JSONStorage;
     use crate::ClearHeadApp;
-use std::path::Path;
+
+    use std::path::Path;
     use std::fs::File;
     use std::io::Read;
-    use super::JSONStorage;
-
     #[test]
     fn successfully_write_json_file() {
         let test_app: ClearHeadApp = Default::default();
