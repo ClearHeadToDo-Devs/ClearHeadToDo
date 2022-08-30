@@ -35,6 +35,33 @@ impl ClearHeadApp {
         Ok(cloned_list)
         }
 
+    fn toggle_action_completion_status(&self, index: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
+        let mut cloned_list = self.clone();
+
+        let new_action_list = cloned_list.action_list.toggle_completion_status(index)?;
+        cloned_list.action_list = new_action_list;
+
+        Ok(cloned_list)
+        }
+
+    fn change_action_priority(&self, index: usize, new_priority: String) -> Result<ClearHeadApp, Box<dyn Error>> {
+        let mut cloned_list = self.clone();
+
+        let new_action_list = cloned_list.action_list.change_priority(index, new_priority)?;
+        cloned_list.action_list = new_action_list;
+
+        Ok(cloned_list)
+        }
+
+    fn remove_action(&self, index: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
+        let mut cloned_list = self.clone();
+
+        let new_action_list = cloned_list.action_list.remove(index)?;
+        cloned_list.action_list = new_action_list;
+
+        Ok(cloned_list)
+        }
+
     fn create_relationship(&self, variant: &str, participant_1: Uuid, participant_2: Uuid) -> Result<ClearHeadApp, Box<dyn Error>> {
         let mut cloned_list = self.clone();
 
@@ -54,6 +81,7 @@ enum ItemType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use action::Priority;
     use im::Vector;
 
 
@@ -80,6 +108,36 @@ mod tests {
         let updated_app = default_action_app.rename_action(0, "new_name".to_string()).unwrap();
 
         assert_eq!(updated_app.action_list.get(0).unwrap().name, "new_name");
+    }
+
+    #[test]
+    fn toggle_action_completion_status(){
+        let test_app: ClearHeadApp = Default::default();
+        let default_action_app = test_app.create_action();
+
+        let updated_app = default_action_app.toggle_action_completion_status(0).unwrap();
+
+        assert_eq!(updated_app.action_list.get(0).unwrap().completed, true);
+    }
+
+    #[test]
+    fn remove_action(){
+        let test_app: ClearHeadApp = Default::default();
+        let default_action_app = test_app.create_action();
+
+        let updated_app = default_action_app.remove_action(0).unwrap();
+
+        assert_eq!(updated_app.action_list.len(), 0);
+    }
+
+    #[test]
+    fn change_action_priority(){
+        let test_app: ClearHeadApp = Default::default();
+        let default_action_app = test_app.create_action();
+
+        let updated_app = default_action_app.change_action_priority(0, 1.to_string()).unwrap();
+
+        assert_eq!(updated_app.action_list.get(0).unwrap().priority, Priority::Critical);
     }
 
     #[test]
