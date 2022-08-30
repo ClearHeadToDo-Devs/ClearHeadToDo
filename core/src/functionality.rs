@@ -147,7 +147,8 @@ mod tests {
     #[test]
     fn list_all_actions(){
         let test_app: ClearHeadApp = Default::default();
-        let default_action_app = test_app.create_action();
+        let default_action_app = test_app.create_action(); // Need to create an action with nil id
+        // for testing purposes.
 
         let all_actions = default_action_app.get_list().unwrap();
 
