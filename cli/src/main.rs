@@ -15,8 +15,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut _updated_task_list: im::Vector<Action> = vector!();
 
-    let app = create_app();
-    let matches = app.get_matches();
+    let argument_parser = create_app();
+    let matches = argument_parser.get_matches();
 
     let subcommand = matches.parse_command()?;
 

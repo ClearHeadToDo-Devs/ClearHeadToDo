@@ -107,6 +107,7 @@ dependencies = [
  "im",
  "relationships",
  "serde",
+ "serde_json",
  "uuid",
 ]
 

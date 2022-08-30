@@ -12,7 +12,7 @@ use std::cmp::PartialEq;
 use std::error::Error;
 
 #[derive(Debug, PartialEq, Default, Clone, Serialize, Deserialize)]
-struct ClearHeadApp  {
+pub struct ClearHeadApp  {
     action_list: Vector<Action>,
     relationship_list: Vector<Relationship>,
 }
@@ -48,6 +48,7 @@ mod tests {
     use super::*;
     use im::Vector;
 
+
     #[test]
     fn default_app_creation() {
         let test_app: ClearHeadApp = Default::default();
@@ -63,4 +64,11 @@ mod tests {
         assert_eq!(updated_app.action_list.len(), 1);
     }
 
+    #[test]
+    fn create_relationship(){
+        let test_app: ClearHeadApp = Default::default();
+        let updated_app = test_app.create_relationship("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 1);
+    }
 }
