@@ -42,11 +42,11 @@ impl JSONStorage for ClearHeadApp {
 
 #[cfg(test)]
 mod tests{
-    use crate::ClearHeadApp;
+    use crate::{ClearHeadApp, functionality};
     use std::path::Path;
     use std::fs::File;
     use std::io::Read;
-    use super::*;
+    use super::JSONStorage;
 
     #[test]
     fn successfully_write_json_file() {
@@ -66,6 +66,17 @@ mod tests{
             "{\n  \"action_list\": [],\n  \"relationship_list\": []\n}"
         );
     
+
+    }
+   
+    #[test]
+    fn successfully_read_json_file() {
+        let test_app: ClearHeadApp = Default::default();
+        let file_path = Path::new("data/test_clearheadApp_read.json");
+
+        let app_from_file: ClearHeadApp = ClearHeadApp::read_from_json(file_path).unwrap();
+
+        assert_eq!(app_from_file, test_app);
 
     }
 }
