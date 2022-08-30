@@ -1,6 +1,5 @@
 use action::action_list_manipulation::ActionListManipulation;
-use action::item::Action;
-use relationships::{RelationshipListManagement, Relationship};
+use relationships::RelationshipListManagement;
 
 use im::Vector;
 use std::fmt::Debug;
@@ -25,8 +24,8 @@ impl <A: ActionListManipulation + Clone,R: RelationshipListManagement + Clone>De
 #[cfg(test)]
 mod tests {
     use super::*;
-    use action::{Action, ActionManipulation};
-    use relationships::{Relationship, RelationshipManagement};
+    use crate::Relationship;
+    use action::Action;
 
     #[test]
     fn app_creation() {
