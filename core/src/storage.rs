@@ -63,16 +63,7 @@ mod tests{
 
         assert_eq!(
             file_contents,
-            "[
-  {
-    \"id\": \"00000000-0000-0000-0000-000000000000\",
-    \"variant\": {
-      \"Related\": \"Undirected\"
-    },
-    \"participant_1\": \"00000000-0000-0000-0000-000000000000\",
-    \"participant_2\": \"00000000-0000-0000-0000-000000000000\"
-  }
-]"
+            "{\n  \"action_list\": [],\n  \"relationship_list\": []\n}"
         );
     
 
