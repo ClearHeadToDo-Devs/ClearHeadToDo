@@ -26,6 +26,14 @@ impl ClearHeadApp {
 
         cloned_list
         }
+    fn rename_action(&self, index: usize, new_name: String) -> Result<ClearHeadApp, Box<dyn Error>> {
+        let mut cloned_list = self.clone();
+
+        let new_action_list = cloned_list.action_list.rename(index, new_name)?;
+        cloned_list.action_list = new_action_list;
+
+        Ok(cloned_list)
+        }
 
     fn create_relationship(&self, variant: &str, participant_1: Uuid, participant_2: Uuid) -> Result<ClearHeadApp, Box<dyn Error>> {
         let mut cloned_list = self.clone();
@@ -62,6 +70,16 @@ mod tests {
         let updated_app = test_app.create_action();
 
         assert_eq!(updated_app.action_list.len(), 1);
+    }
+
+    #[test]
+    fn rename_action(){
+        let test_app: ClearHeadApp = Default::default();
+        let default_action_app = test_app.create_action();
+
+        let updated_app = default_action_app.rename_action(0, "new_name".to_string()).unwrap();
+
+        assert_eq!(updated_app.action_list.get(0).unwrap().name, "new_name");
     }
 
     #[test]
