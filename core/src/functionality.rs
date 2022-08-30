@@ -1,24 +1,13 @@
 use action::action_list_manipulation::ActionListManipulation;
 use relationships::RelationshipListManagement;
 
-use im::Vector;
 use std::fmt::Debug;
-use std::clone::Clone;
 use std::cmp::PartialEq;
 
-#[derive(Debug, PartialEq)]
-struct ClearHeadApp<A: ActionListManipulation + Clone, R: RelationshipListManagement + Clone>  {
-    action_list: Vector<A>,
-    relationship_list: Vector<R>,
-}
-
-impl <A: ActionListManipulation + Clone,R: RelationshipListManagement + Clone>Default for ClearHeadApp<A, R> {
-    fn default() -> Self {
-        ClearHeadApp {
-            action_list: Vector::new(),
-            relationship_list: Vector::new(),
-        }
-    }
+#[derive(Debug, PartialEq, Default)]
+struct ClearHeadApp<A: ActionListManipulation, R: RelationshipListManagement>  {
+    action_list: A,
+    relationship_list: R,
 }
 
 #[cfg(test)]
@@ -26,6 +15,7 @@ mod tests {
     use super::*;
     use crate::Relationship;
     use action::Action;
+    use im::Vector;
 
     #[test]
     fn app_creation() {
@@ -43,5 +33,4 @@ mod tests {
         assert_eq!(test_app.action_list, Vector::new());
         assert_eq!(test_app.relationship_list, Vector::new());
     }
-
 }
