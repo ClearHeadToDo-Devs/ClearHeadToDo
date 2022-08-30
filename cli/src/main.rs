@@ -12,11 +12,8 @@ use std::path::Path;
 fn main() -> Result<(), Box<dyn Error>> {
     let clear_head_app = ClearHeadApp::read_from_json(Path::new("cli/data/app.json"))?;
 
-    let mut _updated_task_list: ClearHeadApp = Default::default();
-
     let argument_parser = create_app();
     let matches = argument_parser.get_matches();
-
     let subcommand = matches.parse_command()?;
 
     if subcommand == Command::List {

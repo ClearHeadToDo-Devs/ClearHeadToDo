@@ -164,3 +164,12 @@ fn successful_action_reprioritize_test() {
         .unwrap();
     assert_eq!(changed_action_list[0].priority, Priority::Low);
 }
+
+#[test]
+fn successfully_get_id_from_index(){
+    let empty_action_list: im::Vector<Action> = vector!();
+    let mut single_action_list = empty_action_list.create_new();
+    single_action_list[0].id = Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap();
+    let id = &single_action_list.get_id_by_index(0).unwrap();
+    assert_eq!(id.to_string(), "00000000-0000-0000-0000-000000000000");
+}

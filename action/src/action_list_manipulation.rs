@@ -22,4 +22,5 @@ pub trait ActionListManipulation {
     where
         Self: Sized;
     fn select_by_id(&self, id: Uuid) -> Result<Self::Child, Box<dyn Error>>;
+    fn get_id_by_index(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
 }

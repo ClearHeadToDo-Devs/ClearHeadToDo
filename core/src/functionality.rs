@@ -147,12 +147,13 @@ mod tests {
     #[test]
     fn list_all_actions(){
         let test_app: ClearHeadApp = Default::default();
-        let default_action_app = test_app.create_action(); // Need to create an action with nil id
-        // for testing purposes.
+        let mut default_action_app = test_app.create_action();
+        default_action_app.action_list[0].id = Uuid::nil();
+
 
         let all_actions = default_action_app.get_list().unwrap();
 
-        assert_eq!(all_actions, "name,priority,completed,ID\nDefault Action,Optional,false,72d271e9-546b-4eeb-9a56-6b7a6efa3e1e\n");
+        assert_eq!(all_actions, format!("name,priority,completed,ID\nDefault Action,Optional,false,{}\n", Uuid::nil()));
     }
 
     #[test]

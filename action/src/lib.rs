@@ -103,4 +103,11 @@ impl ActionListManipulation for im::Vector<Action> {
             }
         }
     }
+
+    fn get_id_by_index(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        match self.iter().nth(index) {
+            Some(action_ref) => return Ok(action_ref.id.clone()),
+            None => Err(ActionError::InvalidIndex(index).into()),
+        }
+    }
 }
