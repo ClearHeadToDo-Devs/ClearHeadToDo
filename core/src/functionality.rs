@@ -1,5 +1,4 @@
 use relationships::{Relationship, RelationshipManagement};
-use action::ActionManipulation;
 use im::Vector;
 
 use action::action_list_manipulation::ActionListManipulation;

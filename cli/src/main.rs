@@ -22,7 +22,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             Ok(s) => println!("{}", s),
             Err(e) => eprintln!("{}", e),
         }
-    } else {
+    } else if subcommand == Command::ExtendedList{
+        match clear_head_app.get_extended_list() {
+            Ok(s) => println!("{}", s),
+            Err(e) => eprintln!("{}", e),
+        }
+    }
+    else {
         let updated_task_list = subcommand.run_subcommand(&clear_head_app)?;
         updated_task_list.write_to_json(Path::new("cli/data/app.json"),true)?;
         println!(

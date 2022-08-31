@@ -1,11 +1,40 @@
 {
   "action_list": [
     {
-      "id": "deee7a90-19ff-4a30-8179-9683e0ae19c1",
       "name": "stuff",
+      "priority": "Optional",
       "completed": false,
-      "priority": "Optional"
+      "id": "deee7a90-19ff-4a30-8179-9683e0ae19c1"
+    },
+    {
+      "name": "test rename",
+      "priority": "Optional",
+      "completed": false,
+      "id": "d9a07453-8cf0-44b9-a3e5-6b38145b86d3"
+    },
+    {
+      "name": "Testing Sequential Actions",
+      "priority": "Optional",
+      "completed": false,
+      "id": "7bf6014e-9c79-4e09-acf8-3dff6c6763d3"
     }
   ],
-  "relationship_list": []
+  "relationship_list": [
+    {
+      "id": "e28fea78-80b7-49fc-8be7-143b06faab22",
+      "variant": {
+        "Parental": "Directed"
+      },
+      "participant_1": "deee7a90-19ff-4a30-8179-9683e0ae19c1",
+      "participant_2": "d9a07453-8cf0-44b9-a3e5-6b38145b86d3"
+    },
+    {
+      "id": "73d8eff8-00a7-4e90-816d-299b5bcb80ee",
+      "variant": {
+        "Sequential": "Directed"
+      },
+      "participant_1": "d9a07453-8cf0-44b9-a3e5-6b38145b86d3",
+      "participant_2": "7bf6014e-9c79-4e09-acf8-3dff6c6763d3"
+    }
+  ]
 }

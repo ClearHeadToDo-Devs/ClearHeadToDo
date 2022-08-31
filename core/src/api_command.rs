@@ -2,8 +2,10 @@ use crate::ClearHeadApp;
 use std::error::Error;
 
 #[derive(Debug, PartialEq)]
+#[non_exhaustive]
 pub enum Command {
     List,
+    ExtendedList,
     Create(Option<String>),
     CreateRelationship {
         variant: String,
@@ -24,6 +26,10 @@ impl Command {
         match self {
             Command::List => {
                 app.get_list()?;
+                return Ok(app.clone());
+            }
+            Command::ExtendedList => {
+                app.get_extended_list()?;
                 return Ok(app.clone());
             }
             Command::Create(name) => {
@@ -118,6 +124,7 @@ impl Command {
                 )
             }
             Command::List => unreachable!(),
+            Command::ExtendedList => unreachable!(),
         }
     }
 }

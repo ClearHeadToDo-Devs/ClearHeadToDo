@@ -11,6 +11,7 @@ pub fn create_app() -> clap::Command<'static> {
         .about("can be used to manage every part of your productive life!")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(SubCommand::with_name("list").alias("lt"))
+        .subcommand(SubCommand::with_name("extended_list").alias("el"))
         .subcommand(
             SubCommand::with_name("create_action")
                 .arg(Arg::with_name("new_name").multiple(true)),
@@ -51,6 +52,7 @@ impl ArgumentParsing for ArgMatches {
     fn parse_command(&self) -> Result<Command, Box<dyn Error>> {
         match self.subcommand_name() {
             Some("list") => Ok(Command::List),
+            Some("extended_list") => Ok(Command::ExtendedList),
             Some("create_action") => Ok(Command::Create(
                 self.parse_desired_name("create_action".to_string()),
             )),
@@ -182,6 +184,24 @@ mod tests {
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::List);
+    }
+
+    #[test]
+    fn cli_extended_list_successful_match() {
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "extended_list"]);
+
+        let result = test_matches.parse_command().unwrap();
+        assert_eq!(result, Command::ExtendedList);
+    }
+
+    #[test]
+    fn cli_extended_list_alias() {
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "el"]);
+
+        let result = test_matches.parse_command().unwrap();
+        assert_eq!(result, Command::ExtendedList);
     }
 
     #[test]
