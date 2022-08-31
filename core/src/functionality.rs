@@ -65,6 +65,27 @@ impl ClearHeadApp {
     pub fn get_list(&self) -> Result<String, Box<dyn Error>> {
             self.action_list.get_list()
     }
+
+    pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
+        let mut extended_list = String::new();
+        let mut index = 0;
+
+        extended_list.push_str("Order,Name,Priority,Completed,Id\n");
+        for action in &self.action_list {
+            extended_list.push_str(&format!("{},{}\n",index, action.to_string()));
+            index += 1;
+            if self.relationship_list.iter().find(|relationship| relationship.get_participant_1() == action.id).is_some() {
+                for relationship in self.relationship_list.iter().filter(
+                    |relationship| relationship.get_participant_1() == action.id) {
+                    extended_list.push_str(&format!(
+                        "  - {},{}\n",relationship.get_variant(), 
+                        &self.action_list.select_by_id(relationship.get_participant_2())?));
+                }
+            }
+
+        }
+        Ok(extended_list)
+    }
         
     
 
@@ -155,11 +176,12 @@ mod tests {
 
     #[test]
     fn list_all_actions_with_relationships(){
-        let mut test_app: ClearHeadApp = ClearHeadApp::default()
+        let test_app: ClearHeadApp = ClearHeadApp::default()
             .create_action().create_action().create_relationship("parental", 0, 1).unwrap();
 
 
-        let all_actions = test_app.get_list().unwrap();
+        let all_actions = test_app.get_extended_list().unwrap();
+
     }
 
     #[test]
