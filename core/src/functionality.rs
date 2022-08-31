@@ -1,11 +1,11 @@
-use relationships::Relationship;
+use relationships::{Relationship, RelationshipManagement};
+use action::ActionManipulation;
 use im::Vector;
 
 use action::action_list_manipulation::ActionListManipulation;
 use action::Action;
 use relationships::RelationshipListManagement;
 use serde::{Serialize, Deserialize};
-use uuid::Uuid;
 
 use std::fmt::Debug;
 use std::cmp::PartialEq;
@@ -63,8 +63,10 @@ impl ClearHeadApp {
         }
 
     pub fn get_list(&self) -> Result<String, Box<dyn Error>> {
-        Ok(self.action_list.get_list()?)
+            self.action_list.get_list()
     }
+        
+    
 
     pub fn create_relationship(&self, variant: &str, participant_1: usize, participant_2: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
         let mut cloned_list = self.clone();
@@ -76,17 +78,12 @@ impl ClearHeadApp {
         }
 }
 
-enum ItemType {
-    Action,
-    Relationship,
-}
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use action::Priority;
     use im::Vector;
+    use uuid::Uuid;
 
 
     #[test]
@@ -154,6 +151,15 @@ mod tests {
         let all_actions = default_action_app.get_list().unwrap();
 
         assert_eq!(all_actions, format!("order,name,priority,completed,ID\n0,Default Action,Optional,false,{}\n", Uuid::nil()));
+    }
+
+    #[test]
+    fn list_all_actions_with_relationships(){
+        let mut test_app: ClearHeadApp = ClearHeadApp::default()
+            .create_action().create_action().create_relationship("parental", 0, 1).unwrap();
+
+
+        let all_actions = test_app.get_list().unwrap();
     }
 
     #[test]

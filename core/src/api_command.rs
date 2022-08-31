@@ -127,8 +127,6 @@ mod tests {
     use super::*;
     use crate::Priority;
     use relationships::RelationshipManagement;
-    use uuid::Uuid;
-    use relationships::relationships::relationship_variants::RelationshipVariant;
 
     #[test]
     fn list_failure_empty_list() {
