@@ -29,12 +29,7 @@ impl Default for Action {
 }
 
 impl Display for Action {
-    // This trait requires `fmt` with this exact signature.
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        // Write strictly the first element into the supplied output
-        // stream: `f`. Returns `fmt::Result` which indicates whether the
-        // operation succeeded or failed. Note that `write!` uses syntax which
-        // is very similar to `println!`.
         write!(f, "{},{},{},{}", self.name, self.priority, self.completed, self.id)
     }
 }
@@ -65,7 +60,6 @@ impl ActionManipulation for Action {
 #[cfg(test)]
 mod tests{
     use super::*;
-    use crate::Error;
     use serde_test::{assert_de_tokens, assert_ser_tokens, Configure, Token};
     use uuid::Uuid;
 
@@ -94,68 +88,6 @@ mod tests{
             "Default Action,Optional,false,00000000-0000-0000-0000-000000000000",
         );
     }
-
-    #[test]
-    fn action_creation_unique_id() {
-        let first_test_action = Action::default();
-        let second_test_action = Action::default();
-
-        assert!(first_test_action.id != second_test_action.id);
-    }
-
-    #[test]
-    fn rename() {
-        let test_action = Action::default();
-        let renamed_action = &test_action.rename(&"Changed Name".to_string());
-
-        assert!(renamed_action.name == "Changed Name");
-    }
-
-    #[test]
-    fn completion() -> Result<(), Box<dyn Error>> {
-        let test_action = Action::default();
-        let test_successful_completion_action = &test_action.toggle_completion_status();
-
-        assert!(test_successful_completion_action.completed == true);
-        return Ok(());
-    }
-
-    #[test]
-    fn reopen() -> () {
-        let test_action = Action::default();
-        let test_first_completion_action = &test_action.toggle_completion_status();
-        let reopened_action = &test_first_completion_action.toggle_completion_status();
-        assert_eq!(reopened_action.completed, false);
-    }
-
-    #[test]
-    fn failing_reprioritize() -> Result<(), Box<dyn Error>> {
-        let test_action = Action::default();
-        let error = &test_action.change_priority("6").unwrap_err();
-        assert_eq!(error.to_string(), "6 is an Invalid Priority Option");
-        return Ok(());
-    }
-
-    #[test]
-    fn successful_reprioritize() -> Result<(), Box<dyn Error>> {
-        let priority_5_test_action = Action::default();
-
-        let priority_4_test_action = &priority_5_test_action.change_priority("4")?;
-        assert!(priority_4_test_action.priority == Priority::Low);
-
-        let priority_3_test_action = &priority_4_test_action.change_priority("3")?;
-        assert!(priority_3_test_action.priority == Priority::Medium);
-
-        let priority_2_test_action = &priority_3_test_action.change_priority("2")?;
-        assert!(priority_2_test_action.priority == Priority::High);
-
-        let priority_1_test_action = &priority_2_test_action.change_priority("1")?;
-        assert!(priority_1_test_action.priority == Priority::Critical);
-
-        return Ok(());
-    }
-
-
 
     #[test]
     fn successfully_serialize_action() {

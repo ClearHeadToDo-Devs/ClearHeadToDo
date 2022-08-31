@@ -70,7 +70,7 @@ fn action_print_successful_test() {
 
     assert_eq!(
                 format!("{}", success.to_string()),
-                "order,name,priority,completed,ID\n0,Default Action,Optional,false,00000000-0000-0000-0000-000000000000\n"
+                "order,name,priority,completed,ID\n0,Default Action,Optional,false,00000000-0000-0000-0000-000000000000"
             );
 }
 
