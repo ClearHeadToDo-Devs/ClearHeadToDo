@@ -179,8 +179,12 @@ mod tests {
         let test_app: ClearHeadApp = ClearHeadApp::default()
             .create_action().create_action().create_relationship("parental", 0, 1).unwrap();
 
-
         let all_actions = test_app.get_extended_list().unwrap();
+
+        assert_eq!(all_actions, format!("Order,Name,Priority,Completed,Id\n0,Default Action,Optional,false,{}\n  - Parental: Directed,Default Action,Optional,false,{}\n1,Default Action,Optional,false,{}\n", 
+            test_app.action_list[0].id, 
+            test_app.action_list[1].id, 
+            test_app.action_list[1].id));
 
     }
 

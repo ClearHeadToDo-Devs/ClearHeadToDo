@@ -35,7 +35,7 @@ impl Display for Action {
         // stream: `f`. Returns `fmt::Result` which indicates whether the
         // operation succeeded or failed. Note that `write!` uses syntax which
         // is very similar to `println!`.
-        write!(f, "{},{},{},{}", self.id, self.name, self.completed, self.priority)
+        write!(f, "{},{},{},{}", self.name, self.priority, self.completed, self.id)
     }
 }
 
