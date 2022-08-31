@@ -127,7 +127,9 @@ impl Command {
 mod tests {
     use super::*;
     use crate::Priority;
+    use relationships::RelationshipManagement;
     use uuid::Uuid;
+    use relationships::relationships::relationship_variants::RelationshipVariant;
 
     #[test]
     fn list_failure_empty_list() {
@@ -331,12 +333,27 @@ mod tests {
     }
 
     #[test]
-    fn cli_create_relationship_successful_run_test() {
+    fn cli_create_related_relationship_successful_run() {
         let empty_list: ClearHeadApp = Default::default();
         let updated_list = empty_list.create_action().create_action();
 
         let result = Command::CreateRelationship {
             variant: "related".to_string(),
+            participant_1: 0,
+            participant_2: 1,
+        }
+        .run_subcommand(&updated_list).unwrap();
+        assert_eq!(result.relationship_list.len(), 1);
+        assert_eq!(result.relationship_list[0].get_variant().to_string(),"Related: Undirected" )
+    }
+
+    #[test]
+    fn cli_create_sequential_relationship_successful_run() {
+        let empty_list: ClearHeadApp = Default::default();
+        let updated_list = empty_list.create_action().create_action();
+
+        let result = Command::CreateRelationship {
+            variant: "sequential".to_string(),
             participant_1: 0,
             participant_2: 1,
         }
