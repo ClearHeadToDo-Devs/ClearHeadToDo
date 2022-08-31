@@ -1,11 +1,12 @@
 use std::error::Error;
+use uuid::Uuid;
 
 pub trait ActionManipulation {
     fn rename(&self, new_action_name: &str) -> Self;
     fn toggle_completion_status(&self) -> Self;
-    fn change_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>>
-    where
-        Self: Sized;
+    fn change_priority(&self, new_priority: &str) -> 
+    Result<Self, Box<dyn Error>> where Self: Sized;
+    fn get_id(&self) -> Uuid;
 }
 
 #[cfg(test)]
@@ -16,16 +17,18 @@ mod tests {
     #[derive(Debug)]
     struct TestStruct {
         name: String,
-        completed: bool,
         priority: String,
+        completed: bool,
+        id: Uuid,
     }
 
     impl Default for TestStruct {
         fn default() -> TestStruct {
             TestStruct {
                 name: "Default Struct".to_string(),
-                completed: false,
                 priority: "low".to_string(),
+                completed: false,
+                id: Uuid::nil(),
             }
         }
     }
@@ -34,16 +37,18 @@ mod tests {
         fn rename(&self, new_name: &str) -> Self {
             TestStruct {
                 name: new_name.to_string(),
-                completed: self.completed.clone(),
                 priority: self.priority.clone(),
+                completed: self.completed.clone(),
+                id: self.id.clone(),
             }
         }
 
         fn toggle_completion_status(&self) -> Self {
             TestStruct {
                 name: self.name.to_string(),
-                completed: !self.completed,
                 priority: self.priority.to_string(),
+                completed: !self.completed,
+                id: self.id.clone(),
             }
         }
 
@@ -51,19 +56,26 @@ mod tests {
             match new_priority {
                 "low" => Ok(TestStruct {
                     name: self.name.to_string(),
-                    completed: self.completed,
                     priority: new_priority.to_string(),
+                    completed: self.completed,
+                    id: self.id.clone(),
                 }),
                 "high" => Ok(TestStruct {
                     name: self.name.to_string(),
-                    completed: self.completed,
                     priority: new_priority.to_string(),
+                    completed: self.completed,
+                    id: self.id.clone(),
                 }),
                 _ => Err(Box::new(OtherError::new(
                     ErrorKind::Other,
                     "invalid priority",
                 ))),
             }
+        }
+
+
+        fn get_id(&self) -> Uuid {
+            self.id
         }
     }
 
@@ -101,5 +113,11 @@ mod tests {
     fn rename_action() {
         let test_action = TestStruct::default().rename("rename test");
         assert_eq!(test_action.name, "rename test");
+    }
+
+    #[test]
+    fn get_id() {
+        let test_action = TestStruct::default();
+        assert_eq!(test_action.get_id(), test_action.id);
     }
 }

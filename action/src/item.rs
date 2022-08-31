@@ -55,6 +55,10 @@ impl ActionManipulation for Action {
             ..self.to_owned()
         });
     }
+
+    fn get_id(&self) -> Uuid {
+        self.id.clone()
+    }
 }
 
 #[cfg(test)]
