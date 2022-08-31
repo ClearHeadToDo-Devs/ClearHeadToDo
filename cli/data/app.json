@@ -17,6 +17,12 @@
       "priority": "Optional",
       "completed": false,
       "id": "7bf6014e-9c79-4e09-acf8-3dff6c6763d3"
+    },
+    {
+      "name": "Testing Related Actions",
+      "priority": "Optional",
+      "completed": false,
+      "id": "cad2950a-d21a-42c9-947f-040da6f98f74"
     }
   ],
   "relationship_list": [
@@ -35,6 +41,14 @@
       },
       "participant_1": "d9a07453-8cf0-44b9-a3e5-6b38145b86d3",
       "participant_2": "7bf6014e-9c79-4e09-acf8-3dff6c6763d3"
+    },
+    {
+      "id": "b34373a3-7036-44a2-ae1a-b56ad23f7cd9",
+      "variant": {
+        "Related": "Undirected"
+      },
+      "participant_1": "7bf6014e-9c79-4e09-acf8-3dff6c6763d3",
+      "participant_2": "cad2950a-d21a-42c9-947f-040da6f98f74"
     }
   ]
 }

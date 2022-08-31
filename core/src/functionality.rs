@@ -81,7 +81,6 @@ impl ClearHeadApp {
                         &self.action_list.select_by_id(relationship.get_participant_2())?));
                 }
             }
-
         }
         Ok(extended_list)
     }

@@ -60,22 +60,6 @@ impl ActionManipulation for Action {
             ..self.to_owned()
         });
     }
-
-    fn export_fields_as_string(&self) -> String {
-        format!(
-            "{name},{priority},{completed},{ID}\n",
-            name = self.name,
-            priority = self.priority.to_string(),
-            completed = self.completed,
-            ID = self.id
-        )
-    }
-
-    fn create_default() -> Action {
-        Action {
-            ..Default::default()
-        }
-    }
 }
 
 #[cfg(test)]
@@ -104,24 +88,24 @@ mod tests{
     #[test]
     fn print_action_content() {
         let test_action = create_nil_action();
-        let test_action_string = test_action.export_fields_as_string();
+        let test_action_string = test_action.to_string();
         assert_eq!(
             test_action_string,
-            "Default Action,Optional,false,00000000-0000-0000-0000-000000000000\n",
+            "Default Action,Optional,false,00000000-0000-0000-0000-000000000000",
         );
     }
 
     #[test]
     fn action_creation_unique_id() {
-        let first_test_action = Action::create_default();
-        let second_test_action = Action::create_default();
+        let first_test_action = Action::default();
+        let second_test_action = Action::default();
 
         assert!(first_test_action.id != second_test_action.id);
     }
 
     #[test]
     fn rename() {
-        let test_action = Action::create_default();
+        let test_action = Action::default();
         let renamed_action = &test_action.rename(&"Changed Name".to_string());
 
         assert!(renamed_action.name == "Changed Name");
@@ -129,7 +113,7 @@ mod tests{
 
     #[test]
     fn completion() -> Result<(), Box<dyn Error>> {
-        let test_action = Action::create_default();
+        let test_action = Action::default();
         let test_successful_completion_action = &test_action.toggle_completion_status();
 
         assert!(test_successful_completion_action.completed == true);
@@ -138,7 +122,7 @@ mod tests{
 
     #[test]
     fn reopen() -> () {
-        let test_action = Action::create_default();
+        let test_action = Action::default();
         let test_first_completion_action = &test_action.toggle_completion_status();
         let reopened_action = &test_first_completion_action.toggle_completion_status();
         assert_eq!(reopened_action.completed, false);
@@ -146,7 +130,7 @@ mod tests{
 
     #[test]
     fn failing_reprioritize() -> Result<(), Box<dyn Error>> {
-        let test_action = Action::create_default();
+        let test_action = Action::default();
         let error = &test_action.change_priority("6").unwrap_err();
         assert_eq!(error.to_string(), "6 is an Invalid Priority Option");
         return Ok(());
@@ -154,7 +138,7 @@ mod tests{
 
     #[test]
     fn successful_reprioritize() -> Result<(), Box<dyn Error>> {
-        let priority_5_test_action = Action::create_default();
+        let priority_5_test_action = Action::default();
 
         let priority_4_test_action = &priority_5_test_action.change_priority("4")?;
         assert!(priority_4_test_action.priority == Priority::Low);

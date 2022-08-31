@@ -28,7 +28,7 @@ impl ActionListManipulation for im::Vector<Action> {
 
     fn create_new(&self) -> Self {
         let mut new_list = self.clone();
-        new_list.push_back(Action::create_default());
+        new_list.push_back(Action::default());
 
         return new_list;
     }
@@ -41,7 +41,7 @@ impl ActionListManipulation for im::Vector<Action> {
             return Err(Box::new(OtherError::new(ErrorKind::Other, "list is empty")));
         } else {
             for action in self {
-                action_list_string.push_str(&format!("{},{}",index,&action.export_fields_as_string()));
+                action_list_string.push_str(&format!("{},{}",index,&action.to_string()));
                 index += 1;
             }
         }
