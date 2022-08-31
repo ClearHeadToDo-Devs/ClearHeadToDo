@@ -34,13 +34,15 @@ impl ActionListManipulation for im::Vector<Action> {
     }
 
     fn get_list(&self) -> Result<String, Box<dyn Error>> {
-        let mut action_list_string = "name,priority,completed,ID\n".to_string();
+        let mut action_list_string = "order,name,priority,completed,ID\n".to_string();
+        let mut index = 0;
 
         if self.is_empty() == true {
             return Err(Box::new(OtherError::new(ErrorKind::Other, "list is empty")));
         } else {
             for action in self {
-                action_list_string.push_str(&action.export_fields_as_string());
+                action_list_string.push_str(&format!("{},{}",index,&action.export_fields_as_string()));
+                index += 1;
             }
         }
 

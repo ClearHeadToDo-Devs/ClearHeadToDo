@@ -153,7 +153,7 @@ mod tests {
 
         let all_actions = default_action_app.get_list().unwrap();
 
-        assert_eq!(all_actions, format!("name,priority,completed,ID\nDefault Action,Optional,false,{}\n", Uuid::nil()));
+        assert_eq!(all_actions, format!("order,name,priority,completed,ID\n0,Default Action,Optional,false,{}\n", Uuid::nil()));
     }
 
     #[test]
