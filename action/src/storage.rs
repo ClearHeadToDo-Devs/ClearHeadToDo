@@ -89,10 +89,10 @@ mod tests {
             assert_eq!(
                 record,
                 vec![
-                    "00000000-0000-0000-0000-000000000000",
                     "Default Action",
+                    "Optional",
                     "false",
-                    "Optional"
+                    "00000000-0000-0000-0000-000000000000"
                 ]
             );
         } else {

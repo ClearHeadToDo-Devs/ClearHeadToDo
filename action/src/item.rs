@@ -11,10 +11,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(PartialEq, Debug, Clone, Deserialize, Serialize)]
 pub struct Action {
-    pub id: Uuid,
     pub name: String,
-    pub completed: bool,
     pub priority: Priority,
+    pub completed: bool,
+    pub id: Uuid,
 }
 
 impl Default for Action {
@@ -187,17 +187,17 @@ mod tests{
                     name: "Action",
                     len: 4,
                 },
-                Token::Str("id"),
-                Token::Str("00000000-0000-0000-0000-000000000000"),
                 Token::Str("name"),
                 Token::Str("Default Action"),
-                Token::Str("completed"),
-                Token::Bool(false),
                 Token::Str("priority"),
                 Token::UnitVariant {
                     name: "Priority",
                     variant: "Optional",
                 },
+                Token::Str("completed"),
+                Token::Bool(false),
+                Token::Str("id"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
                 Token::StructEnd,
             ],
         );
