@@ -40,8 +40,7 @@ impl Command {
                 participant_2,
             } => {
                 let updated_list = app.create_relationship(variant, 
-                        app.action_list[*participant_1].id.to_owned(),
-                        app.action_list[*participant_2].id.to_owned())?;
+                        *participant_1, *participant_2)?;
                 Ok(updated_list)
             }
             Command::ToggleCompletion(index) => {
@@ -85,7 +84,7 @@ impl Command {
                 participant_2,
             } => {
                 format!(
-                    "Created {} Relationship from {} to {}",
+                    "Created {} Relationship from Action {} to Action {}",
                     variant, participant_1, participant_2
                 )
             }
@@ -380,8 +379,8 @@ mod tests {
 
     #[test]
     fn cli_create_relationship_successful_message() {
-        let empty_list: ClearHeadApp = Default::default();
-        let single_relationship_app = empty_list.create_relationship("related", Uuid::nil(), Uuid::nil()).unwrap();
+        let empty_list: ClearHeadApp = ClearHeadApp::default().create_action().create_action();
+        let single_relationship_app = empty_list.create_relationship("related", 0, 1).unwrap();
         let updated_list = single_relationship_app.create_action().create_action();
 
         let result = Command::CreateRelationship {
@@ -390,6 +389,6 @@ mod tests {
             participant_2: 1,
         }.create_end_user_message(&single_relationship_app, &updated_list);
 
-        assert_eq!(result, "Created related Relationship from 0 to 1");
+        assert_eq!(result, "Created related Relationship from Action 0 to Action 1");
     }
 }

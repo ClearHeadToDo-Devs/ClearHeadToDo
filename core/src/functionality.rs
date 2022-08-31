@@ -66,10 +66,10 @@ impl ClearHeadApp {
         Ok(self.action_list.get_list()?)
     }
 
-    pub fn create_relationship(&self, variant: &str, participant_1: Uuid, participant_2: Uuid) -> Result<ClearHeadApp, Box<dyn Error>> {
+    pub fn create_relationship(&self, variant: &str, participant_1: usize, participant_2: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
         let mut cloned_list = self.clone();
 
-        let new_relationship_list: Vector<Relationship> = self.relationship_list.add_new(variant, participant_1, participant_2)?;
+        let new_relationship_list: Vector<Relationship> = self.relationship_list.add_new(variant, self.action_list[participant_1].id, self.action_list[participant_2].id)?;
         cloned_list.relationship_list = new_relationship_list;
 
         Ok(cloned_list)
@@ -158,9 +158,17 @@ mod tests {
 
     #[test]
     fn create_relationship(){
-        let test_app: ClearHeadApp = Default::default();
-        let updated_app = test_app.create_relationship("related", Uuid::new_v4(), Uuid::new_v4()).unwrap();
+        let test_app: ClearHeadApp = ClearHeadApp::default().create_action().create_action();
+        let updated_app = test_app.create_relationship("related", 0,1).unwrap();
 
         assert_eq!(updated_app.relationship_list.len(), 1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn failed_non_existant_action_relationship(){
+        let test_app: ClearHeadApp = Default::default();
+
+        test_app.create_relationship("related", 0, 1).unwrap();
     }
 }
