@@ -1,6 +1,5 @@
 use crate::ClearHeadApp;
 use std::error::Error;
-use uuid::Uuid;
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
@@ -8,8 +7,8 @@ pub enum Command {
     Create(Option<String>),
     CreateRelationship {
         variant: String,
-        participant_1: Uuid,
-        participant_2: Uuid,
+        participant_1: usize,
+        participant_2: usize,
     },
     ToggleCompletion(usize),
     Remove(usize),
@@ -40,7 +39,9 @@ impl Command {
                 participant_1,
                 participant_2,
             } => {
-                let updated_list = app.create_relationship(variant, participant_1.to_owned(), participant_2.to_owned())?;
+                let updated_list = app.create_relationship(variant, 
+                        app.action_list[*participant_1].id.to_owned(),
+                        app.action_list[*participant_2].id.to_owned())?;
                 Ok(updated_list)
             }
             Command::ToggleCompletion(index) => {
@@ -125,10 +126,7 @@ impl Command {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helper::add_nil_action;
     use crate::Priority;
-    use crate::Action;
-    use im::vector;
     use uuid::Uuid;
 
     #[test]
@@ -335,13 +333,29 @@ mod tests {
     #[test]
     fn cli_create_relationship_successful_run_test() {
         let empty_list: ClearHeadApp = Default::default();
+        let updated_list = empty_list.create_action().create_action();
 
         let result = Command::CreateRelationship {
             variant: "related".to_string(),
-            participant_1: Uuid::nil(),
-            participant_2: Uuid::nil(),
+            participant_1: 0,
+            participant_2: 1,
         }
-        .run_subcommand(&empty_list).unwrap();
+        .run_subcommand(&updated_list).unwrap();
         assert_eq!(result.relationship_list.len(), 1);
+    }
+
+    #[test]
+    fn cli_create_relationship_successful_message() {
+        let empty_list: ClearHeadApp = Default::default();
+        let single_relationship_app = empty_list.create_relationship("related", Uuid::nil(), Uuid::nil()).unwrap();
+        let updated_list = single_relationship_app.create_action().create_action();
+
+        let result = Command::CreateRelationship {
+            variant: "related".to_string(),
+            participant_1: 0,
+            participant_2: 1,
+        }.create_end_user_message(&single_relationship_app, &updated_list);
+
+        assert_eq!(result, "Created related Relationship from 0 to 1");
     }
 }

@@ -12,9 +12,13 @@ pub fn create_app() -> clap::Command<'static> {
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(SubCommand::with_name("list").alias("lt"))
         .subcommand(
-            SubCommand::with_name("create")
+            SubCommand::with_name("create_action")
                 .arg(Arg::with_name("new_name").multiple(true)),
         )
+        .subcommand(SubCommand::with_name("create_relationship")
+            .arg(Arg::with_name("variant").required(true))
+            .arg(Arg::with_name("participant_1").required(true))
+            .arg(Arg::with_name("participant_2").required(true)))
         .subcommand(
             SubCommand::with_name("complete")
                 .arg(Arg::with_name("index").required(true)),
@@ -47,9 +51,26 @@ impl ArgumentParsing for ArgMatches {
     fn parse_command(&self) -> Result<Command, Box<dyn Error>> {
         match self.subcommand_name() {
             Some("list") => Ok(Command::List),
-            Some("create") => Ok(Command::Create(
-                self.parse_desired_name("create".to_string()),
+            Some("create_action") => Ok(Command::Create(
+                self.parse_desired_name("create_action".to_string()),
             )),
+            Some("create_relationship") => Ok(Command::CreateRelationship{
+                variant: self.subcommand_matches("create_relationship".to_string())
+                .unwrap()
+                .value_of("variant")
+                .unwrap()
+                .to_string(),
+                participant_1: self.subcommand_matches("create_relationship".to_string())
+                .unwrap()
+                .value_of("participant_1")
+                .unwrap()
+                .parse::<usize>()?,
+                participant_2: self.subcommand_matches("create_relationship".to_string())
+                .unwrap()
+                .value_of("participant_2")
+                .unwrap()
+                .parse::<usize>()?
+            }),
             Some("complete") => Ok(Command::ToggleCompletion(
                 self.parse_index_for_subcommand("complete".to_string())?,
             )),
@@ -166,7 +187,7 @@ mod tests {
     #[test]
     fn cli_create_successful_parse() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create", "Test Task"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_action", "Test Task"]);
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::Create(Some("Test Task".to_string())));
@@ -175,10 +196,22 @@ mod tests {
     #[test]
     fn cli_create_alias() {
         let app = create_app();
-        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create"]);
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_action"]);
 
         let result = test_matches.parse_command().unwrap();
         assert_eq!(result, Command::Create(None));
+    }
+
+    #[test]
+    fn cli_create_relationship_successful_parse() {
+        let app = create_app();
+        let test_matches = app.get_matches_from(vec!["ClearHeadToDo", "create_relationship", "related", "0", "1"]);
+
+        let result = test_matches.parse_command().unwrap();
+        assert_eq!(result, Command::CreateRelationship{
+            variant: "related".to_owned(), 
+            participant_1: 0,
+            participant_2: 1});
     }
 
     #[test]
