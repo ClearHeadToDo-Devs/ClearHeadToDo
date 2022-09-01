@@ -7,6 +7,7 @@ pub trait ActionManipulation {
     fn change_priority(&self, new_priority: &str) -> 
     Result<Self, Box<dyn Error>> where Self: Sized;
     fn get_id(&self) -> Uuid;
+    fn get_name(&self) -> String;
 }
 
 #[cfg(test)]
@@ -77,6 +78,10 @@ mod tests {
         fn get_id(&self) -> Uuid {
             self.id
         }
+
+        fn get_name(&self) -> String {
+            self.name.to_string()
+        }
     }
 
     #[test]
@@ -119,5 +124,11 @@ mod tests {
     fn get_id() {
         let test_action = TestStruct::default();
         assert_eq!(test_action.get_id(), test_action.id);
+    }
+
+    #[test]
+    fn get_name() {
+        let test_action = TestStruct::default();
+        assert_eq!(test_action.get_name(), "Default Struct");
     }
 }

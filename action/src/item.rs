@@ -59,6 +59,10 @@ impl ActionManipulation for Action {
     fn get_id(&self) -> Uuid {
         self.id.clone()
     }
+
+    fn get_name(&self) -> String {
+        self.name.clone()
+    }
 }
 
 #[cfg(test)]
