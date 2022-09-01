@@ -16,16 +16,18 @@ pub trait ActionManipulation {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
-    use std::io::{Error as OtherError, ErrorKind};
+    use std::fmt::{Display, Formatter, Result as fmtResult};
+    use std::io::ErrorKind;
 
-    #[derive(Debug)]
-    struct TestStruct {
-        name: String,
-        priority: Priority,
-        completed: bool,
-        id: Uuid,
+
+    #[derive(Debug, Clone, PartialEq)]
+    pub struct TestStruct {
+        pub name: String,
+        pub priority: Priority,
+        pub completed: bool,
+        pub id: Uuid,
     }
 
     impl Default for TestStruct {
@@ -36,6 +38,12 @@ mod tests {
                 completed: false,
                 id: Uuid::nil(),
             }
+        }
+    }
+
+    impl Display for TestStruct {
+        fn fmt(&self, f: &mut Formatter) -> fmtResult {
+            write!(f, "{},{},{},{}", self.name, self.priority, self.completed, self.id)
         }
     }
 
@@ -78,7 +86,7 @@ mod tests {
                     completed: self.completed.clone(),
                     id: self.id.clone(),
                 }),
-                _ => Err(Box::new(OtherError::new(ErrorKind::InvalidInput, "Invalid Priority"))),
+                _ => Err(Box::new(std::io::Error::new(ErrorKind::Other, "Invalid Priority"))),
             }
         }
 

@@ -75,7 +75,7 @@ impl ActionManipulation for Action {
 }
 
 #[cfg(test)]
-mod tests{
+pub mod tests{
     use super::*;
     use serde_test::{assert_de_tokens, assert_ser_tokens, Configure, Token};
     use uuid::Uuid;
