@@ -7,6 +7,7 @@ pub use action_manipulation::*;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::fmt;
+use std::str::FromStr;
 use uuid::Uuid;
 
 use serde::{Deserialize, Serialize};
@@ -52,7 +53,7 @@ impl ActionManipulation for Action {
 
     fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
         return Ok(Action {
-            priority: Priority::parse_priority(new_priority)?,
+            priority: Priority::from_str(new_priority)?,
             ..self.to_owned()
         });
     }

@@ -31,7 +31,7 @@ pub trait ActionListManipulation {
 mod tests {
     use std::error::Error;
     use crate::item::action_manipulation::tests::TestStruct;
-    use crate::{ActionListManipulation, ActionManipulation, Priority};
+    use crate::{ActionListManipulation, ActionManipulation};
     use uuid::Uuid;
 
     impl ActionListManipulation for Vec<TestStruct> {
@@ -111,7 +111,8 @@ mod tests {
             let mut cloned_list = self.clone();
             match self.iter().nth(index) {
                 Some(_) => {
-                    cloned_list[index].priority = Priority::parse_priority(&new_priority).unwrap();
+                    let updated_action = self[index].change_priority(&new_priority)?;
+                    cloned_list[index] = updated_action;
                     return Ok(cloned_list);
                 }
                 None => Err("invalid index".into()),
@@ -230,7 +231,7 @@ mod tests {
     fn failed_change_priority() {
         let test_struct_list: Vec<TestStruct> = Vec::new();
 
-        let new_test_struct_list = test_struct_list.change_priority(0, "high".to_string());
+        let new_test_struct_list = test_struct_list.change_priority(0, "High".to_string());
 
         assert!(new_test_struct_list.is_err());
     }
