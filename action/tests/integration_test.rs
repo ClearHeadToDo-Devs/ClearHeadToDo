@@ -50,9 +50,8 @@ fn action_print_successful_test() {
 
     let success = &single_action_list.get_list().unwrap();
 
-    assert_eq!(
-                format!("{}", success.to_string()),
-                format!("order,name,priority,completed,ID\n0,Default Action,Optional,false,{}",single_action_list[0].get_id()));
+    assert_eq!(success,
+            &format!("order,name,priority,completed,ID\n0,Default Action,Optional,false,{}",single_action_list[0].get_id()));
 }
 
 #[test]
