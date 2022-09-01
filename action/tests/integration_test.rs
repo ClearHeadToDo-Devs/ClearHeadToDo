@@ -4,24 +4,14 @@ use uuid::Uuid;
 use im::vector;
 use std::str::FromStr;
 
-
-
 #[test]
-fn action_list_creation() {
-    let test_action_list: im::Vector<Action> = vector!();
-    assert_eq!(test_action_list, vector!());
-}
-
-#[test]
-fn child_action_addition() -> Result<(), Box<dyn Error>> {
+fn append_default() {
     let empty_action_list: im::Vector<Action> = vector!();
     let single_action_list = empty_action_list.create_new();
     let test_action = &single_action_list[0];
     assert!(test_action.get_name() == "Default Action");
     assert!(test_action.get_completion_status() == false);
     assert!(test_action.get_priority() == Priority::Optional);
-    assert!(&single_action_list[0] == test_action);
-    return Ok(());
 }
 
 #[test]
