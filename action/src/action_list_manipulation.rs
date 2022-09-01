@@ -67,7 +67,7 @@ mod tests {
             let mut new_list = self.clone();
             match self.iter().nth(index) {
                 Some(_test_struct_ref) => {
-                    new_list.split_off(0);
+                    let _new_split = new_list.split_off(0);
                     Ok(new_list)
                 }
                 None => Err("invalid index".into()),
