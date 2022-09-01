@@ -63,6 +63,10 @@ impl ActionManipulation for Action {
     fn get_name(&self) -> String {
         self.name.clone()
     }
+
+    fn get_priority(&self) -> Priority {
+        self.priority.clone()
+    }
 }
 
 #[cfg(test)]

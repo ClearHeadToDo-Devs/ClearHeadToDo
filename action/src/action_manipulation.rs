@@ -1,6 +1,8 @@
 use std::error::Error;
 use uuid::Uuid;
 
+use crate::Priority;
+
 pub trait ActionManipulation {
     fn rename(&self, new_action_name: &str) -> Self;
     fn toggle_completion_status(&self) -> Self;
@@ -8,6 +10,7 @@ pub trait ActionManipulation {
     Result<Self, Box<dyn Error>> where Self: Sized;
     fn get_id(&self) -> Uuid;
     fn get_name(&self) -> String;
+    fn get_priority(&self) -> Priority;
 }
 
 #[cfg(test)]
@@ -18,7 +21,7 @@ mod tests {
     #[derive(Debug)]
     struct TestStruct {
         name: String,
-        priority: String,
+        priority: Priority,
         completed: bool,
         id: Uuid,
     }
@@ -27,7 +30,7 @@ mod tests {
         fn default() -> TestStruct {
             TestStruct {
                 name: "Default Struct".to_string(),
-                priority: "low".to_string(),
+                priority: Priority::Low,
                 completed: false,
                 id: Uuid::nil(),
             }
@@ -47,7 +50,7 @@ mod tests {
         fn toggle_completion_status(&self) -> Self {
             TestStruct {
                 name: self.name.to_string(),
-                priority: self.priority.to_string(),
+                priority: self.priority.clone(),
                 completed: !self.completed,
                 id: self.id.clone(),
             }
@@ -55,22 +58,25 @@ mod tests {
 
         fn change_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>> {
             match new_priority {
-                "low" => Ok(TestStruct {
+                "Low" => Ok(TestStruct {
                     name: self.name.to_string(),
-                    priority: new_priority.to_string(),
-                    completed: self.completed,
+                    priority: Priority::Low,
+                    completed: self.completed.clone(),
                     id: self.id.clone(),
                 }),
-                "high" => Ok(TestStruct {
+                "Medium" => Ok(TestStruct {
                     name: self.name.to_string(),
-                    priority: new_priority.to_string(),
-                    completed: self.completed,
+                    priority: Priority::Medium,
+                    completed: self.completed.clone(),
                     id: self.id.clone(),
                 }),
-                _ => Err(Box::new(OtherError::new(
-                    ErrorKind::Other,
-                    "invalid priority",
-                ))),
+                "High" => Ok(TestStruct {
+                    name: self.name.to_string(),
+                    priority: Priority::High,
+                    completed: self.completed.clone(),
+                    id: self.id.clone(),
+                }),
+                _ => Err(Box::new(OtherError::new(ErrorKind::InvalidInput, "Invalid Priority"))),
             }
         }
 
@@ -82,14 +88,17 @@ mod tests {
         fn get_name(&self) -> String {
             self.name.to_string()
         }
+        fn get_priority(&self) -> Priority {
+            self.priority
+        }
     }
 
     #[test]
     fn successful_reprioritization() {
         let test_action = TestStruct::default()
-            .change_priority("high")
+            .change_priority("High")
             .unwrap();
-        assert_eq!(test_action.priority, "high");
+        assert_eq!(test_action.priority, Priority::High);
     }
 
     #[test]
@@ -97,7 +106,7 @@ mod tests {
         let test_action_error = TestStruct::default()
             .change_priority("bad_priority")
             .unwrap_err();
-        assert_eq!(test_action_error.to_string(), "invalid priority".to_string());
+        assert_eq!(test_action_error.to_string(), "Invalid Priority".to_string());
     }
 
     #[test]
@@ -130,5 +139,10 @@ mod tests {
     fn get_name() {
         let test_action = TestStruct::default();
         assert_eq!(test_action.get_name(), "Default Struct");
+    }
+
+    fn get_priority() {
+        let test_action = TestStruct::default();
+        assert_eq!(test_action.get_priority(), Priority::Low);
     }
 }
