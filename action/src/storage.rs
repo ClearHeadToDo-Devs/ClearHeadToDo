@@ -53,7 +53,7 @@ fn create_file_writer_to_data_folder(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::helper::add_nil_action;
+    use crate::{ActionManipulation, ActionListManipulation};
     use im::vector;
     use crate::Priority;
     use std::str::FromStr;
@@ -65,7 +65,7 @@ mod tests {
         let test_action = &test_action_list[0];
 
         assert!(test_action.id == Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
-        assert!(test_action.name == "test csv action");
+        assert!(test_action.get_name() == "test csv action");
         assert!(test_action.completed == false);
         assert!(test_action.priority == Priority::Optional);
     }
@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn load_action_data_to_csv_successful() -> Result<(), Box<dyn Error>> {
         let empty_action_list = vector!();
-        let single_nil_action_list = add_nil_action(empty_action_list);
+        let single_nil_action_list = empty_action_list.create_new();
 
         load_csv_with_action_data(&single_nil_action_list, "successful_export_test.csv")?;
         let rdr = Reader::from_path(
@@ -92,7 +92,7 @@ mod tests {
                     "Default Action",
                     "Optional",
                     "false",
-                    "00000000-0000-0000-0000-000000000000"
+                    &format!("{}", single_nil_action_list[0].get_id())
                 ]
             );
         } else {

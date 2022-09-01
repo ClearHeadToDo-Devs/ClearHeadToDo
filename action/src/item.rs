@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(PartialEq, Debug, Clone, Deserialize, Serialize)]
 pub struct Action {
-    pub name: String,
+    name: String,
     pub priority: Priority,
     pub completed: bool,
     pub id: Uuid,

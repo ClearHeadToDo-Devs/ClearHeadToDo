@@ -103,6 +103,7 @@ mod tests {
     use action::Priority;
     use im::Vector;
     use uuid::Uuid;
+    use action::action_manipulation::ActionManipulation;
 
 
     #[test]
@@ -127,7 +128,7 @@ mod tests {
 
         let updated_app = default_action_app.rename_action(0, "new_name".to_string()).unwrap();
 
-        assert_eq!(updated_app.action_list.get(0).unwrap().name, "new_name");
+        assert_eq!(updated_app.action_list.get(0).unwrap().get_name(), "new_name");
     }
 
     #[test]

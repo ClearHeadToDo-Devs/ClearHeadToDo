@@ -1,3 +1,5 @@
+use action::ActionManipulation;
+
 use crate::ClearHeadApp;
 use std::error::Error;
 
@@ -81,7 +83,7 @@ impl Command {
             Command::Create(_name) => {
                 format!(
                     "Created Action {}",
-                    updated_app.action_list[updated_app.action_list.len() - 1].name
+                    updated_app.action_list[updated_app.action_list.len() - 1].get_name()
                 )
             }
             Command::CreateRelationship {
@@ -97,19 +99,19 @@ impl Command {
             Command::ToggleCompletion(index) => {
                 format!(
                     "{} had its' completion status toggled to {}",
-                    updated_app.action_list[*index].name, updated_app.action_list[*index].completed
+                    updated_app.action_list[*index].get_name(), updated_app.action_list[*index].completed
                 )
             }
             Command::Remove(index) => {
                 format!(
                     "{} was removed from your Action List",
-                    previous_app.action_list[*index].name
+                    previous_app.action_list[*index].get_name()
                 )
             }
             Command::Rename { index, new_name } => {
                 format!(
                     "{} was changed from {}",
-                    new_name, previous_app.action_list[*index].name
+                    new_name, previous_app.action_list[*index].get_name()
                 )
             }
             Command::Reprioritize {
@@ -118,7 +120,7 @@ impl Command {
             } => {
                 format!(
                     "{} was changed from a priority of: {}\n to a priority of: {}",
-                    updated_app.action_list[*index].name,
+                    updated_app.action_list[*index].get_name(),
                     previous_app.action_list[*index].priority,
                     new_priority
                 )
@@ -133,6 +135,7 @@ impl Command {
 mod tests {
     use super::*;
     use crate::Priority;
+    use action::ActionManipulation;
     use relationships::RelationshipManagement;
 
     #[test]
@@ -150,7 +153,7 @@ mod tests {
             .run_subcommand(&empty_list)
             .unwrap();
 
-        assert_eq!(result.action_list[0].name, "Default Action".to_string());
+        assert_eq!(result.action_list[0].get_name(), "Default Action".to_string());
         assert_eq!(result.action_list[0].priority, Priority::Optional);
         assert_eq!(result.action_list[0].completed, false);
     }
@@ -257,7 +260,7 @@ mod tests {
         .run_subcommand(&single_list).unwrap();
 
         assert_eq!(
-            result.action_list[0].name,
+            result.action_list[0].get_name(),
             "Test Rename".to_string()
         );
     }

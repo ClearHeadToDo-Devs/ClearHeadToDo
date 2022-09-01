@@ -51,7 +51,7 @@ impl fmt::Display for Priority {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_test::{assert_de_tokens, assert_ser_tokens, Configure, Token};
+    use serde_test::{assert_de_tokens, assert_ser_tokens, Token};
 
     #[test]
     fn create_default_priority() {
