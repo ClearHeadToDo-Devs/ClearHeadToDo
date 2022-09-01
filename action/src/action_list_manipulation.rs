@@ -29,18 +29,17 @@ pub trait ActionListManipulation {
 
 #[cfg(test)]
 mod tests {
-    use im::Vector;
     use std::error::Error;
     use crate::item::action_manipulation::tests::TestStruct;
-    use crate::{ActionListManipulation, ActionManipulation};
+    use crate::{ActionListManipulation, ActionManipulation, Priority};
     use uuid::Uuid;
 
-    impl ActionListManipulation for Vector<TestStruct> {
+    impl ActionListManipulation for Vec<TestStruct> {
         type Child = TestStruct;
 
         fn create_new(&self) -> Self {
             let mut new_list = self.clone();
-            new_list.push_back(TestStruct::default());
+            new_list.push(TestStruct::default());
 
             return new_list;
         }
@@ -65,12 +64,11 @@ mod tests {
         }
 
         fn remove(&self, index: usize) -> Result<Self, Box<dyn Error>> {
+            let mut new_list = self.clone();
             match self.iter().nth(index) {
                 Some(_test_struct_ref) => {
-                    let (mut left_side, mut right_side) = self.clone().split_at(index);
-                    right_side.pop_front().unwrap();
-                    left_side.append(right_side);
-                    Ok(left_side)
+                    new_list.split_off(0);
+                    Ok(new_list)
                 }
                 None => Err("invalid index".into()),
             }
@@ -81,9 +79,11 @@ mod tests {
             index: usize,
             new_name: String,
         ) -> Result<Self, Box<dyn Error>> {
+            let mut new_list = self.clone();
             match self.iter().nth(index) {
-                Some(test_struct_ref) => {
-                    return Ok(self.update(index, test_struct_ref.rename(&new_name)))
+                Some(_) => {
+                    new_list[index].name = new_name;
+                    Ok(new_list)
                 }
                 None => Err("invalid index".into()),
             }
@@ -93,9 +93,11 @@ mod tests {
             &self,
             index: usize,
         ) -> Result<Self, Box<dyn Error>> {
+            let mut cloned_list = self.clone();
             match self.iter().nth(index) {
                 Some(test_struct_ref) => {
-                    return Ok(self.update(index, test_struct_ref.toggle_completion_status()))
+                    cloned_list[index].completed = !test_struct_ref.completed;
+                    Ok(cloned_list)
                 }
                 None => Err("invalid index".into()),
             }
@@ -106,9 +108,11 @@ mod tests {
             index: usize,
             new_priority: String,
         ) -> Result<Self, Box<dyn Error>> {
+            let mut cloned_list = self.clone();
             match self.iter().nth(index) {
-                Some(test_struct_ref) => {
-                    return Ok(self.update(index, test_struct_ref.change_priority(&new_priority)?))
+                Some(_) => {
+                    cloned_list[index].priority = Priority::parse_priority(&new_priority).unwrap();
+                    return Ok(cloned_list);
                 }
                 None => Err("invalid index".into()),
             }
@@ -131,7 +135,7 @@ mod tests {
 
     #[test]
     fn create_new() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let new_test_struct_list = test_struct_list.create_new();
 
@@ -140,7 +144,7 @@ mod tests {
 
     #[test]
     fn get_list() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let new_test_struct_list = test_struct_list.create_new();
 
@@ -151,7 +155,7 @@ mod tests {
 
     #[test]
     fn failed_get_list() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let list = test_struct_list.get_list();
 
@@ -160,7 +164,8 @@ mod tests {
 
     #[test]
     fn remove() {
-        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+        let mut test_struct_list: Vec<TestStruct> = Vec::new();
+        test_struct_list.push(TestStruct::default());
 
         let new_test_struct_list = test_struct_list.remove(0).unwrap();
 
@@ -169,7 +174,7 @@ mod tests {
 
     #[test]
     fn failed_remove() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let new_test_struct_list = test_struct_list.remove(0);
 
@@ -178,7 +183,7 @@ mod tests {
 
     #[test]
     fn rename() {
-        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+        let test_struct_list: Vec<TestStruct> = Vec::new().create_new();
 
         let new_test_struct_list = test_struct_list.rename(0, "new name".to_string()).unwrap();
 
@@ -187,7 +192,7 @@ mod tests {
 
     #[test]
     fn failed_rename() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let new_test_struct_list = test_struct_list.rename(0, "new name".to_string());
 
@@ -196,7 +201,7 @@ mod tests {
 
     #[test]
     fn toggle_completion_status() {
-        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+        let test_struct_list: Vec<TestStruct> = Vec::new().create_new();
 
         let new_test_struct_list = test_struct_list.toggle_completion_status(0).unwrap();
 
@@ -205,7 +210,7 @@ mod tests {
 
     #[test]
     fn failed_toggle_completion_status() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let new_test_struct_list = test_struct_list.toggle_completion_status(0);
 
@@ -214,7 +219,7 @@ mod tests {
 
     #[test]
     fn change_priority() {
-        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+        let test_struct_list: Vec<TestStruct> = Vec::new().create_new();
 
         let new_test_struct_list = test_struct_list.change_priority(0, "High".to_string()).unwrap();
 
@@ -223,7 +228,7 @@ mod tests {
 
     #[test]
     fn failed_change_priority() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let new_test_struct_list = test_struct_list.change_priority(0, "high".to_string());
 
@@ -232,7 +237,7 @@ mod tests {
 
     #[test]
     fn get_id_by_index() {
-        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+        let test_struct_list: Vec<TestStruct> = Vec::new().create_new();
 
         let id = test_struct_list.get_id_by_index(0).unwrap();
 
@@ -241,7 +246,7 @@ mod tests {
 
     #[test]
     fn failed_get_id_by_index() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let id = test_struct_list.get_id_by_index(0);
 
@@ -250,7 +255,7 @@ mod tests {
 
     #[test]
     fn select_by_id() {
-        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+        let test_struct_list: Vec<TestStruct> = Vec::new().create_new();
 
         let id = test_struct_list.get(0).unwrap().get_id();
 
@@ -261,7 +266,7 @@ mod tests {
 
     #[test]
     fn failed_select_by_id() {
-        let test_struct_list: Vector<TestStruct> = Vector::new();
+        let test_struct_list: Vec<TestStruct> = Vec::new();
 
         let test_struct = test_struct_list.select_by_id(Uuid::new_v4());
 
