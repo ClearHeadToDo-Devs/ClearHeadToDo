@@ -49,9 +49,16 @@ mod tests {
             let mut list = String::new();
             let mut index = 0;
 
-            for test_struct in self.iter() {
-                list.push_str(&format!("{},{}", index, test_struct.to_string()));
-                index += 1;
+            if self.len() != 0 {
+                for test_struct in self.iter() {
+                    list.push_str(&format!("{},{}", index, test_struct.to_string()));
+                    index += 1;
+                }
+            } else {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "list is empty",
+                )));
             }
 
             Ok(list)
@@ -139,6 +146,125 @@ mod tests {
 
         let list = new_test_struct_list.get_list().unwrap();
 
-        assert_eq!(list, "0,Default Struct,Low,false,00000000-0000-0000-0000-000000000000");
+        assert!(list.is_empty() == false);
+    }
+
+    #[test]
+    fn failed_get_list() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let list = test_struct_list.get_list();
+
+        assert!(list.is_err());
+    }
+
+    #[test]
+    fn remove() {
+        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+
+        let new_test_struct_list = test_struct_list.remove(0).unwrap();
+
+        assert_eq!(new_test_struct_list.len(), 0);
+    }
+
+    #[test]
+    fn failed_remove() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let new_test_struct_list = test_struct_list.remove(0);
+
+        assert!(new_test_struct_list.is_err());
+    }
+
+    #[test]
+    fn rename() {
+        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+
+        let new_test_struct_list = test_struct_list.rename(0, "new name".to_string()).unwrap();
+
+        assert_eq!(new_test_struct_list.get(0).unwrap().name, "new name");
+    }
+
+    #[test]
+    fn failed_rename() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let new_test_struct_list = test_struct_list.rename(0, "new name".to_string());
+
+        assert!(new_test_struct_list.is_err());
+    }
+
+    #[test]
+    fn toggle_completion_status() {
+        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+
+        let new_test_struct_list = test_struct_list.toggle_completion_status(0).unwrap();
+
+        assert_eq!(new_test_struct_list.get(0).unwrap().completed, true);
+    }
+
+    #[test]
+    fn failed_toggle_completion_status() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let new_test_struct_list = test_struct_list.toggle_completion_status(0);
+
+        assert!(new_test_struct_list.is_err());
+    }
+
+    #[test]
+    fn change_priority() {
+        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+
+        let new_test_struct_list = test_struct_list.change_priority(0, "High".to_string()).unwrap();
+
+        assert_eq!(new_test_struct_list.get(0).unwrap().priority, crate::Priority::High);
+    }
+
+    #[test]
+    fn failed_change_priority() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let new_test_struct_list = test_struct_list.change_priority(0, "high".to_string());
+
+        assert!(new_test_struct_list.is_err());
+    }
+
+    #[test]
+    fn get_id_by_index() {
+        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+
+        let id = test_struct_list.get_id_by_index(0).unwrap();
+
+        assert_eq!(id, test_struct_list.get(0).unwrap().get_id());
+    }
+
+    #[test]
+    fn failed_get_id_by_index() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let id = test_struct_list.get_id_by_index(0);
+
+        assert!(id.is_err());
+    }
+
+    #[test]
+    fn select_by_id() {
+        let test_struct_list: Vector<TestStruct> = Vector::new().create_new();
+
+        let id = test_struct_list.get(0).unwrap().get_id();
+
+        let test_struct = test_struct_list.select_by_id(id).unwrap();
+
+        assert_eq!(&test_struct, test_struct_list.get(0).unwrap());
+    }
+
+    #[test]
+    fn failed_select_by_id() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let test_struct = test_struct_list.select_by_id(Uuid::new_v4());
+
+        assert!(test_struct.is_err());
     }
 }
