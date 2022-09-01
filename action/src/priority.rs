@@ -51,6 +51,7 @@ impl fmt::Display for Priority {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_test::{assert_de_tokens, assert_ser_tokens, Configure, Token};
 
     #[test]
     fn create_default_priority() {
@@ -77,5 +78,35 @@ mod tests {
     fn priority_display_test() {
         let test_priority = Priority::default();
         assert_eq!(test_priority.to_string(), "Optional".to_string())
+    }
+
+    #[test]
+    fn successfully_serialize_action() {
+        let test_priority = Priority::default();
+
+        assert_ser_tokens(
+            &test_priority,
+            &[
+                Token::UnitVariant {
+                    name: "Priority",
+                    variant: "Optional",
+                },
+            ],
+        );
+    }
+
+    #[test]
+    fn successfully_deserializing_action() {
+        let test_priority = Priority::default();
+
+        assert_de_tokens(
+            &test_priority,
+            &[
+                Token::UnitVariant {
+                    name: "Priority",
+                    variant: "Optional",
+                },
+            ],
+        );
     }
 }
