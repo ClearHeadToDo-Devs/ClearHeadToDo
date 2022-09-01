@@ -23,3 +23,26 @@ impl Display for ActionError {
 
 // Make it an error!
 impl std::error::Error for ActionError {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_invalid_priority() {
+        let error = ActionError::InvalidPriority("Bad Priority".to_string());
+        assert_eq!(error.to_string(), "Bad Priority is an Invalid Priority Option");
+    }
+
+    #[test]
+    fn test_invalid_index() {
+        let error = ActionError::InvalidIndex(5);
+        assert_eq!(error.to_string(), "No Action at Index 5");
+    }
+
+    #[test]
+    fn test_invalid_id() {
+        let error = ActionError::InvalidId(Uuid::new_v4());
+        assert_eq!(error.to_string().contains("No Action with Id"), true);
+    }
+}
