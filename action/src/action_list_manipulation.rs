@@ -51,6 +51,7 @@ mod tests {
 
             for test_struct in self.iter() {
                 list.push_str(&format!("{},{}", index, test_struct.to_string()));
+                index += 1;
             }
 
             Ok(list)
@@ -119,5 +120,25 @@ mod tests {
                 None => Err("invalid id".into()),
             }
         }
-}
+    }
+
+    #[test]
+    fn create_new() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let new_test_struct_list = test_struct_list.create_new();
+
+        assert_eq!(new_test_struct_list.len(), 1);
+    }
+
+    #[test]
+    fn get_list() {
+        let test_struct_list: Vector<TestStruct> = Vector::new();
+
+        let new_test_struct_list = test_struct_list.create_new();
+
+        let list = new_test_struct_list.get_list().unwrap();
+
+        assert_eq!(list, "0,Default Struct,Low,false,00000000-0000-0000-0000-000000000000");
+    }
 }
