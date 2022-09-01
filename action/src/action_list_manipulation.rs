@@ -8,7 +8,6 @@ use uuid::Uuid;
 pub trait ActionListManipulation {
     type Child: ActionManipulation;
     fn create_new(&self) -> Self;
-    fn get_list(&self) -> Result<String, Box<dyn Error>>;
     fn remove(&self, index: usize) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized;
@@ -46,24 +45,6 @@ mod tests {
             return new_list;
         }
 
-        fn get_list(&self) -> Result<String, Box<dyn Error>> {
-            let mut list = String::new();
-            let mut index = 0;
-
-            if self.len() != 0 {
-                for test_struct in self.iter() {
-                    list.push_str(&format!("{},{}", index, test_struct.to_string()));
-                    index += 1;
-                }
-            } else {
-                return Err(Box::new(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "list is empty",
-                )));
-            }
-
-            Ok(list)
-        }
 
         fn remove(&self, index: usize) -> Result<Self, Box<dyn Error>> {
             let mut new_list = self.clone();
@@ -151,18 +132,7 @@ mod tests {
 
         let new_test_struct_list = test_struct_list.create_new();
 
-        let list = new_test_struct_list.get_list().unwrap();
-
-        assert!(list.is_empty() == false);
-    }
-
-    #[test]
-    fn failed_get_list() {
-        let test_struct_list: Vec<TestStruct> = Vec::new();
-
-        let list = test_struct_list.get_list();
-
-        assert!(list.is_err());
+        assert!(format!("{:?}", new_test_struct_list).is_empty() == false);
     }
 
     #[test]

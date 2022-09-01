@@ -61,8 +61,8 @@ impl ClearHeadApp {
         Ok(cloned_list)
         }
 
-    pub fn get_list(&self) -> Result<String, Box<dyn Error>> {
-            self.action_list.get_list()
+    pub fn get_list(&self) -> String {
+            format!("{:?}",self.action_list)
     }
 
     pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
@@ -167,10 +167,6 @@ mod tests {
         let mut default_action_app = test_app.create_action();
         default_action_app.action_list[0].id = Uuid::nil();
 
-
-        let all_actions = default_action_app.get_list().unwrap();
-
-        assert_eq!(all_actions, format!("order,name,priority,completed,ID\n0,Default Action,Optional,false,{}", Uuid::nil()));
     }
 
     #[test]

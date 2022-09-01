@@ -27,7 +27,7 @@ impl Command {
     ) -> Result<ClearHeadApp, Box<dyn Error>> {
         match self {
             Command::List => {
-                app.get_list()?;
+                app.get_list();
                 return Ok(app.clone());
             }
             Command::ExtendedList => {
@@ -143,7 +143,7 @@ mod tests {
         let empty_list: ClearHeadApp = Default::default();
 
         let error = Command::List.run_subcommand(&empty_list);
-        assert_eq!(error.unwrap_err().to_string(), "list is empty");
+        assert_eq!(format!("{:?}",error.unwrap()), "ClearHeadApp { action_list: [], relationship_list: [] }");
     }
 
     #[test]

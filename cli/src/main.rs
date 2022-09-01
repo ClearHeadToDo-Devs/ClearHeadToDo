@@ -17,11 +17,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let subcommand = matches.parse_command()?;
 
     if subcommand == Command::List {
-        let task_list_string_result = clear_head_app.get_list();
-        match task_list_string_result {
-            Ok(s) => println!("{}", s),
-            Err(e) => eprintln!("{}", e),
-        }
+        println!("{}", clear_head_app.get_list());
+        return Ok(())
     } else if subcommand == Command::ExtendedList{
         match clear_head_app.get_extended_list() {
             Ok(s) => println!("{}", s),

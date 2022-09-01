@@ -26,22 +26,6 @@ impl ActionListManipulation for Vector<Action> {
         return new_list;
     }
 
-    fn get_list(&self) -> Result<String, Box<dyn Error>> {
-        let mut action_list_string = "order,name,priority,completed,ID\n".to_string();
-        let mut index = 0;
-
-        if self.is_empty() == true {
-            return Err(Box::new(OtherError::new(ErrorKind::Other, "list is empty")));
-        } else {
-            for action in self {
-                action_list_string.push_str(&format!("{},{}",index,&action.to_string()));
-                index += 1;
-            }
-        }
-
-        Ok(action_list_string.to_owned())
-    }
-
     fn remove(&self, index: usize) -> Result<Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(_action_ref) => {
