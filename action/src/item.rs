@@ -49,9 +49,8 @@ impl ActionManipulation for Action {
     }
 
     fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
-        let new_pri: Priority = Priority::parse_priority(new_priority)?;
         return Ok(Action {
-            priority: new_pri.clone(),
+            priority: Priority::parse_priority(new_priority)?,
             ..self.to_owned()
         });
     }
@@ -66,6 +65,10 @@ impl ActionManipulation for Action {
 
     fn get_priority(&self) -> Priority {
         self.priority.clone()
+    }
+
+    fn get_completion_status(&self) -> bool {
+        self.completed.clone()
     }
 }
 

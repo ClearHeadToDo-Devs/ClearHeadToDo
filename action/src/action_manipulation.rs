@@ -8,9 +8,11 @@ pub trait ActionManipulation {
     fn toggle_completion_status(&self) -> Self;
     fn change_priority(&self, new_priority: &str) -> 
     Result<Self, Box<dyn Error>> where Self: Sized;
-    fn get_id(&self) -> Uuid;
+
     fn get_name(&self) -> String;
     fn get_priority(&self) -> Priority;
+    fn get_completion_status(&self) -> bool;
+    fn get_id(&self) -> Uuid;
 }
 
 #[cfg(test)]
@@ -91,6 +93,9 @@ mod tests {
         fn get_priority(&self) -> Priority {
             self.priority
         }
+        fn get_completion_status(&self) -> bool {
+            self.completed
+        }
     }
 
     #[test]
@@ -141,8 +146,15 @@ mod tests {
         assert_eq!(test_action.get_name(), "Default Struct");
     }
 
+    #[test]
     fn get_priority() {
         let test_action = TestStruct::default();
         assert_eq!(test_action.get_priority(), Priority::Low);
+    }
+
+    #[test]
+    fn get_completion_status() {
+        let test_action = TestStruct::default();
+        assert_eq!(test_action.get_completion_status(), false);
     }
 }
