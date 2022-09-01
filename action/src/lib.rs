@@ -11,10 +11,12 @@ pub mod action_list_manipulation;
 pub use action_list_manipulation::*;
 
 use std::error::Error;
+use std::fmt::Display;
 use std::io::{Error as OtherError, ErrorKind};
 use uuid::Uuid;
+use im::Vector;
 
-impl ActionListManipulation for im::Vector<Action> {
+impl ActionListManipulation for Vector<Action> {
     type Child = Action;
 
     fn create_new(&self) -> Self {
@@ -40,7 +42,7 @@ impl ActionListManipulation for im::Vector<Action> {
         Ok(action_list_string.to_owned())
     }
 
-    fn remove(&self, index: usize) -> Result<im::Vector<Action>, Box<dyn Error>> {
+    fn remove(&self, index: usize) -> Result<Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(_action_ref) => {
                 let (mut left_side, mut right_side) = self.clone().split_at(index);
@@ -104,3 +106,4 @@ impl ActionListManipulation for im::Vector<Action> {
         }
     }
 }
+

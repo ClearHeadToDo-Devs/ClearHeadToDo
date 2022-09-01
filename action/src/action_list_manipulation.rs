@@ -1,5 +1,7 @@
 use crate::action_manipulation::ActionManipulation;
-use std::error::Error;
+use im::Vector;
+use std::fmt::Formatter;
+use std::{error::Error, fmt::Display};
 use uuid::Uuid;
 
 

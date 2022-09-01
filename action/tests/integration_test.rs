@@ -46,13 +46,13 @@ fn action_print_fail_test() {
 #[test]
 fn action_print_successful_test() {
     let empty_action_list: im::Vector<Action> = vector!();
+
     let single_action_list = empty_action_list.create_new();
 
-    let success = &single_action_list.get_list().unwrap();
 
-    assert_eq!(success,
-            &format!("order,name,priority,completed,ID\n0,Default Action,Optional,false,{}",single_action_list[0].get_id()));
-}
+    assert_eq!(format!("{:?}", single_action_list),
+            format!("[Action {{ name: \"Default Action\", priority: Optional, completed: false, id: {} }}]",single_action_list[0].get_id()));
+    }
 
 #[test]
 fn failing_action_removal_test() {
