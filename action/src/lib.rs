@@ -47,15 +47,11 @@ impl ActionListManipulation for Vector<Action> {
     }
 
     fn remove_action(&self, index: usize) -> Result<Vector<Action>, Box<dyn Error>> {
-        match self.iter().nth(index) {
-            Some(_action_ref) => {
-                let (mut left_side, mut right_side) = self.clone().split_at(index);
-                right_side.pop_front().unwrap();
-                left_side.append(right_side);
-                Ok(left_side)
-            }
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
+        let mut new_list = self.clone();
+
+        new_list.remove(index);
+
+        return Ok(new_list);
     }
 
     fn rename(
