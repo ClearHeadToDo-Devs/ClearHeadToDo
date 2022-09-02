@@ -11,7 +11,7 @@ use action::*;
 fn append_default() {
     let empty_action_list: im::Vector<Action> = vector!();
 
-    let single_action_list = empty_action_list.create_new();
+    let single_action_list = empty_action_list.append_default();
 
     assert_eq!(single_action_list.len(), 1);
 }
@@ -19,7 +19,7 @@ fn append_default() {
 #[test]
 fn action_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
     let empty_action_list: im::Vector<Action> = vector!();
-    let single_nil_action_list = empty_action_list.create_new();
+    let single_nil_action_list = empty_action_list.append_default();
     let test_search_action = single_nil_action_list.select_by_id(single_nil_action_list[0].get_id())?;
 
     assert!(test_search_action == single_nil_action_list[0]);
@@ -40,7 +40,7 @@ fn failed_search_by_id() {
 
 #[test]
 fn successful_select_by_index() {
-    let single_action_list: im::Vector<Action> = vector!().create_new();
+    let single_action_list: im::Vector<Action> = vector!().append_default();
 
     let test_search_action = single_action_list.select_by_index(0).unwrap();
 
@@ -67,7 +67,7 @@ fn action_print_fail_test() {
 fn action_print_successful_test() {
     let empty_action_list: im::Vector<Action> = vector!();
 
-    let single_action_list = empty_action_list.create_new();
+    let single_action_list = empty_action_list.append_default();
 
 
     assert_eq!(format!("{:#?}", single_action_list),
@@ -86,7 +86,7 @@ fn action_print_successful_test() {
 fn action_print_table_successful() {
     let empty_action_list: im::Vector<Action> = vector!();
 
-    let single_action_list = empty_action_list.create_new();
+    let single_action_list = empty_action_list.append_default();
 
     let table = Table::new(single_action_list.clone());
 
@@ -110,7 +110,7 @@ fn failing_action_removal_test() {
 #[test]
 fn successful_action_removal_test() {
     let empty_action_list: im::Vector<Action> = vector!();
-    let single_action_list = &empty_action_list.create_new();
+    let single_action_list = &empty_action_list.append_default();
 
     let good_result = &single_action_list.remove_action(0).unwrap();
 
@@ -120,14 +120,14 @@ fn successful_action_removal_test() {
 #[test]
 fn action_completion_test() {
     let empty_action_list: im::Vector<Action> = vector!();
-    let single_action_list = &empty_action_list.create_new();
+    let single_action_list = &empty_action_list.append_default();
     let good_result = &single_action_list.toggle_completion_status(0).unwrap();
     assert_eq!(good_result[0].get_completion_status() , true);
 }
 
 #[test]
 fn action_reopen() {
-    let single_action_list: im::Vector<Action> = vector!().create_new();
+    let single_action_list: im::Vector<Action> = vector!().append_default();
 
     let updated_action_list = &single_action_list
         .toggle_completion_status(0).unwrap()
@@ -138,7 +138,7 @@ fn action_reopen() {
 
 #[test]
 fn list_member_rename() {
-    let single_action_list: im::Vector<Action> = vector!().create_new();
+    let single_action_list: im::Vector<Action> = vector!().append_default();
 
     let good_result = &single_action_list
         .rename(0, "Changed Task".to_string())
@@ -150,7 +150,7 @@ fn list_member_rename() {
 #[test]
 fn action_reprioritize() {
     let empty_action_list: im::Vector<Action> = vector!();
-    let single_action_list = &empty_action_list.create_new();
+    let single_action_list = &empty_action_list.append_default();
     let changed_action_list = &single_action_list
         .change_priority(0, "low".to_string())
         .unwrap();
@@ -159,7 +159,7 @@ fn action_reprioritize() {
 
 #[test]
 fn get_name(){
-    let empty_action_list: im::Vector<Action> = vector!().create_new();
+    let empty_action_list: im::Vector<Action> = vector!().append_default();
 
     let name = &empty_action_list.get_action_name(0).unwrap();
     assert_eq!(name.to_string(), "Default Action");
@@ -167,7 +167,7 @@ fn get_name(){
 
 #[test]
 fn get_priority(){
-    let empty_action_list: im::Vector<Action> = vector!().create_new();
+    let empty_action_list: im::Vector<Action> = vector!().append_default();
 
     let priority = &empty_action_list.get_action_priority(0).unwrap();
 
@@ -176,7 +176,7 @@ fn get_priority(){
 
 #[test]
 fn get_completion_status(){
-    let empty_action_list: im::Vector<Action> = vector!().create_new();
+    let empty_action_list: im::Vector<Action> = vector!().append_default();
 
     let completion_status = empty_action_list.get_action_completion_status(0).unwrap();
 

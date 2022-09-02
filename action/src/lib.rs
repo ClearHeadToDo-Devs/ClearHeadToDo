@@ -12,7 +12,7 @@ use uuid::Uuid;
 use im::Vector;
 
 pub trait ActionListManipulation {
-    fn create_new(&self) -> Self;
+    fn append_default(&self) -> Self;
 
     fn rename(&self, index: usize, new_name: String) -> Result<Self, Box<dyn Error>>
     where
@@ -41,7 +41,7 @@ pub trait ActionListManipulation {
 }
 
 impl ActionListManipulation for Vector<Action> {
-    fn create_new(&self) -> Self {
+    fn append_default(&self) -> Self {
         let mut new_list = self.clone();
 
         new_list.push_back(Action::default());

@@ -20,7 +20,7 @@ impl ClearHeadApp {
     pub fn create_action(&self) -> ClearHeadApp  {
         let mut cloned_list = self.clone();
 
-        let new_action_list = self.action_list.create_new();
+        let new_action_list = self.action_list.append_default();
         cloned_list.action_list = new_action_list;
 
         cloned_list
