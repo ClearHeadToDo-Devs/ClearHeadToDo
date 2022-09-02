@@ -1,8 +1,11 @@
-pub mod item;
-pub use item::*;
-
 pub mod error;
 pub use error::*;
+
+pub mod priority;
+pub use priority::*;
+
+pub mod item;
+pub use item::*;
 
 use std::error::Error;
 use uuid::Uuid;

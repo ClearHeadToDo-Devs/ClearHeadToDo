@@ -1,5 +1,4 @@
-pub mod priority;
-pub use priority::*;
+pub use crate::priority::*;
 
 use std::error::Error;
 use std::fmt::{Display, Formatter};
