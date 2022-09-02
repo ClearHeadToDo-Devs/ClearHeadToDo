@@ -3,6 +3,7 @@ use action::*;
 use uuid::Uuid;
 use im::vector;
 use std::str::FromStr;
+use tabled::{Tabled, Table};
 
 #[test]
 fn append_default() {
@@ -60,6 +61,22 @@ fn action_print_successful_test() {
         id: {},
     }},
 ]",single_action_list[0].get_id().simple()));
+    }
+
+#[test]
+fn action_print_table_successful() {
+    let empty_action_list: im::Vector<Action> = vector!();
+
+    let single_action_list = empty_action_list.create_new();
+
+    let table = Table::new(single_action_list.clone());
+
+    assert_eq!(table.to_string(),format!(
+"+----------------+----------+-----------+--------------------------------------+
+| name           | priority | completed | id                                   |
++----------------+----------+-----------+--------------------------------------+
+| Default Action | Optional | false     | {} |
++----------------+----------+-----------+--------------------------------------+", &single_action_list[0]));
     }
 
 #[test]
