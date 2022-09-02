@@ -11,9 +11,6 @@ use im::Vector;
 pub trait ActionListManipulation {
     fn create_new(&self) -> Self;
 
-    fn remove(&self, index: usize) -> Result<Self, Box<dyn Error>>
-    where
-        Self: Sized;
     fn rename(&self, index: usize, new_name: String) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized;
@@ -29,10 +26,15 @@ pub trait ActionListManipulation {
         Self: Sized;
 
     fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>>;
+    fn select_by_index(&self, index: usize) -> Result<Action, Box<dyn Error>>;
     fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>>;
     fn get_action_priority(&self, index: usize) -> Result<Priority, Box<dyn Error>>;
     fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>>;
     fn get_action_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
+
+    fn remove(&self, index: usize) -> Result<Self, Box<dyn Error>>
+    where
+        Self: Sized;
 }
 
 impl ActionListManipulation for Vector<Action> {
@@ -98,6 +100,13 @@ impl ActionListManipulation for Vector<Action> {
             None => {
                 return Err(ActionError::InvalidId(id).into())
             }
+        }
+    }
+
+    fn select_by_index(&self, index: usize) -> Result<Action, Box<dyn Error>> {
+        match self.iter().nth(index) {
+            Some(action_ref) => return Ok(action_ref.clone()),
+            None => Err(ActionError::InvalidIndex(index).into()),
         }
     }
 

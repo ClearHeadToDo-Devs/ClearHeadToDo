@@ -40,6 +40,24 @@ fn action_failed_search_by_id_test() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
+fn successful_select_by_index() {
+    let single_action_list: im::Vector<Action> = vector!().create_new();
+
+    let test_search_action = single_action_list.select_by_index(0).unwrap();
+
+    assert!(test_search_action == single_action_list[0]);
+}
+
+#[test]
+fn failed_select_by_index() {
+    let single_action_list: im::Vector<Action> = vector!();
+
+    let failed_action_selection = single_action_list.select_by_index(0).unwrap_err();
+
+    assert_eq!(failed_action_selection.to_string() , "No Action at Index 0");
+}
+
+#[test]
 fn action_print_fail_test() {
     let empty_action_list: im::Vector<Action> = vector!();
     let error = format!("{:?}", empty_action_list);
