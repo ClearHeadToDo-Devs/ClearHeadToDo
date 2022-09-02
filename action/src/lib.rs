@@ -94,8 +94,10 @@ impl ActionListManipulation for Vector<Action> {
     }
 
     fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {
-        let search_action = self.clone().into_iter().find(|actions| actions.id == id);
-        match search_action {
+        let search_action_result = self.clone().into_iter()
+            .find(|actions| actions.get_id() == id);
+
+        match search_action_result {
             Some(action) => return Ok(action.clone().to_owned()),
             None => {
                 return Err(ActionError::InvalidId(id).into())
@@ -111,29 +113,17 @@ impl ActionListManipulation for Vector<Action> {
     }
 
     fn get_action_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        match self.iter().nth(index) {
-            Some(action_ref) => return Ok(action_ref.id.clone()),
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
+        Ok(self.select_by_index(index)?.get_id())
     }
 
     fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>> {
-        match self.iter().nth(index) {
-            Some(action_ref) => return Ok(action_ref.get_name()),
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
+        Ok(self.select_by_index(index)?.get_name())
     }
 
     fn get_action_priority(&self, index: usize) -> Result<Priority, Box<dyn Error>> {
-        match self.iter().nth(index) {
-            Some(action_ref) => return Ok(action_ref.get_priority()),
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
+        Ok(self.select_by_index(index)?.get_priority())
     }
     fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>> {
-        match self.iter().nth(index) {
-            Some(action_ref) => return Ok(action_ref.get_completion_status()),
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
+        Ok(self.select_by_index(index)?.get_completion_status())
     }
 }
