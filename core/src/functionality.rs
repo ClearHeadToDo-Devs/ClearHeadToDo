@@ -1,8 +1,8 @@
 use relationships::{Relationship, RelationshipManagement};
 use im::Vector;
 
-use action::action_list_manipulation::ActionListManipulation;
 use action::Action;
+use action::ActionListManipulation;
 use relationships::RelationshipListManagement;
 use serde::{Serialize, Deserialize};
 
