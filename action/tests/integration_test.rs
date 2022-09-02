@@ -1,9 +1,11 @@
 use std::error::Error;
-use action::*;
-use uuid::Uuid;
-use im::vector;
 use std::str::FromStr;
-use tabled::{Tabled, Table};
+
+use tabled::{Tabled, Table, Style};
+use uuid::Uuid;
+use im::{vector, Vector};
+
+use action::*;
 
 #[test]
 fn append_default() {
