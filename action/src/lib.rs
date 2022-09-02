@@ -32,7 +32,7 @@ pub trait ActionListManipulation {
     fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>>;
     fn get_action_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
 
-    fn remove(&self, index: usize) -> Result<Self, Box<dyn Error>>
+    fn remove_action(&self, index: usize) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized;
 }
@@ -40,12 +40,13 @@ pub trait ActionListManipulation {
 impl ActionListManipulation for Vector<Action> {
     fn create_new(&self) -> Self {
         let mut new_list = self.clone();
+
         new_list.push_back(Action::default());
 
         return new_list;
     }
 
-    fn remove(&self, index: usize) -> Result<Vector<Action>, Box<dyn Error>> {
+    fn remove_action(&self, index: usize) -> Result<Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
             Some(_action_ref) => {
                 let (mut left_side, mut right_side) = self.clone().split_at(index);
@@ -62,22 +63,22 @@ impl ActionListManipulation for Vector<Action> {
         index: usize,
         new_name: String,
     ) -> Result<im::Vector<Action>, Box<dyn Error>> {
-        match self.iter().nth(index) {
-            Some(action_ref) => return Ok(self.update(
-                index, action_ref.rename(&new_name))),
+        let cloned_list = self.clone();
 
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
+        let updated_action = self.select_by_index(index)?.rename(&new_name);
+
+        Ok(cloned_list.update(index, updated_action))
     }
 
     fn toggle_completion_status(
         &self,
         index: usize,
     ) -> Result<im::Vector<Action>, Box<dyn Error>> {
-        match self.iter().nth(index) {
-            Some(action_ref) => Ok(self.update(index, action_ref.clone().toggle_completion_status())),
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
+        let cloned_list = self.clone();
+
+        let updated_action = self.select_by_index(index)?.toggle_completion_status();
+
+        Ok(cloned_list.update(index, updated_action))
     }
 
     fn change_priority(
@@ -85,12 +86,12 @@ impl ActionListManipulation for Vector<Action> {
         index: usize,
         new_priority: String,
     ) -> Result<im::Vector<Action>, Box<dyn Error>> {
-        match self.iter().nth(index) {
-            Some(action_ref) => {
-                Ok(self.update(index, action_ref.clone().change_priority(&new_priority)?))
-            }
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
+        let cloned_list = self.clone();
+
+        let updated_action = self.select_by_index(index)?
+            .change_priority(&new_priority)?;
+
+        Ok(cloned_list.update(index, updated_action))
     }
 
     fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {

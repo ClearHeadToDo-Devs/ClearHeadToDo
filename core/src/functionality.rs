@@ -55,7 +55,7 @@ impl ClearHeadApp {
     pub fn remove_action(&self, index: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
         let mut cloned_list = self.clone();
 
-        let new_action_list = cloned_list.action_list.remove(index)?;
+        let new_action_list = cloned_list.action_list.remove_action(index)?;
         cloned_list.action_list = new_action_list;
 
         Ok(cloned_list)

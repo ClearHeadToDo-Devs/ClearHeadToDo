@@ -103,7 +103,7 @@ fn action_print_table_successful() {
 #[test]
 fn failing_action_removal_test() {
     let empty_action_list: im::Vector<Action> = vector!();
-    let error = &empty_action_list.remove(0).unwrap_err();
+    let error = &empty_action_list.remove_action(0).unwrap_err();
     assert_eq!(error.to_string(), "No Action at Index 0");
 }
 
@@ -111,7 +111,7 @@ fn failing_action_removal_test() {
 fn successful_action_removal_test() {
     let empty_action_list: im::Vector<Action> = vector!();
     let single_action_list = &empty_action_list.create_new();
-    let good_result = &single_action_list.remove(0).unwrap();
+    let good_result = &single_action_list.remove_action(0).unwrap();
     assert!(good_result.is_empty());
 }
 
@@ -143,16 +143,7 @@ fn successful_action_reopen_test() {
 }
 
 #[test]
-fn failing_action_rename_bad_index_test() {
-    let empty_action_list: im::Vector<Action> = vector!();
-    let error = &empty_action_list
-        .rename(0, "Change Test".to_string())
-        .unwrap_err();
-    assert_eq!(error.to_string(), "No Action at Index 0");
-}
-
-#[test]
-fn successful_action_rename_test() {
+fn list_member_rename() {
     let empty_action_list: im::Vector<Action> = vector!();
     let single_action_list = &empty_action_list.create_new();
     let good_result = &single_action_list
