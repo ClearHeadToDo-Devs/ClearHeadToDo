@@ -1,4 +1,4 @@
-use relationships::{Relationship, RelationshipManagement};
+use relationships::Relationship;
 use im::Vector;
 
 use action::Action;

@@ -1,11 +1,11 @@
 pub mod relationships;
+
 pub mod storage;
 
 pub use crate::relationships::Relationship;
-pub use crate::relationships::RelationshipManagement;
 
 use crate::relationships::RelationshipVariant;
-use crate::relationships::RelationshipVariantManagement;
+
 use std::error::Error;
 use uuid::Uuid;
 

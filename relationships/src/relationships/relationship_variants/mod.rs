@@ -14,18 +14,6 @@ pub enum RelationshipVariant {
     Related(EdgeDirectionality),
 }
 
-pub trait RelationshipVariantManagement {
-    type V: RelationshipVariantManagement;
-
-    fn create_from_string(target_variant: &str) -> Result<Self::V, String>;
-
-    fn create_related() -> Self::V;
-    fn create_sequential() -> Self::V;
-    fn create_parental() -> Self::V;
-
-    fn get_edge_direction(&self) -> String;
-}
-
 #[allow(dead_code)]
 impl RelationshipVariant {
 

@@ -133,7 +133,6 @@ impl Command {
 mod tests {
     use super::*;
     use crate::Priority;
-    use relationships::RelationshipManagement;
 
     #[test]
     fn list_failure_empty_list() {

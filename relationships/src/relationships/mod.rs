@@ -14,28 +14,6 @@ pub struct Relationship {
     participant_2: Uuid,
 }
 
-pub trait RelationshipManagement {
-    type R: RelationshipManagement;
-    fn create_new(
-        variant_str: &str,
-        participant_1: Uuid,
-        participant_2: Uuid,
-    ) -> Result<Self::R, Box<dyn Error>>;
-    fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self::R;
-    fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self::R;
-    fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self::R;
-
-    fn get_id(&self) -> Uuid;
-    fn get_variant(&self) -> RelationshipVariant;
-    fn get_participant_1(&self) -> Uuid;
-    fn get_participant_2(&self) -> Uuid;
-    fn get_edge_direction(&self) -> String;
-
-    fn set_variant(&self, target_variant: &str) -> Result<Self::R, String>;
-    fn set_participant_1(&self, new_id: Uuid) -> Self::R;
-    fn set_participant_2(&self, new_id: Uuid) -> Self::R;
-}
-
 impl Relationship {
     pub fn create_new(
         variant_str: &str,
