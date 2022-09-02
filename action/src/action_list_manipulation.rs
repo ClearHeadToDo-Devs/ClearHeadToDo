@@ -1,12 +1,11 @@
-use crate::action_manipulation::ActionManipulation;
 use im::Vector;
+use crate::Action;
 use std::fmt::Formatter;
 use std::{error::Error, fmt::Display};
 use uuid::Uuid;
 
 
 pub trait ActionListManipulation {
-    type Child: ActionManipulation;
     fn create_new(&self) -> Self;
     fn remove(&self, index: usize) -> Result<Self, Box<dyn Error>>
     where
@@ -24,7 +23,7 @@ pub trait ActionListManipulation {
     ) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized;
-    fn select_by_id(&self, id: Uuid) -> Result<Self::Child, Box<dyn Error>>;
+    fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>>;
     fn get_id_by_index(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
 }
 
@@ -32,12 +31,10 @@ pub trait ActionListManipulation {
 mod tests {
     use std::error::Error;
     use crate::item::action_manipulation::tests::TestStruct;
-    use crate::{ActionListManipulation, ActionManipulation};
+    use crate::{ActionListManipulation, ActionManipulation, Action};
     use uuid::Uuid;
 
     impl ActionListManipulation for Vec<TestStruct> {
-        type Child = TestStruct;
-
         fn create_new(&self) -> Self {
             let mut new_list = self.clone();
             new_list.push(TestStruct::default());
@@ -109,9 +106,9 @@ mod tests {
             }
         }
 
-        fn select_by_id(&self, id: Uuid) -> Result<Self::Child, Box<dyn Error>> {
+        fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {
             match self.iter().find(|test_struct_ref| test_struct_ref.get_id() == id) {
-                Some(test_struct_ref) => Ok(test_struct_ref.clone()),
+                Some(_test_struct_ref) => Ok(Action::default()),
                 None => Err("invalid id".into()),
             }
         }
@@ -234,7 +231,7 @@ mod tests {
 
         let test_struct = test_struct_list.select_by_id(id).unwrap();
 
-        assert_eq!(&test_struct, test_struct_list.get(0).unwrap());
+        assert_eq!(test_struct.get_name(), "Default Action");
     }
 
     #[test]

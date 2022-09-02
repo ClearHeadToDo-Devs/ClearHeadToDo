@@ -17,8 +17,6 @@ use uuid::Uuid;
 use im::Vector;
 
 impl ActionListManipulation for Vector<Action> {
-    type Child = Action;
-
     fn create_new(&self) -> Self {
         let mut new_list = self.clone();
         new_list.push_back(Action::default());
