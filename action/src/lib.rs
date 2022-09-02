@@ -10,6 +10,7 @@ use im::Vector;
 
 pub trait ActionListManipulation {
     fn create_new(&self) -> Self;
+
     fn remove(&self, index: usize) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized;
@@ -26,6 +27,7 @@ pub trait ActionListManipulation {
     ) -> Result<Self, Box<dyn Error>>
     where
         Self: Sized;
+
     fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>>;
     fn get_id_by_index(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
 }
@@ -103,4 +105,3 @@ impl ActionListManipulation for Vector<Action> {
         }
     }
 }
-

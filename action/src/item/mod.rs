@@ -51,7 +51,6 @@ impl Action {
             ..self.to_owned()
         }
     }
-
     pub fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
         return Ok(Action {
             priority: Priority::from_str(new_priority)?,
