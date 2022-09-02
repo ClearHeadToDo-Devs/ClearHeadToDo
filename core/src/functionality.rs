@@ -1,14 +1,16 @@
 use relationships::Relationship;
-use im::Vector;
+use relationships::RelationshipListManagement;
 
 use action::Action;
 use action::ActionListManipulation;
-use relationships::RelationshipListManagement;
-use serde::{Serialize, Deserialize};
 
 use std::fmt::Debug;
 use std::cmp::PartialEq;
 use std::error::Error;
+
+use serde::{Serialize, Deserialize};
+use im::Vector;
+
 
 #[derive(Debug, PartialEq, Default, Clone, Serialize, Deserialize)]
 pub struct ClearHeadApp  {
