@@ -1,9 +1,6 @@
 pub mod priority;
 pub use priority::*;
 
-pub mod action_manipulation;
-pub use action_manipulation::*;
-
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::fmt;
