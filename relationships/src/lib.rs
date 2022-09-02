@@ -13,7 +13,6 @@ use im::Vector;
 
 pub trait RelationshipListManagement {
     type L: RelationshipListManagement;
-    type V: RelationshipVariantManagement;
     fn add_new(
         &self,
         target_variant: &str,
@@ -26,7 +25,7 @@ pub trait RelationshipListManagement {
 
     fn get_index_from_id(&self, id: Uuid) -> Result<usize, String>;
     fn get_id_from_index(&self, index: usize) -> Result<Uuid, String>;
-    fn get_variant(&self, id: Uuid) -> Result<Self::V, String>;
+    fn get_variant(&self, id: Uuid) -> Result<RelationshipVariant, String>;
     fn get_participant_1(&self, id: Uuid) -> Result<Uuid, String>;
     fn get_participant_2(&self, id: Uuid) -> Result<Uuid, String>;
 
@@ -40,7 +39,6 @@ pub trait RelationshipListManagement {
 
 impl RelationshipListManagement for Vector<Relationship> {
     type L = Vector<Relationship>;
-    type V = RelationshipVariant;
 
     fn add_new(
         &self,

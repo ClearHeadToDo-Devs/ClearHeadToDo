@@ -27,10 +27,9 @@ pub trait RelationshipVariantManagement {
 }
 
 #[allow(dead_code)]
-impl RelationshipVariantManagement for RelationshipVariant {
-    type V = RelationshipVariant;
+impl RelationshipVariant {
 
-    fn create_from_string(target_variant: &str) -> Result<RelationshipVariant, String> {
+    pub fn create_from_string(target_variant: &str) -> Result<RelationshipVariant, String> {
         match target_variant {
             "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
                 return Ok(RelationshipVariant::create_parental())
@@ -45,7 +44,7 @@ impl RelationshipVariantManagement for RelationshipVariant {
         }
     }
 
-    fn get_edge_direction(&self) -> String {
+    pub fn get_edge_direction(&self) -> String {
         return match self {
             RelationshipVariant::Related(direction) => direction.to_string(),
             RelationshipVariant::Parental(direction) => direction.to_string(),
@@ -53,15 +52,15 @@ impl RelationshipVariantManagement for RelationshipVariant {
         };
     }
 
-    fn create_related() -> RelationshipVariant {
+    pub fn create_related() -> RelationshipVariant {
         return RelationshipVariant::Related(EdgeDirectionality::Undirected);
     }
 
-    fn create_sequential() -> RelationshipVariant {
+    pub fn create_sequential() -> RelationshipVariant {
         return RelationshipVariant::Sequential(EdgeDirectionality::Directed);
     }
 
-    fn create_parental() -> RelationshipVariant {
+    pub fn create_parental() -> RelationshipVariant {
         return RelationshipVariant::Parental(EdgeDirectionality::Directed);
     }
 }

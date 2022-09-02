@@ -16,7 +16,6 @@ pub struct Relationship {
 
 pub trait RelationshipManagement {
     type R: RelationshipManagement;
-    type V: RelationshipVariantManagement;
     fn create_new(
         variant_str: &str,
         participant_1: Uuid,
@@ -27,7 +26,7 @@ pub trait RelationshipManagement {
     fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self::R;
 
     fn get_id(&self) -> Uuid;
-    fn get_variant(&self) -> Self::V;
+    fn get_variant(&self) -> RelationshipVariant;
     fn get_participant_1(&self) -> Uuid;
     fn get_participant_2(&self) -> Uuid;
     fn get_edge_direction(&self) -> String;
@@ -37,11 +36,8 @@ pub trait RelationshipManagement {
     fn set_participant_2(&self, new_id: Uuid) -> Self::R;
 }
 
-impl RelationshipManagement for Relationship {
-    type R = Relationship;
-    type V = RelationshipVariant;
-
-    fn create_new(
+impl Relationship {
+    pub fn create_new(
         variant_str: &str,
         participant_1: Uuid,
         participant_2: Uuid,
@@ -56,7 +52,7 @@ impl RelationshipManagement for Relationship {
             participant_2,
         })
     }
-    fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self {
+    pub fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_related();
 
@@ -68,7 +64,7 @@ impl RelationshipManagement for Relationship {
         }
     }
 
-    fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self {
+    pub fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_sequential();
 
@@ -80,7 +76,7 @@ impl RelationshipManagement for Relationship {
         }
     }
 
-    fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self {
+    pub fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self {
         let id = Uuid::new_v4();
         let variant = RelationshipVariant::create_parental();
 
@@ -92,27 +88,27 @@ impl RelationshipManagement for Relationship {
         }
     }
 
-    fn get_id(&self) -> Uuid {
+    pub fn get_id(&self) -> Uuid {
         return self.id;
     }
 
-    fn get_variant(&self) -> Self::V {
+    pub fn get_variant(&self) -> RelationshipVariant {
         return self.variant;
     }
 
-    fn get_edge_direction(&self) -> String {
+    pub fn get_edge_direction(&self) -> String {
         return self.variant.get_edge_direction();
     }
 
-    fn get_participant_1(&self) -> Uuid {
+    pub fn get_participant_1(&self) -> Uuid {
         return self.participant_1;
     }
 
-    fn get_participant_2(&self) -> Uuid {
+    pub fn get_participant_2(&self) -> Uuid {
         return self.participant_2;
     }
 
-    fn set_variant(&self, target_variant: &str) -> Result<Relationship, String> {
+    pub fn set_variant(&self, target_variant: &str) -> Result<Relationship, String> {
         let variant = RelationshipVariant::create_from_string(target_variant)?;
         let mut cloned_relationship = self.clone();
 
@@ -121,7 +117,7 @@ impl RelationshipManagement for Relationship {
         Ok(cloned_relationship)
     }
 
-    fn set_participant_1(&self, new_id: Uuid) -> Self::R {
+    pub fn set_participant_1(&self, new_id: Uuid) -> Relationship {
         let mut cloned_relationship = self.clone();
 
         cloned_relationship.participant_1 = new_id;
@@ -129,7 +125,7 @@ impl RelationshipManagement for Relationship {
         return cloned_relationship;
     }
 
-    fn set_participant_2(&self, new_id: Uuid) -> Self::R {
+    pub fn set_participant_2(&self, new_id: Uuid) -> Relationship {
         let mut cloned_relationship = self.clone();
 
         cloned_relationship.participant_2 = new_id;
