@@ -177,6 +177,59 @@ fn successfully_get_id_from_index(){
     let empty_action_list: im::Vector<Action> = vector!();
     let mut single_action_list = empty_action_list.create_new();
     single_action_list[0].id = Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap();
-    let id = &single_action_list.get_id_by_index(0).unwrap();
+    let id = &single_action_list.get_action_id(0).unwrap();
     assert_eq!(id.to_string(), "00000000-0000-0000-0000-000000000000");
+}
+
+#[test]
+fn successful_get_name(){
+    let empty_action_list: im::Vector<Action> = vector!().create_new();
+
+    let name = &empty_action_list.get_action_name(0).unwrap();
+    assert_eq!(name.to_string(), "Default Action");
+}
+
+#[test]
+fn failed_get_name(){
+    let empty_action_list: im::Vector<Action> = vector!();
+
+    let error = &empty_action_list.get_action_name(0).unwrap_err();
+
+    assert_eq!(error.to_string(), "No Action at Index 0");
+}
+
+#[test]
+fn successful_get_priority(){
+    let empty_action_list: im::Vector<Action> = vector!().create_new();
+
+    let priority = &empty_action_list.get_action_priority(0).unwrap();
+
+    assert_eq!(priority.to_string(), "Optional");
+}
+
+#[test]
+fn failed_get_priority(){
+    let empty_action_list: im::Vector<Action> = vector!();
+
+    let error = &empty_action_list.get_action_priority(0).unwrap_err();
+
+    assert_eq!(error.to_string(), "No Action at Index 0");
+}
+
+#[test]
+fn successful_get_completion_status(){
+    let empty_action_list: im::Vector<Action> = vector!().create_new();
+
+    let completion_status = empty_action_list.get_action_completion_status(0).unwrap();
+
+    assert_eq!(completion_status, false);
+}
+
+#[test]
+fn failed_get_completion_status(){
+    let empty_action_list: im::Vector<Action> = vector!();
+
+    let error = &empty_action_list.get_action_completion_status(0).unwrap_err();
+
+    assert_eq!(error.to_string(), "No Action at Index 0");
 }
