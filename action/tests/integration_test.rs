@@ -50,8 +50,16 @@ fn action_print_successful_test() {
     let single_action_list = empty_action_list.create_new();
 
 
-    assert_eq!(format!("{:?}", single_action_list),
-            format!("[Action {{ name: \"Default Action\", priority: Optional, completed: false, id: {} }}]",single_action_list[0].get_id()));
+    assert_eq!(format!("{:#?}", single_action_list),
+            format!(
+"[
+    Action {{
+        name: \"Default Action\",
+        priority: Optional,
+        completed: false,
+        id: {},
+    }},
+]",single_action_list[0].get_id().simple()));
     }
 
 #[test]
