@@ -1,5 +1,3 @@
-use action::ActionManipulation;
-
 use crate::ClearHeadApp;
 use std::error::Error;
 
@@ -135,7 +133,6 @@ impl Command {
 mod tests {
     use super::*;
     use crate::Priority;
-    use action::ActionManipulation;
     use relationships::RelationshipManagement;
 
     #[test]

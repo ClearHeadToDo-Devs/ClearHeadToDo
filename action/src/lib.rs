@@ -5,8 +5,6 @@ pub mod error;
 pub use error::*;
 
 use std::error::Error;
-use std::fmt::Display;
-use std::io::{Error as OtherError, ErrorKind};
 use uuid::Uuid;
 use im::Vector;
 
@@ -58,7 +56,8 @@ impl ActionListManipulation for Vector<Action> {
         new_name: String,
     ) -> Result<im::Vector<Action>, Box<dyn Error>> {
         match self.iter().nth(index) {
-            Some(action_ref) => return Ok(self.update(index, action_ref.rename(&new_name))),
+            Some(action_ref) => return Ok(self.update(
+                index, action_ref.rename(&new_name))),
 
             None => Err(ActionError::InvalidIndex(index).into()),
         }

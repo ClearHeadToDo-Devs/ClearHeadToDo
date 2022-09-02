@@ -11,7 +11,7 @@ use std::str::FromStr;
 use uuid::Uuid;
 
 use serde::{Deserialize, Serialize};
-use tabled::{Tabled, Table};
+use tabled::Tabled;
 
 #[derive(PartialEq, Debug, Clone, Deserialize, Serialize, Tabled)]
 pub struct Action {

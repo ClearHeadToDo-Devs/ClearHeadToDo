@@ -1,9 +1,9 @@
 use std::error::Error;
 use std::str::FromStr;
 
-use tabled::{Tabled, Table, Style};
+use tabled::Table;
 use uuid::Uuid;
-use im::{vector, Vector};
+use im::vector;
 
 use action::*;
 

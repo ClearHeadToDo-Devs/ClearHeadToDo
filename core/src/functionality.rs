@@ -103,7 +103,6 @@ mod tests {
     use action::Priority;
     use im::Vector;
     use uuid::Uuid;
-    use action::action_manipulation::ActionManipulation;
 
 
     #[test]
