@@ -32,12 +32,11 @@ impl Default for EdgeDirectionality {
 
 impl FromStr for EdgeDirectionality {
     type Err = Box<dyn Error>;
-
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_ascii_lowercase().trim() {
             "1" | "directed" | "d" => Ok(EdgeDirectionality::Directed),
             "2" | "undirected" | "u" => Ok(EdgeDirectionality::Undirected),
-            "" => Ok(EdgeDirectionality::Undirected), //defaults to this
+            "" => Ok(EdgeDirectionality::Undirected),
             _ => Err(Box::new(EdgeDirectionalityError::InvalidInput(s.to_owned()))),
         }
     }
@@ -77,7 +76,9 @@ mod tests {
     fn edge_direction_formatting() {
         let example_edge = EdgeDirectionality::default();
 
-        assert_eq!(format!("{}", example_edge) , "Undirected")
+        let directionality_string = format!("{}", example_edge);
+
+        assert_eq!(directionality_string, "Undirected")
     }
 
 
@@ -93,25 +94,25 @@ mod tests {
 
     #[test]
     fn parse_directed() {
-        let example_edge = EdgeDirectionality::Directed;
+        let directionality_string = "Directed";
 
-        let edge_string = format!("{}", example_edge);
+        let parsed_directionality = EdgeDirectionality::from_str(&directionality_string).unwrap();
 
-        let parsed_edge = EdgeDirectionality::from_str(&edge_string).unwrap();
-
-        assert!(parsed_edge == EdgeDirectionality::Directed)
+        assert!(parsed_directionality == EdgeDirectionality::Directed)
     }
 
     #[test]
     fn serialization_and_deserialization() {
         let example_edge = EdgeDirectionality::Undirected;
 
-        assert_tokens(
-            &example_edge,
-            &[Token::UnitVariant {
+        let serde_tokens = vec![
+            Token::UnitVariant {
                 name: "EdgeDirectionality",
                 variant: "Undirected",
-            }],
-        )
+            },
+        ];
+
+        assert_tokens(
+            &example_edge, &serde_tokens)
     }
 }
