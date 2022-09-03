@@ -1,20 +1,28 @@
 use serde::Deserialize;
 use serde::Serialize;
-use std::fmt;
+use std::fmt::{Display, Result, Formatter};
+
+use tabled::Tabled;
 
 #[allow(dead_code)]
-#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy, Tabled)]
 pub enum EdgeDirectionality {
     Directed,
     Undirected,
 }
 
-impl fmt::Display for EdgeDirectionality {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl Display for EdgeDirectionality {
+    fn fmt(&self, f: &mut Formatter) -> Result {
         match *self {
             EdgeDirectionality::Directed => write!(f, "Directed"),
             EdgeDirectionality::Undirected => write!(f, "Undirected"),
         }
+    }
+}
+
+impl Default for EdgeDirectionality {
+    fn default() -> Self {
+        EdgeDirectionality::Undirected
     }
 }
 
@@ -26,11 +34,20 @@ mod tests {
     use serde_test::Token;
 
     #[test]
-    fn edge_direction_formatting() {
-        let example_edge = EdgeDirectionality::Directed;
+    fn default_directionality(){
+        let example_edge = EdgeDirectionality::default();
 
-        assert!(format!("{}", example_edge) == "Directed")
+        assert!(example_edge == EdgeDirectionality::Undirected)
     }
+
+    #[test]
+    fn edge_direction_formatting() {
+        let example_edge = EdgeDirectionality::default();
+
+        assert_eq!(format!("{}", example_edge) , "Undirected")
+    }
+
+
 
     #[test]
     fn display_undirected() {
