@@ -1,6 +1,10 @@
+use std::fmt::{Display, Formatter};
+use std::fmt;
+use std::str::FromStr;
+use std::error::Error;
+
 use serde::Deserialize;
 use serde::Serialize;
-use std::fmt::{Display, Result, Formatter};
 
 use tabled::Tabled;
 
@@ -12,7 +16,7 @@ pub enum EdgeDirectionality {
 }
 
 impl Display for EdgeDirectionality {
-    fn fmt(&self, f: &mut Formatter) -> Result {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self {
             EdgeDirectionality::Directed => write!(f, "Directed"),
             EdgeDirectionality::Undirected => write!(f, "Undirected"),
@@ -25,6 +29,35 @@ impl Default for EdgeDirectionality {
         EdgeDirectionality::Undirected
     }
 }
+
+impl FromStr for EdgeDirectionality {
+    type Err = Box<dyn Error>;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_ascii_lowercase().trim() {
+            "1" | "directed" | "d" => Ok(EdgeDirectionality::Directed),
+            "2" | "undirected" | "u" => Ok(EdgeDirectionality::Undirected),
+            "" => Ok(EdgeDirectionality::Undirected), //defaults to this
+            _ => Err(Box::new(EdgeDirectionalityError::InvalidInput(s.to_owned()))),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum EdgeDirectionalityError {
+    InvalidInput (String),
+}
+
+impl Display for EdgeDirectionalityError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<>) -> std::fmt::Result {
+        match self {
+            EdgeDirectionalityError::InvalidInput(bad_string) => write!(
+                f, "{} is an Invalid Priority Option", bad_string),
+        }
+    }
+}
+
+impl std::error::Error for EdgeDirectionalityError {}
 
 #[cfg(test)]
 
@@ -50,12 +83,23 @@ mod tests {
 
 
     #[test]
-    fn display_undirected() {
-        let example_edge = EdgeDirectionality::Undirected;
+    fn display_directed() {
+        let example_edge = EdgeDirectionality::Directed;
 
         let edge_string = format!("{}", example_edge);
 
-        assert!(edge_string == "Undirected")
+        assert!(edge_string == "Directed")
+    }
+
+    #[test]
+    fn parse_directed() {
+        let example_edge = EdgeDirectionality::Directed;
+
+        let edge_string = format!("{}", example_edge);
+
+        let parsed_edge = EdgeDirectionality::from_str(&edge_string).unwrap();
+
+        assert!(parsed_edge == EdgeDirectionality::Directed)
     }
 
     #[test]
