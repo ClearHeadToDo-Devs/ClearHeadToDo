@@ -167,11 +167,7 @@ pub mod tests {
     use serde_test::{assert_tokens, Configure, Token};
 
     pub fn add_nil_relationship_to_vector(list: Vector<Relationship>) -> Vector<Relationship> {
-        let nil_relationship = create_nil_relationship(
-            RelationshipVariant::Related(EdgeDirectionality::Undirected),
-            Uuid::nil(),
-            Uuid::nil(),
-        );
+        let nil_relationship = create_nil_relationship();
         let mut cloned_list = list.clone();
 
         cloned_list.push_back(nil_relationship);
