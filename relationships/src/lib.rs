@@ -192,6 +192,16 @@ pub mod tests {
         return list;
     }
 
+    pub fn create_relationship_list_with_single_relationship(variant: &str) -> Vector<Relationship> {
+        let mut list: Vector<Relationship> = Vector::new();
+
+        let relationship = Relationship::create_new(variant,Uuid::nil(),Uuid::nil()).unwrap();
+
+        list.push_back(relationship);
+
+        return list;
+    }
+
     #[test]
     fn create_new_from_string() {
         let relationship_list: Vector<Relationship> = Vector::new();
@@ -290,7 +300,7 @@ pub mod tests {
 
         let extraction_error = test_list.select_by_index(0).unwrap_err();
 
-        assert!(extraction_error == "Unable to find relationship at given index")
+       assert_eq!(extraction_error , "Unable to find relationship at given index".to_string());
     }
 
     #[test]
@@ -305,11 +315,12 @@ pub mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn failed_get_variant() {
         let test_list: Vector<Relationship> = Vector::new();
 
-        let _index_error = test_list.get_variant(0).unwrap_err();
+        let index_error = test_list.get_variant(0).unwrap_err();
+
+        assert_eq!(index_error , "Unable to find relationship at given index".to_string());
     }
 
     #[test]
@@ -329,7 +340,7 @@ pub mod tests {
 
         let id_error = test_list.get_participant_1(0).unwrap_err();
 
-        assert!(id_error == "cannot find this id within the relationship list")
+        assert_eq!(id_error , "Unable to find relationship at given index".to_string());
     }
 
     #[test]
@@ -350,7 +361,7 @@ pub mod tests {
 
         let empty_list_error = test_list.get_participant_2(0).unwrap_err();
 
-        assert!(empty_list_error == "cannot find this id within the relationship list")
+        assert_eq!(empty_list_error , "Unable to find relationship at given index".to_string());
     }
 
     #[test]
@@ -425,13 +436,12 @@ pub mod tests {
     #[test]
     fn failed_id_update_participant_1() {
         let relationship_list: Vector<Relationship> = Vector::new();
-        let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
-        let bad_list_search = test_list
+        let bad_list_search = relationship_list
             .update_participant_1(0, Uuid::new_v4())
             .unwrap_err();
 
-        assert!(bad_list_search == "cannot find this id within the relationship list")
+        assert!(bad_list_search == "Unable to find relationship at given index")
     }
 
     #[test]
@@ -449,13 +459,12 @@ pub mod tests {
     #[test]
     fn failed_id_update_participant_2() {
         let relationship_list: Vector<Relationship> = Vector::new();
-        let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
-        let bad_list_search = test_list
+        let bad_list_search = relationship_list
             .update_participant_2(0, Uuid::new_v4())
             .unwrap_err();
 
-        assert!(bad_list_search == "cannot find this id within the relationship list")
+        assert!(bad_list_search == "Unable to find relationship at given index")
     }
 
     #[test]
