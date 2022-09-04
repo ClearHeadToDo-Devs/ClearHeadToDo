@@ -42,6 +42,41 @@ fn create_new_from_string() {
 }
 
 #[test]
+fn create_sequential_from_string() {
+    let relationship_list: Vector<Relationship> = Vector::new();
+    let variant_string = "sequential".to_string();
+
+    let updated_list = relationship_list
+        .add_new(&variant_string, Uuid::nil(), Uuid::nil())
+        .unwrap();
+
+    assert_eq!(updated_list[0].get_variant() , RelationshipVariant::create_sequential());
+}
+
+#[test]
+fn create_parental_from_string() {
+    let relationship_list: Vector<Relationship> = Vector::new();
+    let variant_string = "parental".to_string();
+
+    let updated_list = relationship_list
+        .add_new(&variant_string, Uuid::nil(), Uuid::nil())
+        .unwrap();
+
+    assert_eq!(updated_list[0].get_variant() , RelationshipVariant::create_parental());
+}
+
+#[test]
+fn failed_create_from_string() {
+    let relationship_list: Vector<Relationship> = Vector::new();
+    let variant_string = "invalid".to_string();
+
+    let updated_list = relationship_list
+        .add_new(&variant_string, Uuid::nil(), Uuid::nil());
+
+    assert!(updated_list.is_err());
+}
+
+#[test]
 fn add_related_to_list() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
@@ -71,12 +106,11 @@ fn add_parental_to_list() {
 
 #[test]
 fn remove_relationship() {
-    let relationship_list: Vector<Relationship> = Vector::new();
-    let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+    let relationship_list = create_relationship_list_with_single_related_relationship();
 
-    let pruned_list = modified_list.remove_at_index(0);
+    let pruned_list = relationship_list.remove_at_index(0).unwrap();
 
-    assert!(pruned_list.len() == 0);
+    assert_eq!(pruned_list.len() , 0);
 }
 
 #[test]
@@ -84,7 +118,7 @@ fn remove_relationship() {
 fn empty_vector_removal_error() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
-    let failed_poped_list = relationship_list.remove_at_index(0);
+    let failed_poped_list = relationship_list.remove_at_index(0).unwrap();
 
     assert!(failed_poped_list.len() == 0)
 }
@@ -209,7 +243,7 @@ fn failed_remove_from_id() {
 
     let failed_id_query = relationship_list.remove_with_id(Uuid::nil()).unwrap_err();
 
-    assert!(failed_id_query == "cannot find this id within the relationship list".to_string())
+    assert!(failed_id_query.to_string() == "cannot find this id within the relationship list".to_string())
 }
 
 #[test]

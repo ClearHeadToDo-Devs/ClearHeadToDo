@@ -31,8 +31,8 @@ pub trait RelationshipListManagement {
     fn get_participant_1(&self, index: usize) -> Result<Uuid, String>;
     fn get_participant_2(&self, index: usize) -> Result<Uuid, String>;
 
-    fn remove_at_index(&self, index: usize) -> Self::L;
-    fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String>;
+    fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>>;
+    fn remove_with_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
 
     fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, String>;
     fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, String>;
@@ -84,10 +84,20 @@ impl RelationshipListManagement for Vector<Relationship> {
         return cloned_list;
     }
 
-    fn remove_at_index(&self, index: usize) -> Self::L {
+    fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
         let mut updated_list = self.clone();
-        updated_list.remove(index);
-        return updated_list;
+        match index < self.len() {
+            true => {
+                updated_list.remove(index);
+                return Ok(updated_list);
+            }
+            false => {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Index out of bounds",
+                )));
+            }
+        }
     }
 
     fn select_by_id(&self, id: Uuid) -> Result<Relationship, String> {
@@ -131,12 +141,12 @@ impl RelationshipListManagement for Vector<Relationship> {
         Ok(cloned_relationship.get_id())
     }
 
-    fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String> {
+    fn remove_with_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         let cloned_list = self.clone();
         let target_index = cloned_list.index_of(&cloned_list.select_by_id(id)?)
             .ok_or("Unable to find relationship with given id")?;
 
-        let updated_list = cloned_list.remove_at_index(target_index);
+        let updated_list = cloned_list.remove_at_index(target_index)?;
 
         return Ok(updated_list);
     }
@@ -173,7 +183,7 @@ impl RelationshipListManagement for Vector<Relationship> {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
     use serde_test::{assert_tokens, Configure, Token};
     use relationships::tests::create_nil_relationship;
