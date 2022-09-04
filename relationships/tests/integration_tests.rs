@@ -1,9 +1,9 @@
-use relationships::relationships::edge_direction::EdgeDirectionality;
+use relationships::item::edge_direction::EdgeDirectionality;
 
 use uuid::Uuid;
 use im::Vector;
-use relationships::relationships::Relationship;
-use relationships::relationships::RelationshipVariant;
+use relationships::item::Relationship;
+use relationships::item::RelationshipVariant;
 use relationships::RelationshipListManagement;
 
 

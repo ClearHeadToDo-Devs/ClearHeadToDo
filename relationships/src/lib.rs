@@ -1,10 +1,10 @@
-pub mod relationships;
+pub mod item;
 
 pub mod storage;
 
-pub use crate::relationships::Relationship;
+pub use crate::item::Relationship;
 
-use crate::relationships::RelationshipVariant;
+use crate::item::RelationshipVariant;
 
 use std::error::Error;
 use uuid::Uuid;
@@ -191,7 +191,7 @@ impl RelationshipListManagement for Vector<Relationship> {
 pub mod tests {
     use super::*;
     use serde_test::{assert_tokens, Configure, Token};
-    use relationships::tests::create_nil_relationship;
+    use item::tests::create_nil_relationship;
 
     pub fn create_vector_with_nill_relationship() -> Vector<Relationship> {
         let mut list = Vector::new();

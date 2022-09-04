@@ -1,5 +1,5 @@
-pub mod relationship_variants;
-pub use relationship_variants::*;
+pub mod variants;
+pub use variants::*;
 
 use crate::Uuid;
 use serde::Deserialize;
