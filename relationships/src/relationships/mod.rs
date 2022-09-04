@@ -5,6 +5,7 @@ use crate::Uuid;
 use serde::Deserialize;
 use serde::Serialize;
 use std::error::Error;
+use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct Relationship {
@@ -21,7 +22,7 @@ impl Relationship {
         participant_2: Uuid,
     ) -> Result<Self, Box<dyn Error>> {
         let id = Uuid::new_v4();
-        let variant = RelationshipVariant::create_from_string(&variant_str)?;
+        let variant = RelationshipVariant::from_str(&variant_str)?;
 
         Ok(Relationship {
             id,
@@ -87,7 +88,7 @@ impl Relationship {
     }
 
     pub fn set_variant(&self, target_variant: &str) -> Result<Relationship, String> {
-        let variant = RelationshipVariant::create_from_string(target_variant)?;
+        let variant = RelationshipVariant::from_str(target_variant)?;
         let mut cloned_relationship = self.clone();
 
         cloned_relationship.variant = variant;

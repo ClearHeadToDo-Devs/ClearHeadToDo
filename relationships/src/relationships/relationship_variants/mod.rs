@@ -18,21 +18,6 @@ pub enum RelationshipVariant {
 #[allow(dead_code)]
 impl RelationshipVariant {
 
-    pub fn create_from_string(target_variant: &str) -> Result<RelationshipVariant, String> {
-        match target_variant {
-            "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
-                return Ok(RelationshipVariant::create_parental())
-            }
-            "previous" | "subsequent" | "Previous/Subsequent" | "PS" | "P/S" | "sequential" => {
-                return Ok(RelationshipVariant::create_sequential())
-            }
-            "related" | "relational" | "generic" => {
-                return Ok(RelationshipVariant::create_related())
-            }
-            _ => return Err("invalid relationship variant".to_string()),
-        }
-    }
-
     pub fn get_edge_direction(&self) -> String {
         return match self {
             RelationshipVariant::Related(direction) => direction.to_string(),
@@ -93,10 +78,39 @@ mod tests {
     use serde_test::Token;
 
     #[test]
-    fn create_parent_variant_from_string() {
-        let test_variant = RelationshipVariant::create_from_string("parental").unwrap();
+    fn related_variant_creation() {
+        let related_variant = RelationshipVariant::create_related();
 
-        assert!(test_variant == RelationshipVariant::Parental(EdgeDirectionality::Directed))
+        assert_eq!(related_variant,
+            RelationshipVariant::
+                Related(EdgeDirectionality::Undirected))
+    }
+
+    #[test]
+    fn parent_child_variant_creation() {
+        let parent_child_variant = RelationshipVariant::create_parental();
+
+        assert_eq!(parent_child_variant,
+            RelationshipVariant::
+                Parental(EdgeDirectionality::Directed))
+    }
+
+    #[test]
+    fn previous_subsequest_variant_creation() {
+        let previous_subsiquent_variant = RelationshipVariant::create_sequential();
+
+        assert!(
+            previous_subsiquent_variant
+                == RelationshipVariant::
+                    Sequential(EdgeDirectionality::Directed)
+        )
+    }
+
+    #[test]
+    fn create_parent_variant_from_string() {
+        let test_variant = RelationshipVariant::from_str("parental").unwrap();
+
+        assert!(test_variant == RelationshipVariant::create_parental())
     }
 
     #[test]
@@ -110,7 +124,7 @@ mod tests {
     fn create_related_variant_from_string() {
         let test_variant = RelationshipVariant::from_str("related").unwrap();
 
-        assert!(test_variant == RelationshipVariant::Related(EdgeDirectionality::Undirected))
+        assert!(test_variant == RelationshipVariant::create_related())
     }
 
     #[test]
@@ -121,29 +135,6 @@ mod tests {
         assert!(relationship_error.to_string() == "invalid relationship variant")
     }
 
-    #[test]
-    fn related_variant_creation() {
-        let related_variant = RelationshipVariant::create_related();
-
-        assert!(related_variant == RelationshipVariant::Related(EdgeDirectionality::Undirected))
-    }
-
-    #[test]
-    fn parent_child_variant_creation() {
-        let parent_child_variant = RelationshipVariant::create_parental();
-
-        assert!(parent_child_variant == RelationshipVariant::Parental(EdgeDirectionality::Directed))
-    }
-
-    #[test]
-    fn previous_subsequest_variant_creation() {
-        let previous_subsiquent_variant = RelationshipVariant::create_sequential();
-
-        assert!(
-            previous_subsiquent_variant
-                == RelationshipVariant::Sequential(EdgeDirectionality::Directed)
-        )
-    }
 
     #[test]
     fn print_related_string() {
