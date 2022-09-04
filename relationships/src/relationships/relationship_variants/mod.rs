@@ -167,6 +167,15 @@ mod tests {
     }
 
     #[test]
+    fn get_edge_direction_for_directed() {
+        let relationship_variant = RelationshipVariant::create_parental();
+
+        let edge_string = relationship_variant.get_edge_direction();
+
+        assert!(edge_string == "Directed")
+    }
+
+    #[test]
     fn serialization_and_deserialization() {
         let example_edge = RelationshipVariant::create_related();
 

@@ -134,16 +134,6 @@ pub mod tests {
         };
     }
 
-    #[test]
-    fn id_creation() {
-        let nil_relationship = create_nil_relationship(
-            RelationshipVariant::Related(EdgeDirectionality::Undirected),
-            Uuid::nil(),
-            Uuid::nil(),
-        );
-
-        assert!(nil_relationship.id.is_nil());
-    }
 
     #[test]
     fn ensure_unique_id() {
