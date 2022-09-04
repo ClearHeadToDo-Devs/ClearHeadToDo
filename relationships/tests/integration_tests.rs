@@ -7,6 +7,9 @@ use relationships::relationships::RelationshipVariant;
 use relationships::RelationshipListManagement;
 
 
+pub fn invalid_index_error_string() -> String {
+    return String::from("Invalid index");
+}
 pub fn create_relationship_list_with_single_related_relationship() -> Vector<Relationship> {
     let mut list = Vector::new();
     let relationship = Relationship::create_new_related(
@@ -114,13 +117,12 @@ fn remove_relationship() {
 }
 
 #[test]
-#[should_panic]
 fn empty_vector_removal_error() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
-    let failed_poped_list = relationship_list.remove_at_index(0).unwrap();
+    let failed_poped_list = relationship_list.remove_at_index(0).unwrap_err();
 
-    assert!(failed_poped_list.len() == 0)
+    assert!(failed_poped_list.to_string().contains("Index out of bounds"));
 }
 
 #[test]
@@ -161,16 +163,14 @@ fn failed_get_id() {
 
     let extraction_error = test_list.select_by_index(0).unwrap_err();
 
-   assert_eq!(extraction_error , "Unable to find relationship at given index".to_string());
+   assert_eq!(extraction_error.to_string() , "Unable to find Relationship at given Index".to_string());
 }
 
 #[test]
 fn successfully_get_variant() {
     let relationship_list = create_relationship_list_with_single_related_relationship();
 
-    let variant = relationship_list
-        .get_variant(0)
-        .unwrap();
+    let variant = relationship_list.get_variant(0).unwrap();
 
     assert!(variant == RelationshipVariant::create_related())
 }
@@ -181,7 +181,7 @@ fn failed_get_variant() {
 
     let index_error = test_list.get_variant(0).unwrap_err();
 
-    assert_eq!(index_error , "Unable to find relationship at given index".to_string());
+    assert_eq!(index_error.to_string() , "Unable to find Relationship at given Index".to_string());
 }
 
 #[test]
@@ -201,7 +201,7 @@ fn failed_get_participant_1() {
 
     let id_error = test_list.get_participant_1(0).unwrap_err();
 
-    assert_eq!(id_error , "Unable to find relationship at given index".to_string());
+    assert_eq!(id_error.to_string() , "Unable to find Relationship at given Index".to_string());
 }
 
 #[test]
@@ -222,7 +222,7 @@ fn failed_get_participant_2() {
 
     let empty_list_error = test_list.get_participant_2(0).unwrap_err();
 
-    assert_eq!(empty_list_error , "Unable to find relationship at given index".to_string());
+    assert_eq!(empty_list_error.to_string() , "Unable to find Relationship at given Index".to_string());
 }
 
 #[test]
@@ -279,7 +279,7 @@ fn failed_change_variant() {
 
     let failed_output = test_list.change_variant(0, "bad variant").unwrap_err();
 
-    assert!(failed_output == "invalid relationship variant")
+    assert!(failed_output.to_string() == "invalid relationship variant")
 }
 
 #[test]
@@ -302,7 +302,7 @@ fn failed_id_update_participant_1() {
         .update_participant_1(0, Uuid::new_v4())
         .unwrap_err();
 
-    assert!(bad_list_search == "Unable to find relationship at given index")
+    assert!(bad_list_search.to_string() == "Unable to find Relationship at given Index")
 }
 
 #[test]
@@ -325,6 +325,6 @@ fn failed_id_update_participant_2() {
         .update_participant_2(0, Uuid::new_v4())
         .unwrap_err();
 
-    assert!(bad_list_search == "Unable to find relationship at given index")
+    assert!(bad_list_search.to_string() == "Unable to find Relationship at given Index")
 }
 

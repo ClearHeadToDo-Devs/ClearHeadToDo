@@ -24,19 +24,19 @@ pub trait RelationshipListManagement {
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
 
     fn select_by_id(&self, id: Uuid) -> Result<Relationship, String>;
-    fn select_by_index(&self, index: usize) -> Result<Relationship, String>;
+    fn select_by_index(&self, index: usize) -> Result<Relationship, Box<dyn Error>>;
 
-    fn get_id(&self, index: usize) -> Result<Uuid, String>;
-    fn get_variant(&self, index: usize) -> Result<RelationshipVariant, String>;
-    fn get_participant_1(&self, index: usize) -> Result<Uuid, String>;
-    fn get_participant_2(&self, index: usize) -> Result<Uuid, String>;
+    fn get_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
+    fn get_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>>;
+    fn get_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
+    fn get_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
 
     fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>>;
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
 
-    fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, String>;
-    fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, String>;
-    fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, String>;
+    fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, Box<dyn Error>>;
+    fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>>;
+    fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -109,33 +109,38 @@ impl RelationshipListManagement for Vector<Relationship> {
         return Ok(relationship_clone);
     }
 
-    fn select_by_index(&self, index: usize) -> Result<Relationship, String> {
-        let relationship_ref = self.get(index)
-            .ok_or("Unable to find relationship at given index")?;
-
-        let cloned_relationship = relationship_ref.clone();
-
-        Ok(cloned_relationship)
+    fn select_by_index(&self, index: usize) -> Result<Relationship, Box<dyn Error>> {
+        match self.get(index){
+            Some(relationship) => {
+                return Ok(relationship.clone());
+            }
+            None => {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Unable to find Relationship at given Index",
+                )));
+            }
+        }
     }
 
-    fn get_participant_1(&self, index: usize) -> Result<Uuid, String> {
+    fn get_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         let relationship_clone = self.select_by_index(index)?;
 
         Ok(relationship_clone.get_participant_1())
     }
 
-    fn get_participant_2(&self, index: usize) -> Result<Uuid, String> {
+    fn get_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         let cloned_relationship = self.select_by_index(index)?;
 
         Ok(cloned_relationship.get_participant_2())
     }
-    fn get_variant(&self, index: usize) -> Result<RelationshipVariant, String> {
+    fn get_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
         let cloned_relationship = self.select_by_index(index)?;
 
         Ok(cloned_relationship.get_variant())
     }
 
-    fn get_id(&self, index: usize) -> Result<Uuid, String> {
+    fn get_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         let cloned_relationship = self.select_by_index(index)?;
 
         Ok(cloned_relationship.get_id())
@@ -151,7 +156,7 @@ impl RelationshipListManagement for Vector<Relationship> {
         return Ok(updated_list);
     }
 
-    fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, String> {
+    fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, Box<dyn Error>> {
         let updated_relationship = self[index].set_variant(variant)?;
         let mut cloned_list = self.clone();
 
@@ -160,7 +165,7 @@ impl RelationshipListManagement for Vector<Relationship> {
         return Ok(cloned_list);
     }
 
-    fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, String> {
+    fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         let mut cloned_list = self.clone();
         let cloned_relationship = self.select_by_index(index)?;
 
@@ -171,7 +176,7 @@ impl RelationshipListManagement for Vector<Relationship> {
         return Ok(cloned_list);
     }
 
-    fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, String> {
+    fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         let mut cloned_list = self.clone();
         let cloned_relationship = self.select_by_index(index)?;
 
