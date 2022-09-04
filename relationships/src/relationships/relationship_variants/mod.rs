@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use serde::Serialize;
 use std::fmt;
+use std::str::FromStr;
 
 pub mod edge_direction;
 pub use edge_direction::*;
@@ -65,6 +66,25 @@ impl fmt::Display for RelationshipVariant {
     }
 }
 
+impl FromStr for RelationshipVariant {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
+                return Ok(RelationshipVariant::create_parental())
+            }
+            "previous" | "subsequent" | "Previous/Subsequent" | "PS" | "P/S" | "sequential" => {
+                return Ok(RelationshipVariant::create_sequential())
+            }
+            "related" | "relational" | "generic" => {
+                return Ok(RelationshipVariant::create_related())
+            }
+            _ => return Err("invalid relationship variant".to_string()),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -81,14 +101,14 @@ mod tests {
 
     #[test]
     fn create_sequential_variant_from_string() {
-        let test_variant = RelationshipVariant::create_from_string("sequential").unwrap();
+        let test_variant = RelationshipVariant::from_str("sequential").unwrap();
 
         assert!(test_variant == RelationshipVariant::Sequential(EdgeDirectionality::Directed))
     }
 
     #[test]
     fn create_related_variant_from_string() {
-        let test_variant = RelationshipVariant::create_from_string("related").unwrap();
+        let test_variant = RelationshipVariant::from_str("related").unwrap();
 
         assert!(test_variant == RelationshipVariant::Related(EdgeDirectionality::Undirected))
     }
@@ -96,7 +116,7 @@ mod tests {
     #[test]
     fn failed_string_variant_creation() {
         let relationship_error =
-            RelationshipVariant::create_from_string("bad variant").unwrap_err();
+            RelationshipVariant::from_str("bad variant").unwrap_err();
 
         assert!(relationship_error.to_string() == "invalid relationship variant")
     }
@@ -127,7 +147,7 @@ mod tests {
 
     #[test]
     fn print_related_string() {
-        let relationship_variant = RelationshipVariant::Related(EdgeDirectionality::Undirected);
+        let relationship_variant = RelationshipVariant::create_related();
 
         assert!(format!("{}", relationship_variant) == "Related: Undirected")
     }
