@@ -15,7 +15,6 @@ pub enum RelationshipVariant {
     Related(EdgeDirectionality),
 }
 
-#[allow(dead_code)]
 impl RelationshipVariant {
 
     pub fn get_edge_direction(&self) -> String {

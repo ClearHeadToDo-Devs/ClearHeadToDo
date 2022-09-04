@@ -43,17 +43,26 @@ impl JSONStorage for Vector<Relationship> {
 mod test {
     use std::{fs, io::Read, path::Path};
 
+    use crate::relationships::tests::create_nil_relationship;
+
     use super::*;
-    use crate::tests::add_nil_relationship_to_vector;
+
+    fn create_vector_with_nill_relationship() -> Vector<Relationship> {
+        let mut list = Vector::new();
+        let relationship = create_nil_relationship();
+        list.push_back(relationship);
+        list
+    }
+
 
     #[test]
     fn successfully_write_pretty_json() {
-        let empty_list: Vector<Relationship> = Vector::new();
-        let single_list = add_nil_relationship_to_vector(empty_list);
+        let mut empty_list: Vector<Relationship> = Vector::new();
+        empty_list.push_back(create_nil_relationship());
         let file_path = Path::new("data/test_pretty_relationship.json");
         let mut file_contents = String::new();
 
-        single_list.write_to_json(file_path, true).unwrap();
+        empty_list.write_to_json(file_path, true).unwrap();
 
         fs::File::open(file_path)
             .unwrap()
@@ -77,12 +86,13 @@ mod test {
 
     #[test]
     fn successfully_write_json() {
-        let empty_list: Vector<Relationship> = Vector::new();
-        let single_list = add_nil_relationship_to_vector(empty_list);
+        let mut empty_list: Vector<Relationship> = Vector::new();
+        empty_list.push_back(create_nil_relationship());
+
         let file_path = Path::new("data/test_relationship.json");
         let mut file_contents = String::new();
 
-        single_list.write_to_json(file_path, false).unwrap();
+        empty_list.write_to_json(file_path, false).unwrap();
 
         fs::File::open(file_path)
             .unwrap()
@@ -101,7 +111,7 @@ mod test {
             Vector::<Relationship>::read_from_json(Path::new("data/test_read_relationship.json"))
                 .unwrap();
 
-        assert_eq!(file_list, add_nil_relationship_to_vector(Vector::new()))
+        assert_eq!(file_list, create_vector_with_nill_relationship());
     }
 
     #[test]
@@ -111,6 +121,6 @@ mod test {
         ))
         .unwrap();
 
-        assert_eq!(file_list, add_nil_relationship_to_vector(Vector::new()))
+        assert_eq!(file_list, create_vector_with_nill_relationship())
     }
 }
