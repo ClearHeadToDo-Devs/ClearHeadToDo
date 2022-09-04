@@ -178,6 +178,15 @@ mod tests {
     use serde_test::{assert_tokens, Configure, Token};
     use relationships::tests::create_nil_relationship;
 
+    pub fn create_vector_with_nill_relationship() -> Vector<Relationship> {
+        let mut list = Vector::new();
+        let relationship = create_nil_relationship();
+
+        list.push_back(relationship);
+
+        list
+    }
+
     #[test]
     fn serialize_and_deserialize() {
         let mut single_list = Vector::new();
