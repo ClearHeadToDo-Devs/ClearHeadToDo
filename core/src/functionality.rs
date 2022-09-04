@@ -23,6 +23,25 @@ pub struct ClearHeadApp  {
 }
 
 impl ClearHeadApp {
+    pub fn add_new(&self, clearhead_type: ClearHeadItemType, variant: Option<&str>, participant_1: Option<Uuid>, participant_2: Option<Uuid>) -> Result<ClearHeadApp, Box<dyn Error>> {
+        let mut cloned_list = self.clone();
+        match clearhead_type {
+            ClearHeadItemType::Action => {
+                let new_action_list = self.action_list.append_default();
+                cloned_list.action_list = new_action_list;
+                return Ok(cloned_list);
+            },
+            ClearHeadItemType::Relationship => {
+                let new_relationship_list = self.relationship_list.add_new(
+                    variant.unwrap_or("No Variant"),
+                    participant_1.unwrap(),
+                    participant_2.unwrap()
+                )?;
+                cloned_list.relationship_list = new_relationship_list;
+                return Ok(cloned_list);
+            },
+        }
+    }
     pub fn create_action(&self) -> ClearHeadApp  {
         let mut cloned_list = self.clone();
 
@@ -90,7 +109,6 @@ impl ClearHeadApp {
         }
         Ok(extended_list)
     }
-        
     
 
     pub fn create_relationship(&self, variant: &str, participant_1: usize, participant_2: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
@@ -198,6 +216,13 @@ impl ActionListManipulation for ClearHeadApp{
         Ok(self.select_by_index(index)?.get_completion_status())
     }
 }
+    
+    #[derive(Default, PartialEq, Clone, Debug)]
+    pub enum ClearHeadItemType {
+        #[default]
+        Action,
+        Relationship,
+    }
 
 #[cfg(test)]
 mod tests {
@@ -298,5 +323,12 @@ mod tests {
         let test_app: ClearHeadApp = Default::default();
 
         test_app.create_relationship("related", 0, 1).unwrap();
+    }
+
+    #[test]
+    fn default_item_type(){
+        let test_item_type = ClearHeadItemType::default();
+
+        assert_eq!(test_item_type, ClearHeadItemType::Action);
     }
 }
