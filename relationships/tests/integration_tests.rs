@@ -95,8 +95,7 @@ fn add_sequential_to_list() {
 
     let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
 
-    assert_eq!(modified_list[0].get_variant() ,
-        RelationshipVariant::create_sequential());
+    assert_eq!(modified_list[0].get_variant(),RelationshipVariant::create_sequential());
 }
 
 #[test]
@@ -123,7 +122,7 @@ fn empty_vector_removal_error() {
 
     let failed_poped_list = relationship_list.remove_at_index(0).unwrap_err();
 
-    assert!(failed_poped_list.to_string().contains("Index out of bounds"));
+    assert_eq!(failed_poped_list.to_string() , invalid_index_error_string());
 }
 
 #[test]

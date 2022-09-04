@@ -85,18 +85,15 @@ impl RelationshipListManagement for Vector<Relationship> {
     }
 
     fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
-        let mut updated_list = self.clone();
-        match index < self.len() {
-            true => {
-                updated_list.remove(index);
-                return Ok(updated_list);
-            }
-            false => {
-                return Err(Box::new(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "Index out of bounds",
-                )));
-            }
+        match self.select_by_index(index){
+            Ok(_) => {
+                let mut cloned_list = self.clone();
+
+                cloned_list.remove(index);
+
+                return Ok(cloned_list);
+            },
+            Err(e) => return Err(e)
         }
     }
 
