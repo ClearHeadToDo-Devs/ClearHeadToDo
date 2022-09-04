@@ -8,8 +8,9 @@ use relationships::RelationshipListManagement;
 
 
 pub fn invalid_index_error_string() -> String {
-    return String::from("Invalid index");
+    return String::from("Unable to find Relationship at given Index");
 }
+
 pub fn create_relationship_list_with_single_related_relationship() -> Vector<Relationship> {
     let mut list = Vector::new();
     let relationship = Relationship::create_new_related(
@@ -163,7 +164,7 @@ fn failed_get_id() {
 
     let extraction_error = test_list.select_by_index(0).unwrap_err();
 
-   assert_eq!(extraction_error.to_string() , "Unable to find Relationship at given Index".to_string());
+   assert_eq!(extraction_error.to_string() , invalid_index_error_string());
 }
 
 #[test]
@@ -181,7 +182,7 @@ fn failed_get_variant() {
 
     let index_error = test_list.get_variant(0).unwrap_err();
 
-    assert_eq!(index_error.to_string() , "Unable to find Relationship at given Index".to_string());
+    assert_eq!(index_error.to_string() , invalid_index_error_string());
 }
 
 #[test]
@@ -201,7 +202,7 @@ fn failed_get_participant_1() {
 
     let id_error = test_list.get_participant_1(0).unwrap_err();
 
-    assert_eq!(id_error.to_string() , "Unable to find Relationship at given Index".to_string());
+    assert_eq!(id_error.to_string() , invalid_index_error_string());
 }
 
 #[test]
@@ -222,7 +223,7 @@ fn failed_get_participant_2() {
 
     let empty_list_error = test_list.get_participant_2(0).unwrap_err();
 
-    assert_eq!(empty_list_error.to_string() , "Unable to find Relationship at given Index".to_string());
+    assert_eq!(empty_list_error.to_string() , invalid_index_error_string());
 }
 
 #[test]
@@ -302,7 +303,7 @@ fn failed_id_update_participant_1() {
         .update_participant_1(0, Uuid::new_v4())
         .unwrap_err();
 
-    assert!(bad_list_search.to_string() == "Unable to find Relationship at given Index")
+    assert!(bad_list_search.to_string() == invalid_index_error_string())
 }
 
 #[test]
@@ -325,6 +326,6 @@ fn failed_id_update_participant_2() {
         .update_participant_2(0, Uuid::new_v4())
         .unwrap_err();
 
-    assert!(bad_list_search.to_string() == "Unable to find Relationship at given Index")
+    assert!(bad_list_search.to_string() == invalid_index_error_string())
 }
 
