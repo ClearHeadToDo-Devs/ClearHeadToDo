@@ -23,18 +23,18 @@ pub trait RelationshipListManagement {
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
 
-    fn get_index_from_id(&self, id: Uuid) -> Result<usize, String>;
-    fn get_id_from_index(&self, index: usize) -> Result<Uuid, String>;
-    fn get_variant(&self, id: Uuid) -> Result<RelationshipVariant, String>;
-    fn get_participant_1(&self, id: Uuid) -> Result<Uuid, String>;
-    fn get_participant_2(&self, id: Uuid) -> Result<Uuid, String>;
+    fn select_by_id(&self, id: Uuid) -> Result<Relationship, String>;
+    fn select_by_index(&self, index: usize) -> Result<Relationship, String>;
+    fn get_variant(&self, index: usize) -> Result<RelationshipVariant, String>;
+    fn get_participant_1(&self, index: usize) -> Result<Uuid, String>;
+    fn get_participant_2(&self, index: usize) -> Result<Uuid, String>;
 
     fn remove_at_index(&self, index: usize) -> Self::L;
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String>;
 
     fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, String>;
-    fn update_participant_1(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String>;
-    fn update_participant_2(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String>;
+    fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, String>;
+    fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, String>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -47,16 +47,17 @@ impl RelationshipListManagement for Vector<Relationship> {
         participant_2: Uuid,
     ) -> Result<Vector<Relationship>, Box<dyn Error>> {
         let mut cloned_list = self.clone();
-        let new_relationship =
-            Relationship::create_new(target_variant, participant_1, participant_2)?;
+        let new_relationship = Relationship::create_new(
+            target_variant, participant_1, participant_2)?;
 
         cloned_list.push_back(new_relationship);
         return Ok(cloned_list);
     }
 
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
-        let new_relationship = Relationship::create_new_related(participant_1, participant_2);
         let mut cloned_list = self.clone();
+        let new_relationship = Relationship::create_new_related(
+            participant_1, participant_2);
 
         cloned_list.push_back(new_relationship);
 
@@ -64,8 +65,8 @@ impl RelationshipListManagement for Vector<Relationship> {
     }
 
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
-        let new_relationship = Relationship::create_new_sequential(participant_1, participant_2);
         let mut cloned_list = self.clone();
+        let new_relationship = Relationship::create_new_sequential(participant_1, participant_2);
 
         cloned_list.push_back(new_relationship);
 
@@ -73,8 +74,8 @@ impl RelationshipListManagement for Vector<Relationship> {
     }
 
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
-        let new_relationship = Relationship::create_new_parental(participant_1, participant_2);
         let mut cloned_list = self.clone();
+        let new_relationship = Relationship::create_new_parental(participant_1, participant_2);
 
         cloned_list.push_back(new_relationship);
 
@@ -87,42 +88,45 @@ impl RelationshipListManagement for Vector<Relationship> {
         return updated_list;
     }
 
-    fn get_index_from_id(&self, id: Uuid) -> Result<usize, String> {
-        let cloned_list = self.clone();
-
-        return cloned_list
-            .iter()
-            .position(|relationship| relationship.get_id() == id)
+    fn select_by_id(&self, id: Uuid) -> Result<Relationship, String> {
+        let query_result = self.iter().find(|relationship| relationship.get_id() == id)
             .ok_or("cannot find this id within the relationship list".to_string());
+
+        let relationship_clone = query_result?.clone();
+
+        return Ok(relationship_clone);
     }
 
-    fn get_id_from_index(&self, index: usize) -> Result<Uuid, String> {
-        Ok(self
-            .get(index)
-            .ok_or("Unable to find relationship at given index")?
-            .get_id())
+    fn select_by_index(&self, index: usize) -> Result<Relationship, String> {
+        let relationship_ref = self.get(index)
+            .ok_or("Unable to find relationship at given index")?;
+
+        let cloned_relationship = relationship_ref.clone();
+
+        Ok(cloned_relationship)
     }
 
-    fn get_participant_1(&self, id: Uuid) -> Result<Uuid, String> {
-        let index = self.get_index_from_id(id)?;
+    fn get_participant_1(&self, index: usize) -> Result<Uuid, String> {
+        let relationship_clone = self.select_by_index(index)?;
 
-        Ok(self[index].get_participant_1())
+        Ok(relationship_clone.get_participant_1())
     }
 
-    fn get_participant_2(&self, id: Uuid) -> Result<Uuid, String> {
-        let index = self.get_index_from_id(id)?;
+    fn get_participant_2(&self, index: usize) -> Result<Uuid, String> {
+        let cloned_relationship = self.select_by_index(index)?;
 
-        Ok(self[index].get_participant_2())
+        Ok(cloned_relationship.get_participant_2())
     }
-    fn get_variant(&self, id: Uuid) -> Result<RelationshipVariant, String> {
-        let index = self.get_index_from_id(id)?;
+    fn get_variant(&self, index: usize) -> Result<RelationshipVariant, String> {
+        let cloned_relationship = self.select_by_index(index)?;
 
-        return Ok(self[index].get_variant());
+        Ok(cloned_relationship.get_variant())
     }
 
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, String> {
         let cloned_list = self.clone();
-        let target_index = cloned_list.get_index_from_id(id)?;
+        let target_index = cloned_list.index_of(&cloned_list.select_by_id(id)?)
+            .ok_or("Unable to find relationship with given id")?;
 
         let updated_list = cloned_list.remove_at_index(target_index);
 
@@ -138,24 +142,25 @@ impl RelationshipListManagement for Vector<Relationship> {
         return Ok(cloned_list);
     }
 
-    fn update_participant_1(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String> {
-        let index = self.get_index_from_id(id)?;
-        let updated_relationship = self[index].set_participant_1(new_id);
+    fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, String> {
         let mut cloned_list = self.clone();
+        let cloned_relationship = self.select_by_index(index)?;
+
+        let updated_relationship = cloned_relationship.set_participant_1(new_id);
 
         cloned_list.set(index, updated_relationship);
 
         return Ok(cloned_list);
     }
 
-    fn update_participant_2(&self, id: Uuid, new_id: Uuid) -> Result<Self::L, String> {
-        let index = self.get_index_from_id(id)?;
-        let updated_relationship = self[index].set_participant_2(new_id);
+    fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, String> {
         let mut cloned_list = self.clone();
+        let cloned_relationship = self.select_by_index(index)?;
 
+        let updated_relationship = cloned_relationship.set_participant_2(new_id);
         cloned_list.set(index, updated_relationship);
 
-        return Ok(cloned_list);
+        Ok(cloned_list)
     }
 }
 
@@ -167,12 +172,24 @@ pub mod tests {
     use serde_test::{assert_tokens, Configure, Token};
 
     pub fn add_nil_relationship_to_vector(list: Vector<Relationship>) -> Vector<Relationship> {
-        let nil_relationship = create_nil_relationship();
         let mut cloned_list = list.clone();
+        let nil_relationship = create_nil_relationship();
 
         cloned_list.push_back(nil_relationship);
 
         return cloned_list;
+    }
+
+    pub fn create_relationship_list_with_single_related_relationship() -> Vector<Relationship> {
+        let mut list = Vector::new();
+        let relationship = Relationship::create_new_related(
+            Uuid::nil(),
+            Uuid::nil(),
+        );
+
+        list.push_back(relationship);
+
+        return list;
     }
 
     #[test]
@@ -184,7 +201,7 @@ pub mod tests {
             .add_new(&variant_string, Uuid::nil(), Uuid::nil())
             .unwrap();
 
-        assert!(updated_list.len() == 1)
+        assert_eq!(updated_list[0].get_variant() , RelationshipVariant::create_related());
     }
 
     #[test]
@@ -193,7 +210,7 @@ pub mod tests {
 
         let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
-        assert! {modified_list[0].get_variant().to_string() == "Related: Undirected"}
+        assert_eq!(modified_list[0].get_variant() , RelationshipVariant::create_related());
     }
 
     #[test]
@@ -202,7 +219,8 @@ pub mod tests {
 
         let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
 
-        assert! {modified_list[0].get_variant().to_string() == "Sequential: Directed"}
+        assert_eq!(modified_list[0].get_variant() ,
+            RelationshipVariant::create_sequential());
     }
 
     #[test]
@@ -211,7 +229,7 @@ pub mod tests {
 
         let modified_list = relationship_list.add_parental(Uuid::nil(), Uuid::nil());
 
-        assert!(modified_list[0].get_variant().to_string() == "Parental: Directed")
+        assert_eq!(modified_list[0].get_variant() , RelationshipVariant::create_parental());
     }
 
     #[test]
@@ -235,15 +253,15 @@ pub mod tests {
     }
 
     #[test]
-    fn return_index_from_id() {
+    fn return_relationship_from_id() {
         let relationship_list: Vector<Relationship> =
-            Vector::new().add_related(Uuid::nil(), Uuid::nil());
+            create_relationship_list_with_single_related_relationship();
 
         let relationship_id = relationship_list
-            .get_index_from_id(relationship_list[0].get_id())
+            .select_by_id(relationship_list[0].get_id())
             .unwrap();
 
-        assert!(relationship_id == 0)
+        assert!(relationship_id == relationship_list[0]);
     }
 
     #[test]
@@ -251,7 +269,7 @@ pub mod tests {
         let relationship_list: Vector<Relationship> = Vector::new();
 
         let failed_id_query = relationship_list
-            .get_index_from_id(Uuid::nil())
+            .select_by_id(Uuid::nil())
             .unwrap_err();
 
         assert!(failed_id_query == "cannot find this id within the relationship list".to_string())
@@ -259,61 +277,57 @@ pub mod tests {
 
     #[test]
     fn successfully_get_id() {
-        let test_list: Vector<Relationship> = Vector::new();
-        let single_relationship_list = test_list.add_related(Uuid::nil(), Uuid::nil());
+        let relationship_list = create_relationship_list_with_single_related_relationship();
 
-        let id = single_relationship_list.get_id_from_index(0).unwrap();
+        let relationship = relationship_list.select_by_index(0).unwrap();
 
-        assert!(id == single_relationship_list[0].get_id())
+        assert_eq!(relationship, relationship_list[0]);
     }
 
     #[test]
     fn failed_get_id() {
         let test_list: Vector<Relationship> = Vector::new();
 
-        let extraction_error = test_list.get_id_from_index(0).unwrap_err();
+        let extraction_error = test_list.select_by_index(0).unwrap_err();
 
         assert!(extraction_error == "Unable to find relationship at given index")
     }
 
     #[test]
     fn successfully_get_variant() {
-        let test_list: Vector<Relationship> = Vector::new();
-        let single_relationship_list = test_list.add_related(Uuid::new_v4(), Uuid::new_v4());
+        let relationship_list = create_relationship_list_with_single_related_relationship();
 
-        let variant = single_relationship_list
-            .get_variant(single_relationship_list[0].get_id())
+        let variant = relationship_list
+            .get_variant(0)
             .unwrap();
 
-        assert!(variant == RelationshipVariant::Related(EdgeDirectionality::Undirected));
+        assert!(variant == RelationshipVariant::create_related())
     }
 
     #[test]
+    #[should_panic]
     fn failed_get_variant() {
         let test_list: Vector<Relationship> = Vector::new();
 
-        let id_error = test_list.get_variant(Uuid::nil()).unwrap_err();
-
-        assert!(id_error == "cannot find this id within the relationship list");
+        let _index_error = test_list.get_variant(0).unwrap_err();
     }
 
     #[test]
     fn successfully_get_participant_1() {
-        let test_list: Vector<Relationship> = Vector::new();
-        let single_relationship_list = test_list.add_related(Uuid::nil(), Uuid::nil());
+        let test_list: Vector<Relationship> = create_relationship_list_with_single_related_relationship();
 
-        let participant_1 = single_relationship_list
-            .get_participant_1(single_relationship_list[0].get_id())
+        let participant_1 = test_list
+            .get_participant_1(0)
             .unwrap();
 
-        assert!(participant_1 == single_relationship_list[0].get_participant_1())
+        assert_eq!(participant_1, Uuid::nil());
     }
 
     #[test]
     fn failed_get_participant_1() {
         let test_list: Vector<Relationship> = Vector::new();
 
-        let id_error = test_list.get_participant_1(Uuid::nil()).unwrap_err();
+        let id_error = test_list.get_participant_1(0).unwrap_err();
 
         assert!(id_error == "cannot find this id within the relationship list")
     }
@@ -324,7 +338,7 @@ pub mod tests {
         let single_relationship_list = test_list.add_parental(Uuid::nil(), Uuid::nil());
 
         let participant_2 = single_relationship_list
-            .get_participant_2(single_relationship_list[0].get_id())
+            .get_participant_2(0)
             .unwrap();
 
         assert!(participant_2 == single_relationship_list[0].get_participant_2())
@@ -334,7 +348,7 @@ pub mod tests {
     fn failed_get_participant_2() {
         let test_list: Vector<Relationship> = Vector::new();
 
-        let empty_list_error = test_list.get_participant_2(Uuid::nil()).unwrap_err();
+        let empty_list_error = test_list.get_participant_2(0).unwrap_err();
 
         assert!(empty_list_error == "cannot find this id within the relationship list")
     }
@@ -402,7 +416,7 @@ pub mod tests {
         let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
         let updated_list = test_list
-            .update_participant_1(test_list[0].get_id(), Uuid::new_v4())
+            .update_participant_1(0, Uuid::new_v4())
             .unwrap();
 
         assert!(updated_list[0].get_participant_1() != Uuid::nil())
@@ -414,7 +428,7 @@ pub mod tests {
         let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
         let bad_list_search = test_list
-            .update_participant_1(Uuid::new_v4(), Uuid::new_v4())
+            .update_participant_1(0, Uuid::new_v4())
             .unwrap_err();
 
         assert!(bad_list_search == "cannot find this id within the relationship list")
@@ -426,7 +440,7 @@ pub mod tests {
         let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
         let updated_list = test_list
-            .update_participant_2(test_list[0].get_id(), Uuid::new_v4())
+            .update_participant_2(0, Uuid::new_v4())
             .unwrap();
 
         assert!(updated_list[0].get_participant_2() != Uuid::nil())
@@ -438,7 +452,7 @@ pub mod tests {
         let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
 
         let bad_list_search = test_list
-            .update_participant_2(Uuid::new_v4(), Uuid::new_v4())
+            .update_participant_2(0, Uuid::new_v4())
             .unwrap_err();
 
         assert!(bad_list_search == "cannot find this id within the relationship list")

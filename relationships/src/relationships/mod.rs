@@ -167,8 +167,7 @@ pub mod tests {
 
     #[test]
     fn get_sequential() {
-        let new_related_relationship =
-            create_relationship_with_nil_participants(
+        let new_related_relationship = create_relationship_with_nil_participants(
             RelationshipVariant::create_sequential());
 
         let variant = new_related_relationship.get_variant();
