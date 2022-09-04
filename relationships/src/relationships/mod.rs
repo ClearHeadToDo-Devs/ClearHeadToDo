@@ -117,12 +117,21 @@ impl Relationship {
 pub mod tests {
 
     use super::*;
-    use relationship_variants::edge_direction::EdgeDirectionality;
     use serde_test::{assert_tokens, Configure, Token};
+
+    pub fn create_relationship_with_nil_participants(variant: RelationshipVariant) -> Relationship {
+        Relationship {
+            id: Uuid::new_v4(),
+            variant,
+            participant_1: Uuid::nil(),
+            participant_2: Uuid::nil(),
+        }
+    }
 
     pub fn create_nil_relationship(
     ) -> Relationship {
         let id = Uuid::nil();
+
         return Relationship {
             id,
             variant: RelationshipVariant::create_related(),
@@ -134,33 +143,37 @@ pub mod tests {
     fn create_related_with_double_nil() -> Relationship {
         Relationship::create_new_related(Uuid::nil(), Uuid::nil())
     }
+    
 
     #[test]
     fn get_related_variant() {
-        let example_relationship = create_related_with_double_nil();
+        let example_relationship = create_relationship_with_nil_participants(
+            RelationshipVariant::create_related());
 
         let variant = example_relationship.get_variant();
 
-        assert!(variant == RelationshipVariant::create_related());
+        assert_eq!(variant , RelationshipVariant::create_related());
     }
 
     #[test]
     fn get_parental() {
-        let new_related_relationship = Relationship::create_new_parental(Uuid::nil(), Uuid::nil());
+        let new_related_relationship = create_relationship_with_nil_participants(
+            RelationshipVariant::create_parental());
 
         let variant = new_related_relationship.get_variant();
 
-        assert!(variant == RelationshipVariant::create_parental());
+        assert_eq!(variant , RelationshipVariant::create_parental());
     }
 
     #[test]
     fn get_sequential() {
         let new_related_relationship =
-            Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
+            create_relationship_with_nil_participants(
+            RelationshipVariant::create_sequential());
 
         let variant = new_related_relationship.get_variant();
 
-        assert!(variant == RelationshipVariant::create_sequential());
+        assert_eq!(variant , RelationshipVariant::create_sequential());
     }
 
     #[test]
@@ -169,7 +182,7 @@ pub mod tests {
 
         let edge_direction = test_relationship.get_edge_direction();
 
-        assert!(edge_direction == "Undirected")
+        assert_eq!(edge_direction , "Undirected")
     }
 
     #[test]
@@ -183,29 +196,29 @@ pub mod tests {
 
     #[test]
     fn get_particpant_1_id() {
-        let test_relationship = Relationship::create_new_related(Uuid::new_v4(), Uuid::nil());
+        let test_relationship = create_related_with_double_nil();
 
         let participant_1 = test_relationship.get_participant_1();
 
-        assert!(participant_1 == test_relationship.participant_1)
+        assert_eq!(participant_1 , test_relationship.participant_1)
     }
 
     #[test]
     fn get_participant_2_id() {
-        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::new_v4());
+        let test_relationship = create_related_with_double_nil();
 
         let participant_2 = test_relationship.get_participant_2();
 
-        assert!(participant_2 == test_relationship.participant_2)
+        assert_eq!(participant_2 , test_relationship.participant_2)
     }
 
     #[test]
     fn get_edge_direction() {
-        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let test_relationship = create_related_with_double_nil();
 
         let edge_direction = test_relationship.get_edge_direction();
 
-        assert!(edge_direction == "Undirected")
+        assert_eq!(edge_direction , "Undirected")
     }
 
 
@@ -214,7 +227,7 @@ pub mod tests {
         let relationship_1 = create_related_with_double_nil();
         let relationship_2 = create_related_with_double_nil();
 
-        assert!(relationship_2.id != relationship_1.id);
+        assert!(relationship_2.get_id() != relationship_1.get_id());
     }
 
     #[test]
@@ -236,14 +249,16 @@ pub mod tests {
 
     #[test]
     fn create_subsequent() {
-        let new_sequential_relationship = Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
+        let new_sequential_relationship = create_relationship_with_nil_participants(
+            RelationshipVariant::create_sequential());
 
         assert_eq!(new_sequential_relationship.get_variant(),RelationshipVariant::create_sequential());
     }
 
     #[test]
     fn create_parental() {
-        let new_parental_relationship = Relationship::create_new_parental(Uuid::nil(), Uuid::nil());
+        let new_parental_relationship = create_relationship_with_nil_participants(
+            RelationshipVariant::create_parental());
 
         assert_eq!(new_parental_relationship.get_variant() , RelationshipVariant::create_parental());
     }
@@ -251,52 +266,40 @@ pub mod tests {
 
     #[test]
     fn change_relationship_variant() {
-        let test_relationship = Relationship::create_new_sequential(Uuid::nil(), Uuid::nil());
+        let test_relationship = create_related_with_double_nil();
 
         let updated_relationship = test_relationship.set_variant("parental").unwrap();
 
-        assert!(
-            updated_relationship
-                == Relationship {
-                    variant: RelationshipVariant::Parental(EdgeDirectionality::Directed),
-                    ..test_relationship
-                }
-        )
+        assert!(updated_relationship.get_variant() == RelationshipVariant::create_parental())
     }
 
     #[test]
     fn change_undirected_to_directed() {
-        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let test_relationship = create_related_with_double_nil();
 
         let updated_relationship = test_relationship.set_variant("parental").unwrap();
 
-        assert!(
-            updated_relationship
-                == Relationship {
-                    variant: RelationshipVariant::Parental(EdgeDirectionality::Directed),
-                    ..test_relationship
-                }
-        )
+        assert!(updated_relationship.get_variant() == RelationshipVariant::create_parental())
     }
 
     #[test]
     fn set_participant_1() {
-        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let test_relationship = create_related_with_double_nil();
         let new_uuid = Uuid::new_v4();
 
         let updated_relationship = test_relationship.set_participant_1(new_uuid);
 
-        assert!(updated_relationship.participant_1 == new_uuid)
+        assert_eq!(updated_relationship.get_participant_1() , new_uuid)
     }
 
     #[test]
     fn set_participant_2() {
-        let test_relationship = Relationship::create_new_related(Uuid::nil(), Uuid::nil());
+        let test_relationship = create_related_with_double_nil();
         let new_uuid = Uuid::new_v4();
 
         let updated_relationship = test_relationship.set_participant_2(new_uuid);
 
-        assert!(updated_relationship.participant_2 == new_uuid)
+        assert_eq!(updated_relationship.participant_2 , new_uuid)
     }
 
     #[test]
