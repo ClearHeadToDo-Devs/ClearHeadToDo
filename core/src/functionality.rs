@@ -263,6 +263,8 @@ mod tests {
         let test_app = create_app_with_single_action();
 
         let action_list_string = test_app.get_list();
+
+
         let expected_string = format!(
 "+----------------+----------+-----------+--------------------------------------+
 | name           | priority | completed | id                                   |
@@ -277,19 +279,21 @@ mod tests {
 
     #[test]
     fn list_all_actions_with_relationships(){
-        let test_app: ClearHeadApp = ClearHeadApp::default()
-            .create_action().create_action().create_relationship("parental", 0, 1).unwrap();
+        let test_app = create_minimal_related_app("parental");
 
         let all_actions = test_app.get_extended_list().unwrap();
 
-        assert_eq!(all_actions, format!(
+
+        let expected_string = format!(
 "Order,Name,Priority,Completed,Id
 0,Default Action,Optional,false,{}
   - Parental: Directed,Default Action,Optional,false,{}
 1,Default Action,Optional,false,{}\n", 
             test_app.action_list[0].get_id(),
             test_app.action_list[1].get_id(),
-            test_app.action_list[1].get_id()));
+            test_app.action_list[1].get_id());
+
+        assert_eq!(all_actions, expected_string);
 
     }
 
