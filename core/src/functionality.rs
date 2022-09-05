@@ -355,6 +355,24 @@ mod tests {
     }
 
     #[test]
+    fn create_sequential_relationship(){
+        let test_app = create_minimal_related_app();
+
+        let updated_app = test_app.create_relationship("sequential", 0,1).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 1);
+    }
+
+    #[test]
+    fn create_parental_relationship(){
+        let test_app = create_minimal_related_app();
+
+        let updated_app = test_app.create_relationship("parental", 0,1).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 1);
+    }
+
+    #[test]
     fn failed_non_existant_action_relationship(){
         let test_app: ClearHeadApp = Default::default();
 
@@ -363,4 +381,12 @@ mod tests {
         assert_eq!(invalid_index_error.to_string(), failed_index_error(0));
     }
 
+    #[test]
+    fn failed_invalid_relationship_type(){
+        let test_app = create_minimal_related_app();
+
+        let invalid_relationship_error = test_app.create_relationship("invalid", 0, 1).unwrap_err();
+
+        assert_eq!(invalid_relationship_error.to_string(), "invalid relationship variant");
+    }
 }
