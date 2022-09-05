@@ -205,6 +205,16 @@ mod tests {
     use im::Vector;
     use uuid::Uuid;
 
+    pub fn create_app_with_single_action() -> ClearHeadApp {
+        let mut app = ClearHeadApp::default();
+        app.action_list.push_back(Action::default());
+        app
+    }
+
+    pub fn get_first_action(app: &ClearHeadApp) -> Action {
+        app.action_list[0].clone()
+    }
+
 
     #[test]
     fn default_app_creation() {
@@ -216,6 +226,7 @@ mod tests {
     #[test]
     fn create_action() {
         let test_app: ClearHeadApp = Default::default();
+
         let updated_app = test_app.create_action();
 
         assert_eq!(updated_app.action_list.len(), 1);
@@ -223,12 +234,20 @@ mod tests {
 
     #[test]
     fn rename_action(){
-        let test_app: ClearHeadApp = Default::default();
-        let default_action_app = test_app.create_action();
+        let test_app = create_app_with_single_action();
 
-        let updated_app = default_action_app.rename_action(0, "new_name".to_string()).unwrap();
+        let updated_app = test_app.rename_action(0, "new_name".to_string()).unwrap();
 
-        assert_eq!(updated_app.action_list.get(0).unwrap().get_name(), "new_name");
+        assert_eq!(get_first_action(&updated_app).get_name(), "new_name");
+    }
+
+    #[test]
+    fn failed_rename_action(){
+        let test_app = ClearHeadApp::default();
+
+        let failed_update = test_app.rename_action(1, "new_name".to_string()).unwrap_err();
+
+        assert_eq!(failed_update.to_string(), "No Action at Index 1");
     }
 
     #[test]
