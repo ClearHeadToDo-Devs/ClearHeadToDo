@@ -126,14 +126,13 @@ mod tests {
     use relationships::item::RelationshipVariant;
 
     pub fn create_app_with_single_action() -> ClearHeadApp {
-        let app = ClearHeadApp::default();
-        app.create_action();
+        let app = ClearHeadApp::default().create_action();
+
         app
     }
 
     pub fn create_app_with_two_actions() -> ClearHeadApp {
-        let app = ClearHeadApp::default()
-        .create_action().create_action();
+        let app = ClearHeadApp::default().create_action().create_action();
 
         app
     }
