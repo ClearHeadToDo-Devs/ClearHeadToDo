@@ -3,6 +3,7 @@ use relationships::RelationshipListManagement;
 
 use action::Action;
 use action::ActionListManipulation;
+use relationships::item::RelationshipVariant;
 
 
 use std::fmt::Debug;
@@ -12,6 +13,7 @@ use tabled::Table;
 
 use serde::{Serialize, Deserialize};
 use im::Vector;
+use uuid::Uuid;
 
 
 #[derive(Debug, PartialEq, Default, Clone, Serialize, Deserialize)]
@@ -88,6 +90,14 @@ impl ClearHeadApp {
         }
         Ok(extended_list)
     }
+
+    pub fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        Ok(self.relationship_list.get_id(index)?)
+    }
+
+    pub fn get_relationship_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
+        Ok(self.relationship_list.get_variant(index)?)
+    }
     
 
     pub fn create_relationship(&self, variant: &str, participant_1: usize, participant_2: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
@@ -142,8 +152,12 @@ mod tests {
         app.action_list[0].clone()
     }
 
-    pub fn failed_index_error(index: usize) -> String {
+    pub fn failed_action_index_error(index: usize) -> String {
         format!("No Action at Index {}",index.to_string())
+    }
+
+    pub fn failed_relationship_index_error() -> String {
+        "Unable to find Relationship at given Index".to_string()
     }
 
     pub fn create_minimal_related_app(variant_str: &str) -> ClearHeadApp {
@@ -188,7 +202,7 @@ mod tests {
 
         let failed_update = test_app.rename_action(0, "new_name".to_string()).unwrap_err();
 
-        assert_eq!(failed_update.to_string(), failed_index_error(0));
+        assert_eq!(failed_update.to_string(), failed_action_index_error(0));
     }
 
     #[test]
@@ -206,7 +220,7 @@ mod tests {
 
         let failed_update = test_app.toggle_action_completion_status(0).unwrap_err();
 
-        assert_eq!(failed_update.to_string(), failed_index_error(0));
+        assert_eq!(failed_update.to_string(), failed_action_index_error(0));
     }
 
     #[test]
@@ -224,7 +238,7 @@ mod tests {
 
         let index_error = test_app.remove_action(0).unwrap_err();
 
-        assert_eq!(index_error.to_string(), failed_index_error(0));
+        assert_eq!(index_error.to_string(), failed_action_index_error(0));
     }
 
     #[test]
@@ -272,6 +286,33 @@ mod tests {
     }
 
     #[test]
+    fn get_relationship_id(){
+        let test_app = create_minimal_related_app("parental");
+
+        let relationship_id = test_app.get_relationship_id(0).unwrap();
+
+        assert_eq!(relationship_id, test_app.relationship_list[0].get_id());
+    }
+
+    #[test]
+    fn failed_get_relationship_id(){
+        let test_app = ClearHeadApp::default();
+
+        let failed_get = test_app.get_relationship_id(0).unwrap_err();
+
+        assert_eq!(failed_get.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn get_relationship_variant(){
+        let test_app = create_minimal_related_app("parental");
+
+        let relationship_variant = test_app.get_relationship_variant(0).unwrap();
+
+        assert_eq!(relationship_variant, RelationshipVariant::create_parental());
+    }
+
+    #[test]
     fn create_relationship(){
         let test_app: ClearHeadApp = create_app_with_two_actions();
 
@@ -304,7 +345,7 @@ mod tests {
 
         let invalid_index_error = test_app.create_relationship("related", 0, 1).unwrap_err();
 
-        assert_eq!(invalid_index_error.to_string(), failed_index_error(0));
+        assert_eq!(invalid_index_error.to_string(), failed_action_index_error(0));
     }
 
     #[test]
