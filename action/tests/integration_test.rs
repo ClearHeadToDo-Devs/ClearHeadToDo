@@ -3,9 +3,21 @@ use std::str::FromStr;
 
 use tabled::Table;
 use uuid::Uuid;
-use im::vector;
+use im::{vector,Vector};
 
 use action::*;
+
+fn create_single_action_list() -> Vector<Action> {
+    let mut action_list = vector![];
+
+    action_list.push_back(Action::default());
+
+    return action_list;
+}
+
+fn invalid_index_error_string(index: usize) -> String {
+    return format!("No Action at Index {}", index);
+}
 
 #[test]
 fn append_default() {
@@ -17,22 +29,20 @@ fn append_default() {
 }
 
 #[test]
-fn action_successful_search_by_id_test() -> Result<(), Box<dyn Error>> {
-    let empty_action_list: im::Vector<Action> = vector!();
-    let single_nil_action_list = empty_action_list.append_default();
-    let test_search_action = single_nil_action_list.select_by_id(single_nil_action_list[0].get_id())?;
+fn action_successful_search_by_id_test() {
+    let action_list = create_single_action_list();
 
-    assert!(test_search_action == single_nil_action_list[0]);
+    let test_search_action = action_list
+        .select_by_id(action_list[0].get_id()).unwrap();
 
-    return Ok(());
+    assert!(test_search_action == action_list[0]);
 }
 
 #[test]
 fn failed_search_by_id() {
-    let empty_action_list: im::Vector<Action> = vector!();
+    let empty_list = Vector::new();
 
-    let test_search_action = empty_action_list
-        .select_by_id(Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap());
+    let test_search_action = empty_list.select_by_id(Uuid::nil());
     let error_message = test_search_action.unwrap_err().to_string();
 
     assert_eq!(error_message,"No Action with Id 00000000-0000-0000-0000-000000000000");
@@ -40,7 +50,7 @@ fn failed_search_by_id() {
 
 #[test]
 fn successful_select_by_index() {
-    let single_action_list: im::Vector<Action> = vector!().append_default();
+    let single_action_list = create_single_action_list();
 
     let test_search_action = single_action_list.select_by_index(0).unwrap();
 
@@ -49,15 +59,15 @@ fn successful_select_by_index() {
 
 #[test]
 fn failed_select_by_index() {
-    let single_action_list: im::Vector<Action> = vector!();
+    let empty_list = Vector::new();
 
-    let failed_action_selection = single_action_list.select_by_index(0).unwrap_err();
+    let failed_action_selection = empty_list.select_by_index(0).unwrap_err();
 
-    assert_eq!(failed_action_selection.to_string() , "No Action at Index 0");
+    assert_eq!(failed_action_selection.to_string() , invalid_index_error_string(0));
 }
 
 #[test]
-fn action_print_fail_test() {
+fn action_print_empty_test() {
     let empty_action_list: im::Vector<Action> = vector!();
     let error = format!("{:?}", empty_action_list);
     assert_eq!(error.to_string(), "[]");
@@ -65,12 +75,10 @@ fn action_print_fail_test() {
 
 #[test]
 fn action_print_successful_test() {
-    let empty_action_list: im::Vector<Action> = vector!();
-
-    let single_action_list = empty_action_list.append_default();
+    let action_list = create_single_action_list();
 
 
-    assert_eq!(format!("{:#?}", single_action_list),
+    assert_eq!(format!("{:#?}", action_list),
             format!(
 "[
     Action {{
@@ -79,16 +87,14 @@ fn action_print_successful_test() {
         completed: false,
         id: {},
     }},
-]",single_action_list[0].get_id().simple()));
+]",action_list[0].get_id().simple()));
     }
 
 #[test]
 fn action_print_table_successful() {
-    let empty_action_list: im::Vector<Action> = vector!();
+    let action_list = create_single_action_list();
 
-    let single_action_list = empty_action_list.append_default();
-
-    let table = Table::new(single_action_list.clone());
+    let table = Table::new(action_list.clone());
 
     assert_eq!(table.to_string(),format!(
 "+----------------+----------+-----------+--------------------------------------+
@@ -96,7 +102,7 @@ fn action_print_table_successful() {
 +----------------+----------+-----------+--------------------------------------+
 | Default Action | Optional | false     | {} |
 +----------------+----------+-----------+--------------------------------------+",
-        &single_action_list[0].get_id()));
+        &action_list[0].get_id()));
     }
 
 #[test]
@@ -105,25 +111,34 @@ fn failing_action_removal_test() {
 
     let index_error = empty_action_list.remove_action(0).unwrap_err();
 
-    assert_eq!(index_error.to_string(), "No Action at Index 0");
+    assert_eq!(index_error.to_string(), invalid_index_error_string(0));
 }
 
 #[test]
 fn successful_action_removal_test() {
-    let empty_action_list: im::Vector<Action> = vector!();
-    let single_action_list = &empty_action_list.append_default();
+    let action_list = create_single_action_list();
 
-    let good_result = &single_action_list.remove_action(0).unwrap();
+    let empty_list = action_list.remove_action(0).unwrap();
 
-    assert!(good_result.is_empty());
+    assert!(empty_list.is_empty());
 }
 
 #[test]
 fn action_completion_test() {
-    let empty_action_list: im::Vector<Action> = vector!();
-    let single_action_list = &empty_action_list.append_default();
-    let good_result = &single_action_list.toggle_completion_status(0).unwrap();
+    let action_list = create_single_action_list();
+
+    let good_result = action_list.toggle_completion_status(0).unwrap();
+
     assert_eq!(good_result[0].get_completion_status() , true);
+}
+
+#[test]
+fn failing_action_completion_test() {
+    let empty_list = Vector::new();
+
+    let index_error = empty_list.toggle_completion_status(0).unwrap_err();
+
+    assert_eq!(index_error.to_string(), invalid_index_error_string(0));
 }
 
 #[test]
@@ -138,8 +153,8 @@ fn action_reopen() {
 }
 
 #[test]
-fn list_member_rename() {
-    let single_action_list: im::Vector<Action> = vector!().append_default();
+fn action_rename() {
+    let single_action_list = create_single_action_list();
 
     let good_result = &single_action_list
         .rename(0, "Changed Task".to_string())
@@ -149,37 +164,57 @@ fn list_member_rename() {
 }
 
 #[test]
+fn failing_action_rename() {
+    let empty_list = Vector::new();
+
+    let index_error = empty_list.rename(0, "Changed Task".to_string()).unwrap_err();
+
+    assert_eq!(index_error.to_string(), invalid_index_error_string(0));
+}
+
+#[test]
 fn action_reprioritize() {
-    let empty_action_list: im::Vector<Action> = vector!();
-    let single_action_list = &empty_action_list.append_default();
+    let single_action_list = create_single_action_list();
+
     let changed_action_list = &single_action_list
         .change_priority(0, "low".to_string())
         .unwrap();
+
     assert_eq!(changed_action_list[0].get_priority(), Priority::Low);
 }
 
 #[test]
-fn get_name(){
-    let empty_action_list: im::Vector<Action> = vector!().append_default();
+fn failed_action_reprioritize() {
+    let empty_list = Vector::new();
 
-    let name = &empty_action_list.get_action_name(0).unwrap();
+    let index_error = empty_list.change_priority(0, "low".to_string()).unwrap_err();
+
+    assert_eq!(index_error.to_string(), invalid_index_error_string(0));
+}
+
+#[test]
+fn get_name(){
+    let single_action_list = create_single_action_list();
+
+    let name = single_action_list.get_action_name(0).unwrap();
+
     assert_eq!(name.to_string(), "Default Action");
 }
 
 #[test]
 fn get_priority(){
-    let empty_action_list: im::Vector<Action> = vector!().append_default();
+    let single_action_list = create_single_action_list();
 
-    let priority = &empty_action_list.get_action_priority(0).unwrap();
+    let priority = single_action_list.get_action_priority(0).unwrap();
 
     assert_eq!(priority.to_string(), "Optional");
 }
 
 #[test]
 fn get_completion_status(){
-    let empty_action_list: im::Vector<Action> = vector!().append_default();
+    let single_action_list = create_single_action_list();
 
-    let completion_status = empty_action_list.get_action_completion_status(0).unwrap();
+    let completion_status = single_action_list.get_action_completion_status(0).unwrap();
 
     assert_eq!(completion_status, false);
 }

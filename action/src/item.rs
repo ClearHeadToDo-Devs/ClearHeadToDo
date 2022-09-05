@@ -107,6 +107,34 @@ pub mod tests{
     }
 
     #[test]
+    fn get_name(){
+        let test_action = Action::default();
+
+        assert_eq!(test_action.get_name(), "Default Action".to_string());
+    }
+
+    #[test]
+    fn get_priority(){
+        let test_action = Action::default();
+
+        assert_eq!(test_action.get_priority(), Priority::Optional);
+    }
+
+    #[test]
+    fn get_completion_status(){
+        let test_action = Action::default();
+
+        assert_eq!(test_action.get_completion_status(), false);
+    }
+
+    #[test]
+    fn get_id(){
+        let test_action = create_nil_action();
+
+        assert_eq!(test_action.get_id(), Uuid::nil());
+    }
+
+    #[test]
     fn rename_action() {
         let test_action = Action::default();
 

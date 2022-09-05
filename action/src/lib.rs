@@ -30,6 +30,7 @@ pub trait ActionListManipulation {
 
     fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>>;
     fn select_by_index(&self, index: usize) -> Result<Action, Box<dyn Error>>;
+
     fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>>;
     fn get_action_priority(&self, index: usize) -> Result<Priority, Box<dyn Error>>;
     fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>>;
