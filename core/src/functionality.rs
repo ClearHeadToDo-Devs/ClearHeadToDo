@@ -94,9 +94,14 @@ impl ClearHeadApp {
 
     pub fn create_relationship(&self, variant: &str, participant_1: usize, participant_2: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
         let mut cloned_list = self.clone();
+        let participant_1_id = self.action_list.select_by_index(participant_1)?.get_id();
+        let participant_2_id = self.action_list.select_by_index(participant_2)?.get_id();
 
-        let new_relationship_list: Vector<Relationship> = self.relationship_list.add_new(variant, self.action_list[participant_1].id, self.action_list[participant_2].id)?;
-        cloned_list.relationship_list = new_relationship_list;
+        let updated_relationship_list: Vector<Relationship> = 
+        self.relationship_list.add_new(
+            variant, participant_1_id, participant_2_id)?;
+
+        cloned_list.relationship_list = updated_relationship_list;
 
         Ok(cloned_list)
         }
@@ -219,10 +224,20 @@ mod tests {
         format!("No Action at Index {}",index.to_string())
     }
 
+    pub fn create_minimal_related_app() -> ClearHeadApp {
+        let mut app = ClearHeadApp::default();
+        app.action_list.push_back(Action::default());
+        app.action_list.push_back(Action::default());
+        app.create_relationship("related", 0 , 1).unwrap();
+
+        app
+    }
+
 
     #[test]
     fn default_app_creation() {
         let test_app: ClearHeadApp = Default::default();
+
         assert_eq!(test_app.action_list, Vector::new());
         assert_eq!(test_app.relationship_list, Vector::new());
     }
@@ -301,9 +316,14 @@ mod tests {
 
     #[test]
     fn list_all_actions(){
-        let test_app: ClearHeadApp = Default::default();
-        let mut default_action_app = test_app.create_action();
-        default_action_app.action_list[0].id = Uuid::nil();
+        let test_app = create_app_with_single_action();
+
+        let action_list_string = test_app.get_list();
+        let expected_string = format!(
+            "[Action {{ name: \"Default Action\", priority: Optional, completed: false, id: {} }}]",
+            test_app.action_list[0].get_id());
+
+        assert_eq!(action_list_string, expected_string);
 
     }
 
@@ -314,27 +334,33 @@ mod tests {
 
         let all_actions = test_app.get_extended_list().unwrap();
 
-        assert_eq!(all_actions, format!("Order,Name,Priority,Completed,Id\n0,Default Action,Optional,false,{}\n  - Parental: Directed,Default Action,Optional,false,{}\n1,Default Action,Optional,false,{}\n", 
-            test_app.action_list[0].id, 
-            test_app.action_list[1].id, 
-            test_app.action_list[1].id));
+        assert_eq!(all_actions, format!(
+"Order,Name,Priority,Completed,Id
+0,Default Action,Optional,false,{}
+  - Parental: Directed,Default Action,Optional,false,{}
+1,Default Action,Optional,false,{}\n", 
+            test_app.action_list[0].get_id(),
+            test_app.action_list[1].get_id(),
+            test_app.action_list[1].get_id()));
 
     }
 
     #[test]
     fn create_relationship(){
         let test_app: ClearHeadApp = ClearHeadApp::default().create_action().create_action();
+
         let updated_app = test_app.create_relationship("related", 0,1).unwrap();
 
         assert_eq!(updated_app.relationship_list.len(), 1);
     }
 
     #[test]
-    #[should_panic]
     fn failed_non_existant_action_relationship(){
         let test_app: ClearHeadApp = Default::default();
 
-        test_app.create_relationship("related", 0, 1).unwrap();
+        let invalid_index_error = test_app.create_relationship("related", 0, 1).unwrap_err();
+
+        assert_eq!(invalid_index_error.to_string(), failed_index_error(0));
     }
 
 }
