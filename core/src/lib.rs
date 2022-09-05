@@ -13,4 +13,7 @@ pub use functionality::*;
 pub mod storage;
 pub use storage::*;
 
+pub mod trait_implementation;
+pub use functionality::*;
+
 

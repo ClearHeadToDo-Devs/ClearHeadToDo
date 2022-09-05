@@ -132,11 +132,22 @@ impl ClearHeadApp {
 
         Ok(cloned_list)
         }
+
+    pub fn change_relationship_participant_1(&self, index: usize, new_participant_1_index: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
+        let mut cloned_list = self.clone();
+
+        let updated_relationship_list: Vector<Relationship> = 
+        self.relationship_list.update_participant_1(index, self.action_list.select_by_index(new_participant_1_index)?.get_id())?;
+
+        cloned_list.relationship_list = updated_relationship_list;
+
+        Ok(cloned_list)
+        }
 }
 
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
     use im::Vector;
 
@@ -415,7 +426,7 @@ mod tests {
     }
 
     #[test]
-    fn change_relationship_variant_by_index(){
+    fn change_relationship_to_parental(){
         let test_app = create_minimal_related_app("related");
 
         let updated_app = test_app.change_relationship_variant(0, "parental").unwrap();
@@ -429,7 +440,7 @@ mod tests {
 
         let updated_app = test_app.change_relationship_variant(0, "sequential").unwrap();
 
-        assert_eq!(updated_app.relationship_list[0].get_variant(), RelationshipVariant::create_sequential());
+        assert_eq!(updated_app.get_relationship_variant(0).unwrap(), RelationshipVariant::create_sequential());
     }
 
     #[test]
@@ -439,5 +450,14 @@ mod tests {
         let updated_app = test_app.change_relationship_variant(0, "related").unwrap();
 
         assert_eq!(updated_app.relationship_list[0].get_variant(), RelationshipVariant::create_related());
+    }
+
+    #[test]
+    fn change_participant_1(){
+        let test_app = create_minimal_related_app("parental").create_action();
+
+        let updated_app = test_app.change_relationship_participant_1(0, 2).unwrap();
+
+        assert_eq!(updated_app.get_relationship_participant_1(0).unwrap(), test_app.action_list.get_action_id(2).unwrap());
     }
 }
