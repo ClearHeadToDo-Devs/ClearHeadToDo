@@ -65,7 +65,7 @@ impl ClearHeadApp {
         }
 
     pub fn get_list(&self) -> String {
-            format!("{:?}",self.action_list)
+            format!("{:#?}",self.action_list)
     }
 
     pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
@@ -241,8 +241,14 @@ mod tests {
 
         let action_list_string = test_app.get_list();
         let expected_string = format!(
-            "[Action {{ name: \"Default Action\", priority: Optional, completed: false, id: {} }}]",
-            test_app.action_list[0].get_id());
+"[
+    Action {{
+        name: \"Default Action\",
+        priority: Optional,
+        completed: false,
+        id: {},
+    }},
+]",test_app.action_list[0].get_id().simple());
 
         assert_eq!(action_list_string, expected_string);
 
