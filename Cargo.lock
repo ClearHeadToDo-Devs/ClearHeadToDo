@@ -115,6 +115,7 @@ dependencies = [
  "relationships",
  "serde",
  "serde_json",
+ "tabled",
  "uuid",
 ]
 

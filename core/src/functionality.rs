@@ -8,6 +8,7 @@ use action::ActionListManipulation;
 use std::fmt::Debug;
 use std::cmp::PartialEq;
 use std::error::Error;
+use tabled::Table;
 
 use serde::{Serialize, Deserialize};
 use im::Vector;
@@ -65,7 +66,7 @@ impl ClearHeadApp {
         }
 
     pub fn get_list(&self) -> String {
-            format!("{:#?}",self.action_list)
+        Table::new(&self.action_list).to_string()
     }
 
     pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
@@ -241,14 +242,12 @@ mod tests {
 
         let action_list_string = test_app.get_list();
         let expected_string = format!(
-"[
-    Action {{
-        name: \"Default Action\",
-        priority: Optional,
-        completed: false,
-        id: {},
-    }},
-]",test_app.action_list[0].get_id().simple());
+"+----------------+----------+-----------+--------------------------------------+
+| name           | priority | completed | id                                   |
++----------------+----------+-----------+--------------------------------------+
+| Default Action | Optional | false     | {} |
++----------------+----------+-----------+--------------------------------------+"
+            ,test_app.action_list[0].get_id().hyphenated());
 
         assert_eq!(action_list_string, expected_string);
 
