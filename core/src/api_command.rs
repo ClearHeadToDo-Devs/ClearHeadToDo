@@ -237,11 +237,12 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn failing_cli_remove_invalid_index_test() {
         let empty_list: ClearHeadApp = Default::default();
 
-        Command::Remove(0).run_subcommand(&empty_list).unwrap_err();
+        let index_error = Command::Remove(0).run_subcommand(&empty_list).unwrap_err();
+
+        assert_eq!(index_error.to_string(), "No Action at Index 0");
     }
 
     #[test]

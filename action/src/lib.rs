@@ -52,9 +52,13 @@ impl ActionListManipulation for Vector<Action> {
     fn remove_action(&self, index: usize) -> Result<Vector<Action>, Box<dyn Error>> {
         let mut new_list = self.clone();
 
-        new_list.remove(index);
-
-        return Ok(new_list);
+        match new_list.select_by_index(index){
+            Ok(_) => {
+                new_list.remove(index);
+                Ok(new_list)
+            },
+            Err(error) => Err(error),
+        }
     }
 
     fn rename(

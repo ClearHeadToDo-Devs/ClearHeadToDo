@@ -100,11 +100,12 @@ fn action_print_table_successful() {
     }
 
 #[test]
-#[should_panic]
 fn failing_action_removal_test() {
     let empty_action_list: im::Vector<Action> = vector!();
 
-    empty_action_list.remove_action(0).unwrap_err();
+    let index_error = empty_action_list.remove_action(0).unwrap_err();
+
+    assert_eq!(index_error.to_string(), "No Action at Index 0");
 }
 
 #[test]

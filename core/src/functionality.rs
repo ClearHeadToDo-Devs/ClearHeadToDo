@@ -215,6 +215,10 @@ mod tests {
         app.action_list[0].clone()
     }
 
+    pub fn failed_index_error(index: usize) -> String {
+        format!("No Action at Index {}",index.to_string())
+    }
+
 
     #[test]
     fn default_app_creation() {
@@ -233,7 +237,7 @@ mod tests {
     }
 
     #[test]
-    fn rename_action(){
+    fn successful_rename_action(){
         let test_app = create_app_with_single_action();
 
         let updated_app = test_app.rename_action(0, "new_name".to_string()).unwrap();
@@ -245,39 +249,54 @@ mod tests {
     fn failed_rename_action(){
         let test_app = ClearHeadApp::default();
 
-        let failed_update = test_app.rename_action(1, "new_name".to_string()).unwrap_err();
+        let failed_update = test_app.rename_action(0, "new_name".to_string()).unwrap_err();
 
-        assert_eq!(failed_update.to_string(), "No Action at Index 1");
+        assert_eq!(failed_update.to_string(), failed_index_error(0));
     }
 
     #[test]
     fn toggle_action_completion_status(){
-        let test_app: ClearHeadApp = Default::default();
-        let default_action_app = test_app.create_action();
+        let test_app = create_app_with_single_action();
 
-        let updated_app = default_action_app.toggle_action_completion_status(0).unwrap();
+        let updated_app = test_app.toggle_action_completion_status(0).unwrap();
 
-        assert_eq!(updated_app.action_list.get(0).unwrap().completed, true);
+        assert_eq!(get_first_action(&updated_app).get_completion_status(), true);
     }
 
     #[test]
-    fn remove_action(){
-        let test_app: ClearHeadApp = Default::default();
-        let default_action_app = test_app.create_action();
+    fn failed_toggle_action_completion_status(){
+        let test_app = ClearHeadApp::default();
 
-        let updated_app = default_action_app.remove_action(0).unwrap();
+        let failed_update = test_app.toggle_action_completion_status(0).unwrap_err();
+
+        assert_eq!(failed_update.to_string(), failed_index_error(0));
+    }
+
+    #[test]
+    fn successful_remove_action(){
+        let test_app = create_app_with_single_action();
+
+        let updated_app = test_app.remove_action(0).unwrap();
 
         assert_eq!(updated_app.action_list.len(), 0);
     }
 
     #[test]
+    fn failed_remove_action(){
+        let test_app = ClearHeadApp::default();
+
+        let index_error = test_app.remove_action(0).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_index_error(0));
+    }
+
+    #[test]
     fn change_action_priority(){
-        let test_app: ClearHeadApp = Default::default();
-        let default_action_app = test_app.create_action();
+        let test_app = create_app_with_single_action();
 
-        let updated_app = default_action_app.change_action_priority(0, 1.to_string()).unwrap();
+        let updated_app = test_app.change_action_priority(0, 1.to_string()).unwrap();
 
-        assert_eq!(updated_app.action_list.get(0).unwrap().priority, Priority::Critical);
+        assert_eq!(get_first_action(&updated_app).get_priority(), Priority::Critical);
     }
 
     #[test]
