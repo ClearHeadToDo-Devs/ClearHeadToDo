@@ -3,8 +3,6 @@ use relationships::RelationshipListManagement;
 
 use action::Action;
 use action::ActionListManipulation;
-use action::ActionError;
-use action::Priority;
 
 
 use std::fmt::Debug;
@@ -12,7 +10,6 @@ use std::cmp::PartialEq;
 use std::error::Error;
 
 use serde::{Serialize, Deserialize};
-use uuid::Uuid;
 use im::Vector;
 
 
@@ -105,110 +102,28 @@ impl ClearHeadApp {
 
         Ok(cloned_list)
         }
-}
 
-impl ActionListManipulation for ClearHeadApp{
-    fn append_default(&self) -> Self {
-        let mut new_list = self.clone();
-
-        new_list.action_list.push_back(Action::default());
-
-        return new_list;
-    }
-
-    fn remove_action(&self, index: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
-        let mut new_list = self.clone();
-
-        new_list.action_list.remove(index);
-
-        return Ok(new_list);
-    }
-
-    fn rename(
-        &self,
-        index: usize,
-        new_name: String,
-    ) -> Result<ClearHeadApp, Box<dyn Error>> {
-        let mut cloned_app = self.clone();
-
-        let updated_action = self.select_by_index(index)?.rename(&new_name);
-        let updated_list = self.action_list.update(index, updated_action);
-
-        cloned_app.action_list = updated_list;
-        Ok(cloned_app)
-    }
-
-    fn toggle_completion_status(
-        &self,
-        index: usize,
-    ) -> Result<ClearHeadApp, Box<dyn Error>> {
-        let mut cloned_list = self.clone();
-        let updated_action = self.select_by_index(index)?.toggle_completion_status();
-
-        let updated_list = cloned_list.action_list.update(index, updated_action);
-
-        cloned_list.action_list = updated_list;
-
-        Ok(cloned_list)
-    }
-
-    fn change_priority(
-        &self,
-        index: usize,
-        new_priority: String,
-    ) -> Result<ClearHeadApp, Box<dyn Error>> {
+    pub fn change_relationship_variant(&self, index: usize, new_variant: &str) -> Result<ClearHeadApp, Box<dyn Error>> {
         let mut cloned_list = self.clone();
 
-        let updated_action = self.select_by_index(index)?
-            .change_priority(&new_priority)?;
-        let updated_list = self.action_list.update(index, updated_action);
+        let updated_relationship_list: Vector<Relationship> = 
+        self.relationship_list.change_variant(index, new_variant)?;
 
-        cloned_list.action_list = updated_list;
+        cloned_list.relationship_list = updated_relationship_list;
 
         Ok(cloned_list)
-    }
-
-    fn select_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {
-        let search_action_result = self.clone().action_list.into_iter()
-            .find(|actions| actions.get_id() == id);
-
-        match search_action_result {
-            Some(action) => return Ok(action.clone().to_owned()),
-            None => {
-                return Err(ActionError::InvalidId(id).into())
-            }
         }
-    }
-
-    fn select_by_index(&self, index: usize) -> Result<Action, Box<dyn Error>> {
-        match self.action_list.iter().nth(index) {
-            Some(action_ref) => return Ok(action_ref.clone()),
-            None => Err(ActionError::InvalidIndex(index).into()),
-        }
-    }
-
-    fn get_action_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        Ok(self.select_by_index(index)?.get_id())
-    }
-
-    fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>> {
-        Ok(self.select_by_index(index)?.get_name())
-    }
-
-    fn get_action_priority(&self, index: usize) -> Result<Priority, Box<dyn Error>> {
-        Ok(self.select_by_index(index)?.get_priority())
-    }
-    fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>> {
-        Ok(self.select_by_index(index)?.get_completion_status())
-    }
 }
+
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use action::Priority;
     use im::Vector;
-    use uuid::Uuid;
+
+    use action::Priority;
+
+    use relationships::item::RelationshipVariant;
 
     pub fn create_app_with_single_action() -> ClearHeadApp {
         let mut app = ClearHeadApp::default();
@@ -388,5 +303,15 @@ mod tests {
         let invalid_relationship_error = test_app.create_relationship("invalid", 0, 1).unwrap_err();
 
         assert_eq!(invalid_relationship_error.to_string(), "invalid relationship variant");
+    }
+
+    #[test]
+    fn change_relationship_variant_by_index(){
+        let test_app = create_minimal_related_app();
+
+        let updated_app = test_app.change_relationship_variant(0, "parental").unwrap();
+        println!("{}", updated_app.relationship_list.len());
+
+        assert_eq!(updated_app.relationship_list[0].get_variant(), RelationshipVariant::create_parental());
     }
 }

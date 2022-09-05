@@ -154,12 +154,11 @@ impl RelationshipListManagement for Vector<Relationship> {
     }
 
     fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, Box<dyn Error>> {
-        let updated_relationship = self[index].set_variant(variant)?;
-        let mut cloned_list = self.clone();
+        let updated_relationship = self.select_by_index(index)?.set_variant(variant)?;
 
-        cloned_list.set(index, updated_relationship);
+        let updated_list = self.update(index, updated_relationship);
 
-        return Ok(cloned_list);
+        return Ok(updated_list);
     }
 
     fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
