@@ -126,8 +126,15 @@ mod tests {
     use relationships::item::RelationshipVariant;
 
     pub fn create_app_with_single_action() -> ClearHeadApp {
-        let mut app = ClearHeadApp::default();
-        app.action_list.push_back(Action::default());
+        let app = ClearHeadApp::default();
+        app.create_action();
+        app
+    }
+
+    pub fn create_app_with_two_actions() -> ClearHeadApp {
+        let app = ClearHeadApp::default()
+        .create_action().create_action();
+
         app
     }
 
@@ -140,10 +147,10 @@ mod tests {
     }
 
     pub fn create_minimal_related_app() -> ClearHeadApp {
-        let mut app = ClearHeadApp::default();
-        app.action_list.push_back(Action::default());
-        app.action_list.push_back(Action::default());
-        app.create_relationship("related", 0 , 1).unwrap();
+        let app = ClearHeadApp::default()
+            .create_action()
+            .create_action()
+            .create_relationship("related", 0 , 1).unwrap();
 
         app
     }
@@ -262,7 +269,7 @@ mod tests {
 
     #[test]
     fn create_relationship(){
-        let test_app: ClearHeadApp = ClearHeadApp::default().create_action().create_action();
+        let test_app: ClearHeadApp = create_app_with_two_actions();
 
         let updated_app = test_app.create_relationship("related", 0,1).unwrap();
 
@@ -271,7 +278,7 @@ mod tests {
 
     #[test]
     fn create_sequential_relationship(){
-        let test_app = create_minimal_related_app();
+        let test_app = create_app_with_two_actions();
 
         let updated_app = test_app.create_relationship("sequential", 0,1).unwrap();
 
@@ -280,7 +287,7 @@ mod tests {
 
     #[test]
     fn create_parental_relationship(){
-        let test_app = create_minimal_related_app();
+        let test_app = create_app_with_two_actions();
 
         let updated_app = test_app.create_relationship("parental", 0,1).unwrap();
 
