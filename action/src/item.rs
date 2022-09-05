@@ -88,20 +88,72 @@ pub mod tests{
     #[test]
     fn default_action_creation() {
         let test_action = create_nil_action();
-        assert!(test_action.name == "Default Action".to_string());
-        assert!(test_action.priority == Priority::Optional);
-        assert!(test_action.completed == false);
-        assert!(test_action.id.to_string() == "00000000-0000-0000-0000-000000000000".to_string());
+        assert!(test_action.get_name() == "Default Action".to_string());
+        assert!(test_action.get_priority() == Priority::Optional);
+        assert!(test_action.get_completion_status() == false);
+        assert!(test_action.get_id() == Uuid::nil());
     }
 
     #[test]
     fn print_action_content() {
         let test_action = create_nil_action();
+
         let test_action_string = test_action.to_string();
+
         assert_eq!(
             test_action_string,
             "Default Action,Optional,false,00000000-0000-0000-0000-000000000000",
         );
+    }
+
+    #[test]
+    fn rename_action() {
+        let test_action = Action::default();
+
+        let renamed_action = test_action.rename("New Action Name");
+
+        assert_eq!(renamed_action.get_name(), "New Action Name".to_string());
+    }
+
+    #[test]
+    fn toggle_completion_status() {
+        let test_action = Action::default();
+
+        let completed_action = test_action.toggle_completion_status();
+
+        assert_eq!(completed_action.get_completion_status(), true);
+    }
+
+    #[test]
+    fn reopen_action() {
+        let test_action = Action::default();
+
+        let reopened_action = test_action
+            .toggle_completion_status()
+            .toggle_completion_status();
+
+        assert_eq!(reopened_action.get_completion_status(), false);
+    }
+
+    #[test]
+    fn reprioritize_action() {
+        let test_action = Action::default();
+
+        let reprioritized_action = test_action
+            .change_priority("High")
+            .unwrap();
+
+        assert_eq!(reprioritized_action.get_priority(), Priority::High);
+    }
+
+    #[test]
+    fn failed_reprioritize_action(){
+        let test_action = Action::default();
+
+        let reprioritization_error = test_action
+            .change_priority("Not a priority").unwrap_err();
+
+        assert_eq!(reprioritization_error.to_string() , "Not a priority is an Invalid Priority Option");
     }
 
     #[test]
