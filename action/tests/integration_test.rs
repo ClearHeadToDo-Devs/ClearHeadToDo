@@ -1,11 +1,11 @@
 use tabled::Table;
 use uuid::Uuid;
-use im::{vector,Vector};
+use im::Vector;
 
 use action::*;
 
 fn create_single_action_list() -> Vector<Action> {
-    let mut action_list = vector![];
+    let mut action_list = Vector::new();
 
     action_list.push_back(Action::default());
 
@@ -18,7 +18,7 @@ fn invalid_index_error_string(index: usize) -> String {
 
 #[test]
 fn append_default() {
-    let empty_action_list: im::Vector<Action> = vector!();
+    let empty_action_list = Vector::new();
 
     let single_action_list = empty_action_list.append_default();
 
@@ -65,9 +65,11 @@ fn failed_select_by_index() {
 
 #[test]
 fn action_print_empty_test() {
-    let empty_action_list: im::Vector<Action> = vector!();
-    let error = format!("{:?}", empty_action_list);
-    assert_eq!(error.to_string(), "[]");
+    let empty_action_list: Vector<Action> = Vector::new();
+
+    let empty_list_str = format!("{:?}", empty_action_list);
+
+    assert_eq!(empty_list_str.to_string(), "[]");
 }
 
 #[test]
@@ -104,7 +106,7 @@ fn action_print_table_successful() {
 
 #[test]
 fn failing_action_removal_test() {
-    let empty_action_list: im::Vector<Action> = vector!();
+    let empty_action_list = Vector::new();
 
     let index_error = empty_action_list.remove_action(0).unwrap_err();
 
@@ -140,9 +142,9 @@ fn failing_action_completion_test() {
 
 #[test]
 fn action_reopen() {
-    let single_action_list: im::Vector<Action> = vector!().append_default();
+    let action_list = create_single_action_list();
 
-    let updated_action_list = &single_action_list
+    let updated_action_list = &action_list
         .toggle_completion_status(0).unwrap()
         .toggle_completion_status(0).unwrap();
 
