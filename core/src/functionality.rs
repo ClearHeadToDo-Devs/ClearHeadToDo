@@ -145,11 +145,11 @@ mod tests {
         format!("No Action at Index {}",index.to_string())
     }
 
-    pub fn create_minimal_related_app() -> ClearHeadApp {
+    pub fn create_minimal_related_app(variant_str: &str) -> ClearHeadApp {
         let app = ClearHeadApp::default()
             .create_action()
             .create_action()
-            .create_relationship("related", 0 , 1).unwrap();
+            .create_relationship(variant_str, 0 , 1).unwrap();
 
         app
     }
@@ -304,7 +304,7 @@ mod tests {
 
     #[test]
     fn failed_invalid_relationship_type(){
-        let test_app = create_minimal_related_app();
+        let test_app = create_app_with_two_actions();
 
         let invalid_relationship_error = test_app.create_relationship("invalid", 0, 1).unwrap_err();
 
@@ -313,11 +313,28 @@ mod tests {
 
     #[test]
     fn change_relationship_variant_by_index(){
-        let test_app = create_minimal_related_app();
+        let test_app = create_minimal_related_app("related");
 
         let updated_app = test_app.change_relationship_variant(0, "parental").unwrap();
-        println!("{}", updated_app.relationship_list.len());
 
         assert_eq!(updated_app.relationship_list[0].get_variant(), RelationshipVariant::create_parental());
+    }
+
+    #[test]
+    fn change_relationship_variant_to_sequential(){
+        let test_app = create_minimal_related_app("related");
+
+        let updated_app = test_app.change_relationship_variant(0, "sequential").unwrap();
+
+        assert_eq!(updated_app.relationship_list[0].get_variant(), RelationshipVariant::create_sequential());
+    }
+
+    #[test]
+    fn change_relationship_variant_to_related(){
+        let test_app = create_minimal_related_app("parental");
+
+        let updated_app = test_app.change_relationship_variant(0, "related").unwrap();
+
+        assert_eq!(updated_app.relationship_list[0].get_variant(), RelationshipVariant::create_related());
     }
 }
