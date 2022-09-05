@@ -34,7 +34,11 @@ impl ActionListManipulation for ClearHeadApp {
         ) -> Result<Self, Box<dyn Error>>
         where
             Self: Sized {
-        unimplemented!();
+        let mut new_app = self.clone();
+
+        new_app.action_list = new_app.action_list.change_priority(index, new_priority)?;
+
+        Ok(new_app)
     }
 
     fn rename(&self, index: usize, new_name: String) -> Result<Self, Box<dyn Error>>
@@ -260,5 +264,41 @@ mod tests{
         let updated_app = test_app.toggle_completion_status(0).unwrap();
 
         assert_eq!(get_first_action(&updated_app).get_completion_status(), true);
+    }
+
+    #[test]
+    fn failed_toggle_action_completion_status(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.toggle_completion_status(0).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_action_index_error(0));
+    }
+
+    #[test]
+    fn change_action_priority(){
+        let test_app = create_app_with_single_action();
+
+        let updated_app = test_app.change_priority(0, "high".to_string()).unwrap();
+
+        assert_eq!(get_first_action(&updated_app).get_priority(), Priority::High);
+    }
+
+    #[test]
+    fn failed_change_action_priority(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.change_priority(0, "high".to_string()).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_action_index_error(0));
+    }
+
+    #[test]
+    fn failed_change_priority_invalid_priority(){
+        let test_app = create_app_with_single_action();
+
+        let index_error = test_app.change_priority(0, "invalid".to_string()).unwrap_err();
+
+        assert_eq!(index_error.to_string(), "invalid is an Invalid Priority Option");
     }
 }
