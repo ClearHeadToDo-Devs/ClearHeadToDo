@@ -98,6 +98,14 @@ impl ClearHeadApp {
     pub fn get_relationship_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
         Ok(self.relationship_list.get_variant(index)?)
     }
+
+    pub fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        Ok(self.relationship_list.get_participant_1(index)?)
+    }
+
+    pub fn get_relationship_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        Ok(self.relationship_list.get_participant_2(index)?)
+    }
     
 
     pub fn create_relationship(&self, variant: &str, participant_1: usize, participant_2: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
@@ -310,6 +318,51 @@ mod tests {
         let relationship_variant = test_app.get_relationship_variant(0).unwrap();
 
         assert_eq!(relationship_variant, RelationshipVariant::create_parental());
+    }
+
+    #[test]
+    fn failed_get_relationship_variant(){
+        let test_app = ClearHeadApp::default();
+
+        let failed_get = test_app.get_relationship_variant(0).unwrap_err();
+
+        assert_eq!(failed_get.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn get_relationship_participant_1(){
+        let test_app = create_minimal_related_app("parental");
+
+        let relationship_participant_1 = test_app.get_relationship_participant_1(0).unwrap();
+
+        assert_eq!(relationship_participant_1, test_app.relationship_list.get_participant_1(0).unwrap());
+    }
+
+    #[test]
+    fn failed_get_relationship_participant_1(){
+        let test_app = ClearHeadApp::default();
+
+        let failed_get = test_app.get_relationship_participant_1(0).unwrap_err();
+
+        assert_eq!(failed_get.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn get_relationship_participant_2(){
+        let test_app = create_minimal_related_app("parental");
+
+        let relationship_participant_2 = test_app.get_relationship_participant_2(0).unwrap();
+
+        assert_eq!(relationship_participant_2, test_app.relationship_list.get_participant_2(0).unwrap());
+    }
+
+    #[test]
+    fn failed_get_relationship_participant_2(){
+        let test_app = ClearHeadApp::default();
+
+        let failed_get = test_app.get_relationship_participant_2(0).unwrap_err();
+
+        assert_eq!(failed_get.to_string(), failed_relationship_index_error());
     }
 
     #[test]
