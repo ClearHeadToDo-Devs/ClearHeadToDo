@@ -362,9 +362,9 @@ mod tests {
         .run_subcommand(&double_action_app).unwrap();
 
         assert_eq!(result.relationship_list.len(), 1);
-        assert_eq!(result.get_variant(0).unwrap().to_string(), "Related: Undirected");
-        assert_eq!(result.get_participant_1(0).unwrap(), result.get_action_id(0).unwrap());
-        assert_eq!(result.get_participant_2(0).unwrap(), result.get_action_id(1).unwrap());
+        assert_eq!(result.get_relationship_variant(0).unwrap().to_string(), "Related: Undirected");
+        assert_eq!(result.get_relationship_participant_1(0).unwrap(), result.get_action_id(0).unwrap());
+        assert_eq!(result.get_relationship_participant_2(0).unwrap(), result.get_action_id(1).unwrap());
     }
 
     #[test]
@@ -378,7 +378,7 @@ mod tests {
         }
         .run_subcommand(&double_action_app).unwrap();
 
-        assert_eq!(result.get_variant(0).unwrap().to_string(), "Sequential: Directed");
+        assert_eq!(result.get_relationship_variant(0).unwrap().to_string(), "Sequential: Directed");
     }
 
     #[test]
@@ -392,7 +392,7 @@ mod tests {
         }
         .run_subcommand(&double_action_app).unwrap();
 
-        assert_eq!(result.get_variant(0).unwrap().to_string(), "Parental: Directed");
+        assert_eq!(result.get_relationship_variant(0).unwrap().to_string(), "Parental: Directed");
     }
 
     #[test]

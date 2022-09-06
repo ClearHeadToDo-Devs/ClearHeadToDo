@@ -51,7 +51,7 @@ impl ClearHeadApp {
         let participant_1_id = self.get_action_id(participant_1_index)?;
         let participant_2_id = self.get_action_id(participant_2_index)?;
 
-        let updated_app = self.add_new(variant_str, participant_1_id, participant_2_id)?;
+        let updated_app = self.append_new_relationship(variant_str, participant_1_id, participant_2_id)?;
 
         Ok(updated_app)
     }

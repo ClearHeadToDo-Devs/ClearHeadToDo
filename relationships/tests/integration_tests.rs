@@ -39,7 +39,7 @@ fn create_new_from_string() {
     let variant_string = "related".to_string();
 
     let updated_list = relationship_list
-        .add_new(&variant_string, Uuid::nil(), Uuid::nil())
+        .append_new_relationship(&variant_string, Uuid::nil(), Uuid::nil())
         .unwrap();
 
     assert_eq!(updated_list[0].get_variant() , RelationshipVariant::create_related());
@@ -51,7 +51,7 @@ fn create_sequential_from_string() {
     let variant_string = "sequential".to_string();
 
     let updated_list = relationship_list
-        .add_new(&variant_string, Uuid::nil(), Uuid::nil())
+        .append_new_relationship(&variant_string, Uuid::nil(), Uuid::nil())
         .unwrap();
 
     assert_eq!(updated_list[0].get_variant() , RelationshipVariant::create_sequential());
@@ -63,7 +63,7 @@ fn create_parental_from_string() {
     let variant_string = "parental".to_string();
 
     let updated_list = relationship_list
-        .add_new(&variant_string, Uuid::nil(), Uuid::nil())
+        .append_new_relationship(&variant_string, Uuid::nil(), Uuid::nil())
         .unwrap();
 
     assert_eq!(updated_list[0].get_variant() , RelationshipVariant::create_parental());
@@ -75,7 +75,7 @@ fn failed_create_from_string() {
     let variant_string = "invalid".to_string();
 
     let updated_list = relationship_list
-        .add_new(&variant_string, Uuid::nil(), Uuid::nil());
+        .append_new_relationship(&variant_string, Uuid::nil(), Uuid::nil());
 
     assert!(updated_list.is_err());
 }
@@ -84,7 +84,7 @@ fn failed_create_from_string() {
 fn add_related_to_list() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
-    let modified_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+    let modified_list = relationship_list.append_related_relationship(Uuid::nil(), Uuid::nil());
 
     assert_eq!(modified_list[0].get_variant() , RelationshipVariant::create_related());
 }
@@ -93,7 +93,7 @@ fn add_related_to_list() {
 fn add_sequential_to_list() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
-    let modified_list = relationship_list.add_sequential(Uuid::nil(), Uuid::nil());
+    let modified_list = relationship_list.append_sequential_relationship(Uuid::nil(), Uuid::nil());
 
     assert_eq!(modified_list[0].get_variant(),RelationshipVariant::create_sequential());
 }
@@ -102,7 +102,7 @@ fn add_sequential_to_list() {
 fn add_parental_to_list() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
-    let modified_list = relationship_list.add_parental(Uuid::nil(), Uuid::nil());
+    let modified_list = relationship_list.append_parental_relationship(Uuid::nil(), Uuid::nil());
 
     assert_eq!(modified_list[0].get_variant() , RelationshipVariant::create_parental());
 }
@@ -131,7 +131,7 @@ fn return_relationship_from_id() {
         create_relationship_list_with_single_related_relationship();
 
     let relationship_id = relationship_list
-        .select_by_id(relationship_list[0].get_id())
+        .select_relationship_by_id(relationship_list[0].get_id())
         .unwrap();
 
     assert!(relationship_id == relationship_list[0]);
@@ -142,7 +142,7 @@ fn fail_to_find_id() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
     let failed_id_query = relationship_list
-        .select_by_id(Uuid::nil())
+        .select_relationship_by_id(Uuid::nil())
         .unwrap_err();
 
     assert!(failed_id_query == "cannot find this id within the relationship list".to_string())
@@ -152,7 +152,7 @@ fn fail_to_find_id() {
 fn successfully_get_id() {
     let relationship_list = create_relationship_list_with_single_related_relationship();
 
-    let relationship = relationship_list.select_by_index(0).unwrap();
+    let relationship = relationship_list.select_relationship_by_index(0).unwrap();
 
     assert_eq!(relationship, relationship_list[0]);
 }
@@ -161,7 +161,7 @@ fn successfully_get_id() {
 fn failed_get_id() {
     let test_list: Vector<Relationship> = Vector::new();
 
-    let extraction_error = test_list.select_by_index(0).unwrap_err();
+    let extraction_error = test_list.select_relationship_by_index(0).unwrap_err();
 
    assert_eq!(extraction_error.to_string() , invalid_index_error_string());
 }
@@ -170,7 +170,7 @@ fn failed_get_id() {
 fn successfully_get_variant() {
     let relationship_list = create_relationship_list_with_single_related_relationship();
 
-    let variant = relationship_list.get_variant(0).unwrap();
+    let variant = relationship_list.get_relationship_variant(0).unwrap();
 
     assert!(variant == RelationshipVariant::create_related())
 }
@@ -179,7 +179,7 @@ fn successfully_get_variant() {
 fn failed_get_variant() {
     let test_list: Vector<Relationship> = Vector::new();
 
-    let index_error = test_list.get_variant(0).unwrap_err();
+    let index_error = test_list.get_relationship_variant(0).unwrap_err();
 
     assert_eq!(index_error.to_string() , invalid_index_error_string());
 }
@@ -189,7 +189,7 @@ fn successfully_get_participant_1() {
     let test_list: Vector<Relationship> = create_relationship_list_with_single_related_relationship();
 
     let participant_1 = test_list
-        .get_participant_1(0)
+        .get_relationship_participant_1(0)
         .unwrap();
 
     assert_eq!(participant_1, Uuid::nil());
@@ -199,7 +199,7 @@ fn successfully_get_participant_1() {
 fn failed_get_participant_1() {
     let test_list: Vector<Relationship> = Vector::new();
 
-    let id_error = test_list.get_participant_1(0).unwrap_err();
+    let id_error = test_list.get_relationship_participant_1(0).unwrap_err();
 
     assert_eq!(id_error.to_string() , invalid_index_error_string());
 }
@@ -207,10 +207,10 @@ fn failed_get_participant_1() {
 #[test]
 fn successfully_get_participant_2() {
     let test_list: Vector<Relationship> = Vector::new();
-    let single_relationship_list = test_list.add_parental(Uuid::nil(), Uuid::nil());
+    let single_relationship_list = test_list.append_parental_relationship(Uuid::nil(), Uuid::nil());
 
     let participant_2 = single_relationship_list
-        .get_participant_2(0)
+        .get_relationship_participant_2(0)
         .unwrap();
 
     assert!(participant_2 == single_relationship_list[0].get_participant_2())
@@ -220,7 +220,7 @@ fn successfully_get_participant_2() {
 fn failed_get_participant_2() {
     let test_list: Vector<Relationship> = Vector::new();
 
-    let empty_list_error = test_list.get_participant_2(0).unwrap_err();
+    let empty_list_error = test_list.get_relationship_participant_2(0).unwrap_err();
 
     assert_eq!(empty_list_error.to_string() , invalid_index_error_string());
 }
@@ -228,7 +228,7 @@ fn failed_get_participant_2() {
 #[test]
 fn successfully_remove_from_id() {
     let relationship_list: Vector<Relationship> = Vector::new();
-    let single_relationship_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+    let single_relationship_list = relationship_list.append_related_relationship(Uuid::nil(), Uuid::nil());
 
     let empty_list = single_relationship_list
         .remove_with_id(single_relationship_list[0].get_id())
@@ -249,9 +249,9 @@ fn failed_remove_from_id() {
 #[test]
 fn change_related_to_parental() {
     let relationship_list: Vector<Relationship> = Vector::new();
-    let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+    let test_list = relationship_list.append_related_relationship(Uuid::nil(), Uuid::nil());
 
-    let updated_list = test_list.change_variant(0, "parental").unwrap();
+    let updated_list = test_list.change_relationship_variant(0, "parental").unwrap();
 
     assert!(
         updated_list[0].get_variant()
@@ -262,9 +262,9 @@ fn change_related_to_parental() {
 #[test]
 fn change_parental_to_related() {
     let relationship_list: Vector<Relationship> = Vector::new();
-    let test_list = relationship_list.add_parental(Uuid::nil(), Uuid::nil());
+    let test_list = relationship_list.append_parental_relationship(Uuid::nil(), Uuid::nil());
 
-    let updated_list = test_list.change_variant(0, "related").unwrap();
+    let updated_list = test_list.change_relationship_variant(0, "related").unwrap();
 
     assert!(
         updated_list[0].get_variant()
@@ -275,9 +275,9 @@ fn change_parental_to_related() {
 #[test]
 fn failed_change_variant() {
     let relationship_list: Vector<Relationship> = Vector::new();
-    let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+    let test_list = relationship_list.append_related_relationship(Uuid::nil(), Uuid::nil());
 
-    let failed_output = test_list.change_variant(0, "bad variant").unwrap_err();
+    let failed_output = test_list.change_relationship_variant(0, "bad variant").unwrap_err();
 
     assert!(failed_output.to_string() == "invalid relationship variant")
 }
@@ -285,10 +285,10 @@ fn failed_change_variant() {
 #[test]
 fn update_participant_1_id() {
     let relationship_list: Vector<Relationship> = Vector::new();
-    let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+    let test_list = relationship_list.append_related_relationship(Uuid::nil(), Uuid::nil());
 
     let updated_list = test_list
-        .update_participant_1(0, Uuid::new_v4())
+        .update_relationship_participant_1(0, Uuid::new_v4())
         .unwrap();
 
     assert!(updated_list[0].get_participant_1() != Uuid::nil())
@@ -299,7 +299,7 @@ fn failed_id_update_participant_1() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
     let bad_list_search = relationship_list
-        .update_participant_1(0, Uuid::new_v4())
+        .update_relationship_participant_1(0, Uuid::new_v4())
         .unwrap_err();
 
     assert!(bad_list_search.to_string() == invalid_index_error_string())
@@ -308,10 +308,10 @@ fn failed_id_update_participant_1() {
 #[test]
 fn update_participant_2_id() {
     let relationship_list: Vector<Relationship> = Vector::new();
-    let test_list = relationship_list.add_related(Uuid::nil(), Uuid::nil());
+    let test_list = relationship_list.append_related_relationship(Uuid::nil(), Uuid::nil());
 
     let updated_list = test_list
-        .update_participant_2(0, Uuid::new_v4())
+        .update_relationship_participant_2(0, Uuid::new_v4())
         .unwrap();
 
     assert!(updated_list[0].get_participant_2() != Uuid::nil())
@@ -322,7 +322,7 @@ fn failed_id_update_participant_2() {
     let relationship_list: Vector<Relationship> = Vector::new();
 
     let bad_list_search = relationship_list
-        .update_participant_2(0, Uuid::new_v4())
+        .update_relationship_participant_2(0, Uuid::new_v4())
         .unwrap_err();
 
     assert!(bad_list_search.to_string() == invalid_index_error_string())
@@ -389,7 +389,7 @@ fn get_participant_1_list_for_id() {
     let query_result = single_relationship_list
         .get_participant_1_list_for_id(Uuid::nil()).unwrap();
 
-    assert_eq!(query_result[0] , single_relationship_list.select_by_index(0).unwrap());
+    assert_eq!(query_result[0] , single_relationship_list.select_relationship_by_index(0).unwrap());
 }
 
 #[test]
@@ -409,7 +409,7 @@ fn get_participant_2_list_for_id() {
     let query_result = single_relationship_list
         .get_participant_2_list_for_id(Uuid::nil()).unwrap();
 
-    assert_eq!(query_result[0] , single_relationship_list.select_by_index(0).unwrap());
+    assert_eq!(query_result[0] , single_relationship_list.select_relationship_by_index(0).unwrap());
 }
 
 #[test]
@@ -425,30 +425,30 @@ fn failed_get_participant_2_list_for_id() {
 #[test]
 fn get_either_participant_list_for_id() {
     let single_relationship_list = create_relationship_list_with_single_related_relationship();
-    let single_p2_relationship_list = single_relationship_list.update_participant_2(0, Uuid::new_v4()).unwrap();
+    let single_p2_relationship_list = single_relationship_list.update_relationship_participant_2(0, Uuid::new_v4()).unwrap();
 
     let query_result = single_p2_relationship_list
         .get_either_participant_list_for_id(Uuid::nil()).unwrap();
 
-    assert_eq!(query_result[0] , single_p2_relationship_list.select_by_index(0).unwrap());
+    assert_eq!(query_result[0] , single_p2_relationship_list.select_relationship_by_index(0).unwrap());
 }
 
 #[test]
 fn get_either_participant_list_only_2_for_id() {
     let single_relationship_list = create_relationship_list_with_single_related_relationship();
-    let single_p1_relationship_list = single_relationship_list.update_participant_1(0, Uuid::new_v4()).unwrap();
+    let single_p1_relationship_list = single_relationship_list.update_relationship_participant_1(0, Uuid::new_v4()).unwrap();
 
     let query_result = single_p1_relationship_list
         .get_either_participant_list_for_id(Uuid::nil()).unwrap();
 
-    assert_eq!(query_result[0] , single_p1_relationship_list.select_by_index(0).unwrap());
+    assert_eq!(query_result[0] , single_p1_relationship_list.select_relationship_by_index(0).unwrap());
 }
 
 #[test]
 fn get_either_participant_list_for_id_one_in_each(){
     let empty_list: Vector<Relationship> = Vector::new();
-    let single_relationship_list = empty_list.add_related(Uuid::new_v4(), Uuid::nil());
-    let double_relationship_list = single_relationship_list.add_related(Uuid::nil(), Uuid::new_v4());
+    let single_relationship_list = empty_list.append_related_relationship(Uuid::new_v4(), Uuid::nil());
+    let double_relationship_list = single_relationship_list.append_related_relationship(Uuid::nil(), Uuid::new_v4());
 
     let query_result = double_relationship_list
         .get_either_participant_list_for_id(Uuid::nil()).unwrap();
