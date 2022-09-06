@@ -13,7 +13,7 @@ use tabled::Tabled;
 #[derive(PartialEq, Debug, Clone, Deserialize, Serialize, Tabled)]
 pub struct Action {
     name: String,
-    pub priority: Priority,
+    priority: Priority,
     pub completed: bool,
     pub id: Uuid,
 }

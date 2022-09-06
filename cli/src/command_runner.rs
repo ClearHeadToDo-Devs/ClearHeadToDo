@@ -121,7 +121,7 @@ impl Command {
                 format!(
                     "{} was changed from a priority of: {}\n to a priority of: {}",
                     updated_app.action_list[*index].get_name(),
-                    previous_app.action_list[*index].priority,
+                    previous_app.action_list[*index].get_priority(),
                     new_priority
                 )
             }
@@ -153,8 +153,8 @@ mod tests {
             .unwrap();
 
         assert_eq!(result.action_list[0].get_name(), "Default Action".to_string());
-        assert_eq!(result.action_list[0].priority, Priority::Optional);
-        assert_eq!(result.action_list[0].completed, false);
+        assert_eq!(result.action_list[0].get_priority(), Priority::Optional);
+        assert_eq!(result.action_list[0].get_completion_status(), false);
     }
 
     #[test]
@@ -304,7 +304,7 @@ mod tests {
             new_priority: "High".to_string(),
         }
         .run_subcommand(&single_list).unwrap();
-        assert_eq!(result.action_list[0].priority, Priority::High);
+        assert_eq!(result.action_list[0].get_priority(), Priority::High);
     }
 
     #[test]
