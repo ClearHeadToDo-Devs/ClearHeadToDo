@@ -381,3 +381,13 @@ fn false_check_id_against_either_participant_lists() {
 
     assert_eq!(query_result, false);
 }
+
+#[test]
+fn get_participant_1_list_for_id() {
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+
+    let query_result = single_relationship_list
+        .get_participant_1_list_for_id(Uuid::nil()).unwrap();
+
+    assert_eq!(query_result[0] , single_relationship_list.select_by_index(0).unwrap());
+}

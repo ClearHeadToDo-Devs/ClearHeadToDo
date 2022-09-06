@@ -41,6 +41,7 @@ pub trait RelationshipListManagement {
     fn id_is_present_in_participant_1_list(&self, id: Uuid) -> bool;
     fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool;
     fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool;
+    fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -207,6 +208,28 @@ impl RelationshipListManagement for Vector<Relationship> {
     fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool {
         self.id_is_present_in_participant_1_list(id) 
         || self.id_is_present_in_participant_2_list(id)
+    }
+
+    fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        match self.id_is_present_in_participant_1_list(id){
+            true => {
+                let mut participant_1_list = Vector::new();
+
+                for relationship in self.iter(){
+                    if relationship.get_participant_1() == id{
+                        participant_1_list.push_back(relationship.clone());
+                    }
+                }
+
+                return Ok(participant_1_list);
+            },
+            false => {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Unable to find Relationship with given Id in participant 1 list",
+                )));
+            }
+        }
     }
 }
 

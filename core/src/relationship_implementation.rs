@@ -146,6 +146,10 @@ impl RelationshipListManagement for ClearHeadApp {
     fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool {
         self.relationship_list.id_is_present_in_either_participant_list(id)
     }
+
+    fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        todo!()
+    }
 }
 
 #[cfg(test)]
