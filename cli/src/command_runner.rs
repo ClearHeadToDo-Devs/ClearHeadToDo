@@ -205,42 +205,38 @@ mod tests {
 
     #[test]
     fn generate_complete_message() {
-        let empty_app = ClearHeadApp::default();
-        let single_action_app = empty_app.append_default();
+        let single_action_app = create_single_action_app();
         let updated_action_app = single_action_app.toggle_completion_status(0).unwrap();
 
         let message = Command::ToggleCompletion(0)
             .create_end_user_message(&single_action_app, &updated_action_app);
 
-        assert_eq!(
-            message,
-            "Default Action had its\' completion status toggled to true"
-        );
+        assert_eq!(message,"Default Action had its\' completion status toggled to true");
     }
 
     #[test]
     fn complete_failing_invalid_id() {
         let empty_list: ClearHeadApp = Default::default();
 
-        let error = Command::ToggleCompletion(1).run_subcommand(&empty_list);
-        assert_eq!(error.unwrap_err().to_string(), "No Action at Index 1");
+        let error = Command::ToggleCompletion(0).run_subcommand(&empty_list);
+
+        assert_eq!(error.unwrap_err().to_string(), "No Action at Index 0");
     }
 
     #[test]
     fn cli_remove_successful_run_test() {
-        let empty_list: ClearHeadApp = Default::default();
-        let single_list = empty_list.append_default();
+        let single_action_app = create_single_action_app();
 
-        let result = Command::Remove(0).run_subcommand(&single_list);
-        assert_eq!(result.unwrap(), ClearHeadApp::default());
+        let result = Command::Remove(0).run_subcommand(&single_action_app).unwrap();
+
+        assert_eq!(result, ClearHeadApp::default());
     }
 
     #[test]
     fn generate_remove_message() {
-        let empty_app = ClearHeadApp::default();
-        let single_action_app = empty_app.append_default();
-        let updated_app_list = single_action_app.remove_action(0).unwrap();
+        let single_action_app = create_single_action_app();
 
+        let updated_app_list = single_action_app.remove_action(0).unwrap();
         let message =
             Command::Remove(0).create_end_user_message(&single_action_app, &updated_app_list);
 
