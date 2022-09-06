@@ -134,6 +134,18 @@ impl RelationshipListManagement for ClearHeadApp {
 
         Ok(cloned_app)
     }
+
+    fn id_is_present_in_participant_1_list(&self, id: Uuid) -> bool {
+        self.relationship_list.id_is_present_in_participant_1_list(id)
+    }
+
+    fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool {
+        self.relationship_list.id_is_present_in_participant_2_list(id)
+    }
+
+    fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool {
+        self.relationship_list.id_is_present_in_either_participant_list(id)
+    }
 }
 
 #[cfg(test)]
@@ -443,5 +455,65 @@ mod tests {
         let index_error = test_app.change_variant(0, "bad_variant").unwrap_err();
 
         assert_eq!(index_error.to_string(), failed_relationship_variant_error());
+    }
+
+    #[test]
+    fn check_id_in_participant_1(){
+        let test_app = create_app_with_single_relationship("related");
+        let test_id = test_app.get_participant_1(0).unwrap();
+
+        let result = test_app.id_is_present_in_participant_1_list(test_id);
+
+        assert!(result == true);
+    }
+
+    #[test]
+    fn check_id_not_in_participant_1(){
+        let test_app = create_app_with_single_relationship("related");
+        let test_id = Uuid::new_v4();
+
+        let result = test_app.id_is_present_in_participant_1_list(test_id);
+
+        assert!(result == false);
+    }
+
+    #[test]
+    fn check_id_in_participant_2(){
+        let test_app = create_app_with_single_relationship("related");
+        let test_id = test_app.get_participant_2(0).unwrap();
+
+        let result = test_app.id_is_present_in_participant_2_list(test_id);
+
+        assert!(result == true);
+    }
+
+    #[test]
+    fn check_id_not_in_participant_2(){
+        let test_app = create_app_with_single_relationship("related");
+        let test_id = Uuid::new_v4();
+
+        let result = test_app.id_is_present_in_participant_2_list(test_id);
+
+        assert!(result == false);
+    }
+
+    #[test]
+    fn check_id_in_either_participant_lists(){
+        let test_app = create_app_with_single_relationship("related");
+        let test_id = test_app.get_participant_1(0).unwrap();
+
+        let result = test_app.id_is_present_in_either_participant_list(test_id);
+
+        assert!(result == true);
+    }
+
+    #[test]
+    fn check_id_not_in_either_participant_lists(){
+        let test_app = create_app_with_single_relationship("related");
+        let test_id = Uuid::new_v4();
+
+        let result = test_app.id_is_present_in_either_participant_list(test_id);
+
+        assert!(result == false);
     }
 }

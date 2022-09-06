@@ -328,3 +328,56 @@ fn failed_id_update_participant_2() {
     assert!(bad_list_search.to_string() == invalid_index_error_string())
 }
 
+#[test]
+fn check_id_against_participant_1_list() {
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+
+    let query_result = single_relationship_list.id_is_present_in_participant_1_list(Uuid::nil());
+
+    assert_eq!(query_result, true);
+}
+
+#[test]
+fn false_check_id_against_participant_1_list() {
+    let empty_relationship_list = Vector::new();
+
+    let query_result = empty_relationship_list.id_is_present_in_participant_1_list(Uuid::new_v4());
+
+    assert_eq!(query_result, false);
+}
+
+#[test]
+fn check_id_against_participant_2_list() {
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+
+    let query_result = single_relationship_list.id_is_present_in_participant_2_list(Uuid::nil());
+
+    assert_eq!(query_result, true);
+}
+
+#[test]
+fn false_check_id_against_participant_2_list() {
+    let empty_relationship_list = Vector::new();
+
+    let query_result = empty_relationship_list.id_is_present_in_participant_2_list(Uuid::new_v4());
+
+    assert_eq!(query_result, false);
+}
+
+#[test]
+fn check_id_against_either_participant_lists() {
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+
+    let query_result = single_relationship_list.id_is_present_in_either_participant_list(Uuid::nil());
+
+    assert_eq!(query_result, true);
+}
+
+#[test]
+fn false_check_id_against_either_participant_lists() {
+    let empty_relationship_list = Vector::new();
+
+    let query_result = empty_relationship_list.id_is_present_in_either_participant_list(Uuid::new_v4());
+
+    assert_eq!(query_result, false);
+}

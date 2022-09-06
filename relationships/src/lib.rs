@@ -37,6 +37,10 @@ pub trait RelationshipListManagement {
     fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, Box<dyn Error>>;
     fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>>;
     fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>>;
+
+    fn id_is_present_in_participant_1_list(&self, id: Uuid) -> bool;
+    fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool;
+    fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -180,6 +184,29 @@ impl RelationshipListManagement for Vector<Relationship> {
         cloned_list.set(index, updated_relationship);
 
         Ok(cloned_list)
+    }
+
+    fn id_is_present_in_participant_1_list(&self, id: Uuid) -> bool {
+        let query_result = self.iter().find(|relationship| relationship.get_participant_1() == id);
+
+        match query_result{
+            Some(_) => true,
+            None => false
+        }
+    }
+
+    fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool {
+        let query_result = self.iter().find(|relationship| relationship.get_participant_2() == id);
+
+        match query_result{
+            Some(_) => true,
+            None => false
+        }
+    }
+
+    fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool {
+        self.id_is_present_in_participant_1_list(id) 
+        || self.id_is_present_in_participant_2_list(id)
     }
 }
 
