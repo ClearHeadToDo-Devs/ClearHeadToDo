@@ -32,17 +32,18 @@ impl ClearHeadApp {
 
         extended_list.push_str("Order,Name,Priority,Completed,Id\n");
         for action in &self.action_list {
+
             extended_list.push_str(&format!("{},{}\n",index, action.to_string()));
             index += 1;
+
             if self.id_is_present_in_participant_1_list(action.get_id()) {
-                for relationship in self.relationship_list.iter().filter(
-                    |relationship| relationship.get_participant_1() == action.get_id()) {
-                    extended_list.push_str(&format!(
-                        "  - {},{}\n",relationship.get_variant(), 
-                        &self.action_list.select_by_id(relationship.get_participant_2())?));
+                for relationship in &self.get_participant_1_list_for_id(action.get_id())? {
+                        extended_list.push_str(&format!(
+                            "  - {},{}\n",relationship.get_variant(), 
+                            &self.action_list.select_action_by_id(relationship.get_participant_2())?));
+                    }
                 }
             }
-        }
         Ok(extended_list)
     }
 
@@ -63,13 +64,13 @@ pub mod tests {
 
 
     pub fn create_app_with_single_action() -> ClearHeadApp {
-        let app = ClearHeadApp::default().append_default();
+        let app = ClearHeadApp::default().append_default_action();
 
         app
     }
 
     pub fn create_app_with_two_actions() -> ClearHeadApp {
-        let app = ClearHeadApp::default().append_default().append_default();
+        let app = ClearHeadApp::default().append_default_action().append_default_action();
 
         app
     }
@@ -88,8 +89,8 @@ pub mod tests {
 
     pub fn create_minimal_related_app(variant_str: &str) -> ClearHeadApp {
         let app = ClearHeadApp::default()
-            .append_default()
-            .append_default()
+            .append_default_action()
+            .append_default_action()
             .create_action_relationship(variant_str, 0, 1).unwrap();
 
         app

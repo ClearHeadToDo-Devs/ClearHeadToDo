@@ -35,10 +35,10 @@ impl Command {
                 return Ok(app.clone());
             }
             Command::Create(name) => {
-                let updated_list = app.append_default();
+                let updated_list = app.append_default_action();
                 if let Some(name) = name {
                     return updated_list
-                        .rename(updated_list.action_list.len() - 1, name.to_string());
+                        .rename_action(updated_list.action_list.len() - 1, name.to_string());
                 }
                 Ok(updated_list)
             }
@@ -52,7 +52,7 @@ impl Command {
                 Ok(updated_list)
             }
             Command::ToggleCompletion(index) => {
-                let updated_list = app.toggle_completion_status(*index)?;
+                let updated_list = app.toggle_action_completion_status(*index)?;
                 Ok(updated_list)
             }
             Command::Remove(index) => {
@@ -60,7 +60,7 @@ impl Command {
                 Ok(updated_list)
             }
             Command::Rename { index, new_name } => {
-                let updated_list = app.rename(*index, new_name.to_string())?;
+                let updated_list = app.rename_action(*index, new_name.to_string())?;
                 Ok(updated_list)
             }
             Command::Reprioritize {
@@ -68,7 +68,7 @@ impl Command {
                 new_priority,
             } => {
                 let updated_list =
-                    app.change_priority(*index, new_priority.to_string())?;
+                    app.change_action_priority(*index, new_priority.to_string())?;
                 Ok(updated_list)
             }
         }
@@ -140,19 +140,19 @@ mod tests {
 
     fn create_empty_and_singe_action_list() -> (ClearHeadApp, ClearHeadApp) {
         let empty_list = ClearHeadApp::default();
-        let single_action_list = empty_list.append_default();
+        let single_action_list = empty_list.append_default_action();
 
         (empty_list, single_action_list)
     }
 
     fn create_single_action_app() -> ClearHeadApp {
-        let single_action_list = ClearHeadApp::default().append_default();
+        let single_action_list = ClearHeadApp::default().append_default_action();
 
         single_action_list
     }
 
     fn create_double_action_app() -> ClearHeadApp {
-        let double_action_app = ClearHeadApp::default().append_default().append_default();
+        let double_action_app = ClearHeadApp::default().append_default_action().append_default_action();
 
         double_action_app
     }
@@ -203,7 +203,7 @@ mod tests {
     #[test]
     fn reopen_successful_run() {
         let single_action_app = create_single_action_app();
-        let single_completed_action_app = single_action_app.toggle_completion_status(0).unwrap();
+        let single_completed_action_app = single_action_app.toggle_action_completion_status(0).unwrap();
 
         let updated_list =
             Command::ToggleCompletion(0).run_subcommand(&single_completed_action_app).unwrap();
@@ -214,7 +214,7 @@ mod tests {
     #[test]
     fn generate_complete_message() {
         let single_action_app = create_single_action_app();
-        let updated_action_app = single_action_app.toggle_completion_status(0).unwrap();
+        let updated_action_app = single_action_app.toggle_action_completion_status(0).unwrap();
 
         let message = Command::ToggleCompletion(0)
             .create_end_user_message(&single_action_app, &updated_action_app);
@@ -280,7 +280,7 @@ mod tests {
     fn generate_rename_message() {
         let single_action_app = create_single_action_app();
         let updated_list = single_action_app
-            .rename(0, "New Name".to_string())
+            .rename_action(0, "New Name".to_string())
             .unwrap();
 
         let message = Command::Rename {
@@ -321,7 +321,7 @@ mod tests {
     fn generate_reprioritize_message() {
         let single_action_app = create_single_action_app();
         let updated_list = single_action_app
-            .change_priority(0, "low".to_string())
+            .change_action_priority(0, "low".to_string())
             .unwrap();
 
         let message = Command::Reprioritize {

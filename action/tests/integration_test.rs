@@ -20,7 +20,7 @@ fn invalid_index_error_string(index: usize) -> String {
 fn append_default() {
     let empty_action_list = Vector::new();
 
-    let single_action_list = empty_action_list.append_default();
+    let single_action_list = empty_action_list.append_default_action();
 
     assert_eq!(single_action_list.len(), 1);
 }
@@ -30,7 +30,7 @@ fn action_successful_search_by_id_test() {
     let action_list = create_single_action_list();
 
     let test_search_action = action_list
-        .select_by_id(action_list[0].get_id()).unwrap();
+        .select_action_by_id(action_list[0].get_id()).unwrap();
 
     assert!(test_search_action == action_list[0]);
 }
@@ -39,7 +39,7 @@ fn action_successful_search_by_id_test() {
 fn failed_search_by_id() {
     let empty_list = Vector::new();
 
-    let test_search_action = empty_list.select_by_id(Uuid::nil());
+    let test_search_action = empty_list.select_action_by_id(Uuid::nil());
     let error_message = test_search_action.unwrap_err().to_string();
 
     assert_eq!(error_message,"No Action with Id 00000000-0000-0000-0000-000000000000");
@@ -49,7 +49,7 @@ fn failed_search_by_id() {
 fn successful_select_by_index() {
     let single_action_list = create_single_action_list();
 
-    let test_search_action = single_action_list.select_by_index(0).unwrap();
+    let test_search_action = single_action_list.select_action_by_index(0).unwrap();
 
     assert!(test_search_action == single_action_list[0]);
 }
@@ -58,7 +58,7 @@ fn successful_select_by_index() {
 fn failed_select_by_index() {
     let empty_list = Vector::new();
 
-    let failed_action_selection = empty_list.select_by_index(0).unwrap_err();
+    let failed_action_selection = empty_list.select_action_by_index(0).unwrap_err();
 
     assert_eq!(failed_action_selection.to_string() , invalid_index_error_string(0));
 }
@@ -126,7 +126,7 @@ fn successful_action_removal_test() {
 fn action_completion_test() {
     let action_list = create_single_action_list();
 
-    let good_result = action_list.toggle_completion_status(0).unwrap();
+    let good_result = action_list.toggle_action_completion_status(0).unwrap();
 
     assert_eq!(good_result[0].get_completion_status() , true);
 }
@@ -135,7 +135,7 @@ fn action_completion_test() {
 fn failing_action_completion_test() {
     let empty_list = Vector::new();
 
-    let index_error = empty_list.toggle_completion_status(0).unwrap_err();
+    let index_error = empty_list.toggle_action_completion_status(0).unwrap_err();
 
     assert_eq!(index_error.to_string(), invalid_index_error_string(0));
 }
@@ -145,8 +145,8 @@ fn action_reopen() {
     let action_list = create_single_action_list();
 
     let updated_action_list = &action_list
-        .toggle_completion_status(0).unwrap()
-        .toggle_completion_status(0).unwrap();
+        .toggle_action_completion_status(0).unwrap()
+        .toggle_action_completion_status(0).unwrap();
 
     assert_eq!(updated_action_list[0].get_completion_status(), false);
 }
@@ -156,7 +156,7 @@ fn action_rename() {
     let single_action_list = create_single_action_list();
 
     let good_result = &single_action_list
-        .rename(0, "Changed Task".to_string())
+        .rename_action(0, "Changed Task".to_string())
         .unwrap();
 
     assert!(good_result[0].get_name() == "Changed Task".to_string());
@@ -166,7 +166,7 @@ fn action_rename() {
 fn failing_action_rename() {
     let empty_list = Vector::new();
 
-    let index_error = empty_list.rename(0, "Changed Task".to_string()).unwrap_err();
+    let index_error = empty_list.rename_action(0, "Changed Task".to_string()).unwrap_err();
 
     assert_eq!(index_error.to_string(), invalid_index_error_string(0));
 }
@@ -176,7 +176,7 @@ fn action_reprioritize() {
     let single_action_list = create_single_action_list();
 
     let changed_action_list = &single_action_list
-        .change_priority(0, "low".to_string())
+        .change_action_priority(0, "low".to_string())
         .unwrap();
 
     assert_eq!(changed_action_list[0].get_priority(), Priority::Low);
@@ -186,7 +186,7 @@ fn action_reprioritize() {
 fn failed_action_reprioritize() {
     let empty_list = Vector::new();
 
-    let index_error = empty_list.change_priority(0, "low".to_string()).unwrap_err();
+    let index_error = empty_list.change_action_priority(0, "low".to_string()).unwrap_err();
 
     assert_eq!(index_error.to_string(), invalid_index_error_string(0));
 }
