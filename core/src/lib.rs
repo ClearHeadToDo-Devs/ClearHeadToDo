@@ -12,6 +12,6 @@ pub use storage::*;
 
 pub mod action_implementation;
 pub mod relationship_implementation;
-pub use functionality::*;
 
+pub mod extended_action;
 
