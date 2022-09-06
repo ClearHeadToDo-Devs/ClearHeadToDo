@@ -151,11 +151,11 @@ impl RelationshipListManagement for ClearHeadApp {
     }
 
     fn select_by_id(&self, id: Uuid) -> Result<Relationship, String> {
-        unimplemented!()
+        Ok(self.relationship_list.select_by_id(id)?)
     }
 
     fn select_by_index(&self, index: usize) -> Result<Relationship, Box<dyn Error>> {
-        unimplemented!()
+        Ok(self.relationship_list.select_by_index(index)?)
     }
 
     fn get_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
@@ -216,6 +216,10 @@ mod tests{
 
     pub fn create_app_with_single_relationship() -> ClearHeadApp {
         ClearHeadApp::default().add_new("related", Uuid::nil(), Uuid::nil()).unwrap()
+    }
+
+    pub fn failed_relationship_id_search_error() -> String {
+        "cannot find this id within the relationship list".to_string()
     }
 
     #[test]
@@ -596,6 +600,43 @@ mod tests{
 
         let index_error = test_app.remove_with_id(Uuid::nil()).unwrap_err();
 
-        assert_eq!(index_error.to_string(), "cannot find this id within the relationship list".to_string());
+        assert_eq!(index_error.to_string(), failed_relationship_id_search_error());
+    }
+
+    #[test]
+    fn select_by_index(){
+        let test_app = create_app_with_single_relationship();
+
+        let selected = RelationshipListManagement::select_by_index(&test_app, 0).unwrap();
+
+        assert_eq!(selected, test_app.relationship_list[0]);
+    }
+
+    #[test]
+    fn failed_select_by_index(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = RelationshipListManagement::select_by_index(&empty_app, 0).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn select_by_id(){
+        let test_app = create_app_with_single_relationship();
+        let target_id = test_app.get_id(0).unwrap();
+
+        let selected = RelationshipListManagement::select_by_id(&test_app, target_id).unwrap();
+
+        assert_eq!(selected, test_app.relationship_list[0]);
+    }
+
+    #[test]
+    fn failed_select_by_id(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = RelationshipListManagement::select_by_id(&empty_app, Uuid::nil()).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_id_search_error());
     }
 }
