@@ -136,12 +136,27 @@ mod tests {
     use super::*;
     use clear_head_todo_core::Priority;
 
+    fn create_empty_and_singe_action_list() -> (ClearHeadApp, ClearHeadApp) {
+        let empty_list = ClearHeadApp::default();
+        let single_action_list = empty_list.append_default();
+
+        (empty_list, single_action_list)
+    }
+
+    fn create_single_action_app() -> ClearHeadApp {
+        let single_action_list = ClearHeadApp::default().append_default();
+
+        single_action_list
+    }
+
     #[test]
     fn list_failure_empty_list() {
         let empty_list: ClearHeadApp = Default::default();
 
         let error = Command::List.run_subcommand(&empty_list);
-        assert_eq!(format!("{:?}",error.unwrap()), "ClearHeadApp { action_list: [], relationship_list: [] }");
+
+        let expected_string = "ClearHeadApp { action_list: [], relationship_list: [] }";
+        assert_eq!(format!("{:?}",error.unwrap()), expected_string);
     }
 
     #[test]
@@ -159,40 +174,33 @@ mod tests {
 
     #[test]
     fn generate_create_success_message() {
-        let empty_list: ClearHeadApp = Default::default();
-        let single_list = empty_list.append_default();
+        let (empty_list, single_action_list) = create_empty_and_singe_action_list();
 
-        let message =
-            Command::Create(None).create_end_user_message(&empty_list, &single_list);
+        let message = Command::Create(None)
+            .create_end_user_message(&empty_list, &single_action_list);
+
         assert_eq!(message, "Created Action Default Action");
     }
 
     #[test]
     fn complete_successful_run() {
-        let empty_list: ClearHeadApp = Default::default();
-        let single_action_lst = empty_list.append_default();
+        let single_action_app = create_single_action_app();
 
-        let result = Command::ToggleCompletion(0).run_subcommand(&single_action_lst);
+        let result = Command::ToggleCompletion(0)
+            .run_subcommand(&single_action_app).unwrap();
 
-        assert_eq!(
-            result.unwrap().action_list[0].get_completion_status(),
-            true
-        );
+        assert_eq!(result.get_action_completion_status(0).unwrap(),true);
     }
 
     #[test]
     fn reopen_successful_run() {
-        let empty_app: ClearHeadApp = Default::default();
-        let single_action_app = empty_app.append_default();
+        let single_action_app = create_single_action_app();
         let single_completed_action_app = single_action_app.toggle_completion_status(0).unwrap();
 
         let updated_list =
             Command::ToggleCompletion(0).run_subcommand(&single_completed_action_app).unwrap();
 
-        assert_eq!(
-            updated_list.action_list[0].get_completion_status(),
-            false
-        );
+        assert_eq!(updated_list.get_action_completion_status(0).unwrap(),false);
     }
 
     #[test]
