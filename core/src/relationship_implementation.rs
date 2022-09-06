@@ -24,7 +24,6 @@ impl RelationshipListManagement for ClearHeadApp {
         )?;
 
         updated_app.relationship_list = updated_relationship_list;
-
         Ok(updated_app)
     }
 
@@ -37,7 +36,6 @@ impl RelationshipListManagement for ClearHeadApp {
         );
 
         cloned_app.relationship_list = updated_relationship_list;
-
         return cloned_app;
     }
 
@@ -50,7 +48,6 @@ impl RelationshipListManagement for ClearHeadApp {
         );
 
         cloned_app.relationship_list = updated_relationship_list;
-
         return cloned_app;
     }
 
@@ -63,7 +60,6 @@ impl RelationshipListManagement for ClearHeadApp {
         );
 
         cloned_app.relationship_list = updated_relationship_list;
-
         return cloned_app;
     }
 
@@ -95,8 +91,8 @@ impl RelationshipListManagement for ClearHeadApp {
         let mut cloned_app = self.clone();
 
         let updated_relationship_list = self.relationship_list.remove_at_index(index)?;
-        cloned_app.relationship_list = updated_relationship_list;
 
+        cloned_app.relationship_list = updated_relationship_list;
         Ok(cloned_app)
     }
 
@@ -114,7 +110,6 @@ impl RelationshipListManagement for ClearHeadApp {
 
         let updated_relationship_list = self.relationship_list.update_participant_1(index, new_id)?;
         cloned_app.relationship_list = updated_relationship_list;
-
         Ok(cloned_app)
     }
 
@@ -123,7 +118,6 @@ impl RelationshipListManagement for ClearHeadApp {
 
         let updated_relationship_list = self.relationship_list.update_participant_2(index, new_id)?;
         cloned_app.relationship_list = updated_relationship_list;
-
         Ok(cloned_app)
     }
 
@@ -132,7 +126,6 @@ impl RelationshipListManagement for ClearHeadApp {
 
         let updated_relationship_list = self.relationship_list.change_variant(index, variant)?;
         cloned_app.relationship_list = updated_relationship_list;
-
         Ok(cloned_app)
     }
 
@@ -154,11 +147,11 @@ impl RelationshipListManagement for ClearHeadApp {
     }
 
     fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>> {
-        todo!()
+        Ok(self.relationship_list.get_participant_2_list_for_id(id)?)
     }
 
     fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>> {
-        todo!()
+        Ok(self.relationship_list.get_either_participant_list_for_id(id)?)
     }
 }
 
@@ -546,6 +539,46 @@ mod tests {
 
         let result = test_app.get_participant_1_list_for_id(Uuid::nil()).unwrap_err();
 
-        assert_eq!(result.to_string(), "Unable to find Relationship with given Id in participant 1 list");
+        assert_eq!(result.to_string(), 
+            "Unable to find Relationship with given Id in participant 1 list");
+    }
+
+    #[test]
+    fn get_participant_2_list_for_id(){
+        let test_app = ClearHeadApp::default().add_related(Uuid::new_v4(), Uuid::nil());
+
+        let result = test_app.get_participant_2_list_for_id(Uuid::nil()).unwrap();
+
+        assert_eq!(result.select_by_index(0).unwrap(), test_app.select_by_index(0).unwrap());
+    }
+
+    #[test]
+    fn failed_get_participant_2_list_for_id(){
+        let test_app = ClearHeadApp::default();
+
+        let result = test_app.get_participant_2_list_for_id(Uuid::nil()).unwrap_err();
+
+        assert_eq!(result.to_string(), 
+            "Unable to find Relationship with given Id in participant 2 list");
+    }
+
+    #[test]
+    fn get_either_participant_list_for_id(){
+        let test_app = ClearHeadApp::default().add_related(Uuid::new_v4(), Uuid::nil())
+        .add_related(Uuid::nil(), Uuid::new_v4());
+
+        let result = test_app.get_either_participant_list_for_id(Uuid::nil()).unwrap();
+
+        assert_eq!(result.len(), 2);
+    }
+
+    #[test]
+    fn failed_get_either_participant_list_for_id(){
+        let test_app = ClearHeadApp::default();
+
+        let result = test_app.get_either_participant_list_for_id(Uuid::nil()).unwrap_err();
+
+        assert_eq!(result.to_string(), 
+            "Unable to find Relationship with given Id in either participant list");
     }
 }
