@@ -125,11 +125,29 @@ impl RelationshipListManagement for ClearHeadApp {
     }
 
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> ClearHeadApp {
-        unimplemented!()
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.add_parental(
+            participant_1,
+            participant_2,
+        );
+
+        cloned_app.relationship_list = updated_relationship_list;
+
+        return cloned_app;
     }
 
     fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
-        unimplemented!()
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.add_sequential(
+            participant_1,
+            participant_2,
+        );
+
+        cloned_app.relationship_list = updated_relationship_list;
+
+        return cloned_app;
     }
 
     fn select_by_id(&self, id: Uuid) -> Result<Relationship, String> {
@@ -439,7 +457,25 @@ mod tests{
 
         let updated_app = test_app.add_related(Uuid::nil(), Uuid::nil());
 
-        assert_eq!(updated_app.relationship_list.len(), 1);
+        assert_eq!(updated_app.get_variant(0).unwrap(), RelationshipVariant::create_related());
+    }
+
+    #[test]
+    fn create_sequential_direct(){
+        let test_app = ClearHeadApp::default();
+
+        let updated_app = test_app.add_sequential(Uuid::nil(), Uuid::nil());
+
+        assert_eq!(updated_app.get_variant(0).unwrap(), RelationshipVariant::create_sequential());
+    }
+
+    #[test]
+    fn create_parental_direct(){
+        let test_app = ClearHeadApp::default();
+
+        let updated_app = test_app.add_parental(Uuid::nil(), Uuid::nil());
+
+        assert_eq!(updated_app.get_variant(0).unwrap(), RelationshipVariant::create_parental());
     }
 
     #[test]
