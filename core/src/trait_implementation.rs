@@ -223,7 +223,7 @@ impl RelationshipListManagement for ClearHeadApp {
 
 #[cfg(test)]
 mod tests{
-    use crate::{ClearHeadApp, functionality::tests::{create_app_with_single_action, failed_action_index_error, get_first_action, create_minimal_related_app, create_app_with_two_actions, failed_relationship_index_error}};
+    use crate::{ClearHeadApp, functionality::tests::{create_app_with_single_action, failed_action_index_error, get_first_action, failed_relationship_index_error}};
 
     use super::*;
 
