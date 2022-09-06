@@ -2,8 +2,8 @@ pub mod arg_parser;
 use arg_parser::create_app;
 use arg_parser::ArgumentParsing;
 
-pub mod command_builder;
-use command_builder::Command;
+pub mod command_runner;
+use command_runner::Command;
 
 use clear_head_todo_core::ClearHeadApp;
 use clear_head_todo_core::JSONStorage;
