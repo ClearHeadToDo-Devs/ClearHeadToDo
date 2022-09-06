@@ -7,13 +7,8 @@ use action::ActionListManipulation;
 use relationships::item::RelationshipVariant;
 
 
-use std::fmt::Debug;
-use std::cmp::PartialEq;
 use std::error::Error;
-use tabled::Table;
 
-use serde::{Serialize, Deserialize};
-use im::Vector;
 use uuid::Uuid;
 
 use crate::ClearHeadApp;
@@ -103,7 +98,17 @@ impl RelationshipListManagement for ClearHeadApp {
             participant_1: Uuid,
             participant_2: Uuid,
         ) -> Result<Self::L, Box<dyn Error>> {
-        unimplemented!()
+        let mut updated_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.add_new(
+            target_variant,
+            participant_1,
+            participant_2,
+        )?;
+
+        updated_app.relationship_list = updated_relationship_list;
+
+        Ok(updated_app)
     }
 
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> ClearHeadApp {
@@ -372,10 +377,46 @@ mod tests{
 
     #[test]
     fn create_relationship() {
-        let test_app = create_app_with_two_actions();
-        let action_1_id = test_app.get_action_id(0).unwrap();
-        let action_2_id = test_app.get_action_id(1).unwrap();
+        let test_app = ClearHeadApp::default();
 
-        let updated_app = test_app.add_new("related", action_1_id, action_2_id).unwrap();
+        let updated_app = test_app.add_new("related", Uuid::nil(), Uuid::nil()).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 1);
+    }
+
+    #[test]
+    fn failed_create_relationship(){
+        let test_app = ClearHeadApp::default();
+
+        let bad_variant_error = test_app.add_new("invalid", Uuid::nil(), Uuid::nil()).unwrap_err();
+
+        assert_eq!(bad_variant_error.to_string(), "invalid relationship variant");
+    }
+
+    #[test]
+    fn create_related(){
+        let test_app = ClearHeadApp::default();
+
+        let updated_app = test_app.add_new("related", Uuid::nil(), Uuid::nil()).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 1);
+    }
+
+    #[test]
+    fn create_sequential(){
+        let test_app = ClearHeadApp::default();
+
+        let updated_app = test_app.add_new("sequential", Uuid::nil(), Uuid::nil()).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 1);
+    }
+
+    #[test]
+    fn create_parental(){
+        let test_app = ClearHeadApp::default();
+
+        let updated_app = test_app.add_new("parental", Uuid::nil(), Uuid::nil()).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 1);
     }
 }
