@@ -2,7 +2,7 @@ extern crate clap;
 use clap::{command, AppSettings, Arg, ArgMatches, SubCommand};
 
 use crate::Error;
-use crate::api_command::Command;
+use crate::command_builder::Command;
 
 
 
