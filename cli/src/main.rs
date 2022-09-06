@@ -1,10 +1,12 @@
-mod arg_parser;
+pub mod arg_parser;
 use arg_parser::create_app;
 use arg_parser::ArgumentParsing;
 
+pub mod api_command;
+use api_command::Command;
+
 use clear_head_todo_core::ClearHeadApp;
 use clear_head_todo_core::JSONStorage;
-use clear_head_todo_core::api_command::Command;
 
 use std::error::Error;
 use std::path::Path;

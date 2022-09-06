@@ -2,7 +2,9 @@ extern crate clap;
 use clap::{command, AppSettings, Arg, ArgMatches, SubCommand};
 
 use crate::Error;
-use clear_head_todo_core::api_command::Command;
+use crate::api_command::Command;
+
+
 
 pub fn create_app() -> clap::Command<'static> {
     command!()

@@ -1,6 +1,6 @@
-use action::ActionListManipulation;
-
 use crate::ClearHeadApp;
+use clear_head_todo_core::ActionListManipulation;
+
 use std::error::Error;
 
 #[derive(Debug, PartialEq)]
@@ -134,7 +134,7 @@ impl Command {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Priority;
+    use clear_head_todo_core::Priority;
 
     #[test]
     fn list_failure_empty_list() {
