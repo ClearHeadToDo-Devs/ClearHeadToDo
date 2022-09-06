@@ -178,7 +178,6 @@ impl RelationshipListManagement for ClearHeadApp {
         let mut cloned_app = self.clone();
 
         let updated_relationship_list = self.relationship_list.remove_at_index(index)?;
-
         cloned_app.relationship_list = updated_relationship_list;
 
         Ok(cloned_app)
@@ -188,22 +187,36 @@ impl RelationshipListManagement for ClearHeadApp {
         let mut cloned_app = self.clone();
 
         let updated_relationship_list = self.relationship_list.remove_with_id(id)?;
-
         cloned_app.relationship_list = updated_relationship_list;
 
         Ok(cloned_app)
     }
 
     fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
-        unimplemented!()
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.update_participant_1(index, new_id)?;
+        cloned_app.relationship_list = updated_relationship_list;
+
+        Ok(cloned_app)
     }
 
     fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
-        unimplemented!()
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.update_participant_2(index, new_id)?;
+        cloned_app.relationship_list = updated_relationship_list;
+
+        Ok(cloned_app)
     }
 
     fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, Box<dyn Error>> {
-        unimplemented!()
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.change_variant(index, variant)?;
+        cloned_app.relationship_list = updated_relationship_list;
+
+        Ok(cloned_app)
     }
 }
 
@@ -214,12 +227,16 @@ mod tests{
 
     use super::*;
 
-    pub fn create_app_with_single_relationship() -> ClearHeadApp {
-        ClearHeadApp::default().add_new("related", Uuid::nil(), Uuid::nil()).unwrap()
+    pub fn create_app_with_single_relationship(variant_str: &str) -> ClearHeadApp {
+        ClearHeadApp::default().add_new(variant_str, Uuid::nil(), Uuid::nil()).unwrap()
     }
 
     pub fn failed_relationship_id_search_error() -> String {
         "cannot find this id within the relationship list".to_string()
+    }
+
+    pub fn failed_relationship_variant_error() -> String {
+        "invalid relationship variant".to_string()
     }
 
     #[test]
@@ -437,7 +454,7 @@ mod tests{
 
         let bad_variant_error = test_app.add_new("invalid", Uuid::nil(), Uuid::nil()).unwrap_err();
 
-        assert_eq!(bad_variant_error.to_string(), "invalid relationship variant");
+        assert_eq!(bad_variant_error.to_string(), failed_relationship_variant_error());
     }
 
     #[test]
@@ -496,7 +513,7 @@ mod tests{
 
     #[test]
     fn get_variant(){
-        let test_app = create_app_with_single_relationship();
+        let test_app = create_app_with_single_relationship("related");
 
         let variant = test_app.get_variant(0).unwrap();
 
@@ -514,7 +531,7 @@ mod tests{
 
     #[test]
     fn get_id(){
-        let test_app = create_app_with_single_relationship();
+        let test_app = create_app_with_single_relationship("related");
 
         let id = test_app.get_id(0).unwrap();
 
@@ -532,7 +549,7 @@ mod tests{
 
     #[test]
     fn get_participant_1(){
-        let test_app = create_app_with_single_relationship();
+        let test_app = create_app_with_single_relationship("related");
 
         let participant_1 = test_app.get_participant_1(0).unwrap();
 
@@ -550,7 +567,7 @@ mod tests{
 
     #[test]
     fn get_participant_2(){
-        let test_app = create_app_with_single_relationship();
+        let test_app = create_app_with_single_relationship("related");
 
         let participant_2 = test_app.get_participant_2(0).unwrap();
 
@@ -568,7 +585,7 @@ mod tests{
 
     #[test]
     fn remove_relationship(){
-        let test_app = create_app_with_single_relationship();
+        let test_app = create_app_with_single_relationship("related");
 
         let updated_app = test_app.remove_at_index(0).unwrap();
 
@@ -586,7 +603,7 @@ mod tests{
 
     #[test]
     fn remove_relationship_by_id(){
-        let test_app = create_app_with_single_relationship();
+        let test_app = create_app_with_single_relationship("related");
         let target_id = test_app.get_id(0).unwrap();
 
         let updated_app = test_app.remove_with_id(target_id).unwrap();
@@ -605,7 +622,7 @@ mod tests{
 
     #[test]
     fn select_by_index(){
-        let test_app = create_app_with_single_relationship();
+        let test_app = create_app_with_single_relationship("related");
 
         let selected = RelationshipListManagement::select_by_index(&test_app, 0).unwrap();
 
@@ -623,7 +640,7 @@ mod tests{
 
     #[test]
     fn select_by_id(){
-        let test_app = create_app_with_single_relationship();
+        let test_app = create_app_with_single_relationship("related");
         let target_id = test_app.get_id(0).unwrap();
 
         let selected = RelationshipListManagement::select_by_id(&test_app, target_id).unwrap();
@@ -638,5 +655,79 @@ mod tests{
         let index_error = RelationshipListManagement::select_by_id(&empty_app, Uuid::nil()).unwrap_err();
 
         assert_eq!(index_error.to_string(), failed_relationship_id_search_error());
+    }
+
+    #[test]
+    fn update_participant_1(){
+        let test_app = create_app_with_single_relationship("related");
+        let test_id = Uuid::new_v4();
+
+        let updated_app = test_app.update_participant_1(0, test_id).unwrap();
+
+        assert_eq!(updated_app.get_participant_1(0).unwrap(), test_id);
+    }
+
+    #[test]
+    fn failed_update_participant_1(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.update_participant_1(0, Uuid::nil()).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn update_participant_2(){
+        let test_app = create_app_with_single_relationship("related");
+        let test_id = Uuid::new_v4();
+
+        let updated_app = test_app.update_participant_2(0, test_id).unwrap();
+
+        assert_eq!(updated_app.get_participant_2(0).unwrap(), test_id);
+    }
+
+    #[test]
+    fn update_variant(){
+        let test_app = create_app_with_single_relationship("related");
+
+        let updated_app = test_app.change_variant(0, "sequential").unwrap();
+
+        assert_eq!(updated_app.get_variant(0).unwrap(), RelationshipVariant::create_sequential());
+    }
+
+    #[test]
+    fn change_to_parental(){
+        let test_app = create_app_with_single_relationship("related");
+
+        let updated_app = test_app.change_variant(0, "parental").unwrap();
+
+        assert_eq!(updated_app.get_variant(0).unwrap(), RelationshipVariant::create_parental());
+    }
+
+    #[test]
+    fn change_to_related(){
+        let test_app = create_app_with_single_relationship("sequential");
+
+        let updated_app = test_app.change_variant(0, "related").unwrap();
+
+        assert_eq!(updated_app.get_variant(0).unwrap(), RelationshipVariant::create_related());
+    }
+
+    #[test]
+    fn failed_change_variant_bad_index(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.change_variant(0, "related").unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn failed_change_variant_bad_variant(){
+        let test_app = create_app_with_single_relationship("related");
+
+        let index_error = test_app.change_variant(0, "bad_variant").unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_variant_error());
     }
 }
