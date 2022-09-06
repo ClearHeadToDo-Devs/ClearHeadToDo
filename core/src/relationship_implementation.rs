@@ -150,6 +150,14 @@ impl RelationshipListManagement for ClearHeadApp {
     fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         todo!()
     }
+
+    fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        todo!()
+    }
+
+    fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        todo!()
+    }
 }
 
 #[cfg(test)]

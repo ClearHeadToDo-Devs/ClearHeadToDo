@@ -42,6 +42,8 @@ pub trait RelationshipListManagement {
     fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool;
     fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool;
     fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
+    fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
+    fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -227,6 +229,50 @@ impl RelationshipListManagement for Vector<Relationship> {
                 return Err(Box::new(std::io::Error::new(
                     std::io::ErrorKind::Other,
                     "Unable to find Relationship with given Id in participant 1 list",
+                )));
+            }
+        }
+    }
+
+    fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        match self.id_is_present_in_participant_2_list(id){
+            true => {
+                let mut participant_2_list = Vector::new();
+
+                for relationship in self.iter(){
+                    if relationship.get_participant_2() == id{
+                        participant_2_list.push_back(relationship.clone());
+                    }
+                }
+
+                return Ok(participant_2_list);
+            },
+            false => {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Unable to find Relationship with given Id in participant 2 list",
+                )));
+            }
+        }
+    }
+
+    fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        match self.id_is_present_in_either_participant_list(id){
+            true => {
+                let mut either_participant_list = Vector::new();
+
+                for relationship in self.iter(){
+                    if relationship.get_participant_1() == id || relationship.get_participant_2() == id{
+                        either_participant_list.push_back(relationship.clone());
+                    }
+                }
+
+                return Ok(either_participant_list);
+            },
+            false => {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Unable to find Relationship with given Id in either participant list",
                 )));
             }
         }
