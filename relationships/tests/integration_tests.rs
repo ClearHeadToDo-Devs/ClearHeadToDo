@@ -1,5 +1,6 @@
 use relationships::item::edge_direction::EdgeDirectionality;
 
+use tabled::Table;
 use uuid::Uuid;
 use im::Vector;
 use relationships::item::Relationship;
@@ -473,13 +474,5 @@ fn print_relationship_table() {
 
     let query_result = single_relationship_list.get_relationship_list_as_table();
 
-    assert_eq!(query_result, format!(
-"+--------------------------------------+---------------------+--------------------------------------+--------------------------------------+
-| id                                   | variant             | participant_1                        | participant_2                        |
-+--------------------------------------+---------------------+--------------------------------------+--------------------------------------+
-| {} | Related: Undirected | {nil} | {nil} |
-+--------------------------------------+---------------------+--------------------------------------+--------------------------------------+",
-        single_relationship_list.get_relationship_id(0).unwrap(),
-        nil = Uuid::nil()
-    ));
+    assert_eq!(query_result, Table::new(single_relationship_list).to_string());
 }

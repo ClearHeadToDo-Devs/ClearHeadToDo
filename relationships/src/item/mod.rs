@@ -10,10 +10,10 @@ use tabled::Tabled;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Tabled)]
 pub struct Relationship {
-    id: Uuid,
     variant: RelationshipVariant,
     participant_1: Uuid,
     participant_2: Uuid,
+    id: Uuid,
 }
 
 impl Relationship {
@@ -313,8 +313,6 @@ pub mod tests {
                     name: "Relationship",
                     len: 4,
                 },
-                Token::Str("id"),
-                Token::Str("00000000-0000-0000-0000-000000000000"),
                 Token::Str("variant"),
                 Token::NewtypeVariant {
                     name: "RelationshipVariant",
@@ -327,6 +325,8 @@ pub mod tests {
                 Token::Str("participant_1"),
                 Token::Str("00000000-0000-0000-0000-000000000000"),
                 Token::Str("participant_2"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::Str("id"),
                 Token::Str("00000000-0000-0000-0000-000000000000"),
                 Token::StructEnd,
             ],
