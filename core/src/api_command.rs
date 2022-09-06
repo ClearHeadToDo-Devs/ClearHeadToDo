@@ -1,5 +1,4 @@
 use action::ActionListManipulation;
-use relationships::RelationshipListManagement;
 
 use crate::ClearHeadApp;
 use std::error::Error;
@@ -136,8 +135,6 @@ impl Command {
 mod tests {
     use super::*;
     use crate::Priority;
-
-    use crate::functionality::tests::create_app_with_single_action;
 
     #[test]
     fn list_failure_empty_list() {
