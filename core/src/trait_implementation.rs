@@ -163,23 +163,35 @@ impl RelationshipListManagement for ClearHeadApp {
     }
 
     fn get_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        unimplemented!()
+        Ok(self.relationship_list.get_id(index)?)
     }
 
     fn get_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        unimplemented!()
+        Ok(self.relationship_list.get_participant_1(index)?)
     }
 
     fn get_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        unimplemented!()
+        Ok(self.relationship_list.get_participant_2(index)?)
     }
 
     fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
-        unimplemented!()
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.remove_at_index(index)?;
+
+        cloned_app.relationship_list = updated_relationship_list;
+
+        Ok(cloned_app)
     }
 
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
-        unimplemented!()
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.remove_with_id(id)?;
+
+        cloned_app.relationship_list = updated_relationship_list;
+
+        Ok(cloned_app)
     }
 
     fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
@@ -494,5 +506,96 @@ mod tests{
         let index_error = empty_app.get_variant(0).unwrap_err();
 
         assert_eq!(index_error.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn get_id(){
+        let test_app = create_app_with_single_relationship();
+
+        let id = test_app.get_id(0).unwrap();
+
+        assert_eq!(id, test_app.relationship_list.get_id(0).unwrap());
+    }
+
+    #[test]
+    fn failed_get_id(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.get_id(0).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn get_participant_1(){
+        let test_app = create_app_with_single_relationship();
+
+        let participant_1 = test_app.get_participant_1(0).unwrap();
+
+        assert_eq!(participant_1, Uuid::nil());
+    }
+
+    #[test]
+    fn failed_get_participant_1(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.get_participant_1(0).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn get_participant_2(){
+        let test_app = create_app_with_single_relationship();
+
+        let participant_2 = test_app.get_participant_2(0).unwrap();
+
+        assert_eq!(participant_2, Uuid::nil());
+    }
+
+    #[test]
+    fn failed_get_participant_2(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.get_participant_2(0).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn remove_relationship(){
+        let test_app = create_app_with_single_relationship();
+
+        let updated_app = test_app.remove_at_index(0).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 0);
+    }
+
+    #[test]
+    fn failed_remove_relationship(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.remove_at_index(0).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_index_error());
+    }
+
+    #[test]
+    fn remove_relationship_by_id(){
+        let test_app = create_app_with_single_relationship();
+        let target_id = test_app.get_id(0).unwrap();
+
+        let updated_app = test_app.remove_with_id(target_id).unwrap();
+
+        assert_eq!(updated_app.relationship_list.len(), 0);
+    }
+
+    #[test]
+    fn remove_relationship_by_id_not_found(){
+        let test_app = ClearHeadApp::default();
+
+        let index_error = test_app.remove_with_id(Uuid::nil()).unwrap_err();
+
+        assert_eq!(index_error.to_string(), "cannot find this id within the relationship list".to_string());
     }
 }
