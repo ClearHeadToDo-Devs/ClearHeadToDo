@@ -3,7 +3,6 @@ use relationships::RelationshipListManagement;
 
 use action::Action;
 use action::ActionListManipulation;
-use relationships::item::RelationshipVariant;
 
 
 use std::fmt::Debug;
@@ -13,7 +12,6 @@ use tabled::Table;
 
 use serde::{Serialize, Deserialize};
 use im::Vector;
-use uuid::Uuid;
 
 
 #[derive(Debug, PartialEq, Default, Clone, Serialize, Deserialize)]
@@ -48,30 +46,21 @@ impl ClearHeadApp {
         Ok(extended_list)
     }
 
-    fn create_action_relationship(&self, variant_str: &str, participant_1_index: usize, participant_2_index: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
-        let mut cloned_app = self.clone();
-
+    pub fn create_action_relationship(&self, variant_str: &str, participant_1_index: usize, participant_2_index: usize) -> Result<ClearHeadApp, Box<dyn Error>> {
         let participant_1_id = self.get_action_id(participant_1_index)?;
         let participant_2_id = self.get_action_id(participant_2_index)?;
 
-        let updated_list = self.add_new(variant_str, participant_1_id, participant_2_id)?;
+        let updated_app = self.add_new(variant_str, participant_1_id, participant_2_id)?;
 
-        cloned_app.relationship_list = updated_list;
-
-        Ok(cloned_app)
+        Ok(updated_app)
     }
 }
-
-
 
 #[cfg(test)]
 pub mod tests {
     use super::*;
     use im::Vector;
 
-    use action::Priority;
-
-    use relationships::item::RelationshipVariant;
 
     pub fn create_app_with_single_action() -> ClearHeadApp {
         let app = ClearHeadApp::default().append_default();

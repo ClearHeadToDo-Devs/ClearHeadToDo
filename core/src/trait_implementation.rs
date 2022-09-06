@@ -243,7 +243,7 @@ mod tests{
     fn append_default_action(){
         let test_app = ClearHeadApp::default();
 
-        let updated_app = test_app.create_action();
+        let updated_app = test_app.append_default();
 
         assert_eq!(updated_app.action_list.len(), 1);
 

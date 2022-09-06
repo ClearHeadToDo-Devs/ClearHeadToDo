@@ -1,3 +1,6 @@
+use action::ActionListManipulation;
+use relationships::RelationshipListManagement;
+
 use crate::ClearHeadApp;
 use std::error::Error;
 
@@ -33,10 +36,10 @@ impl Command {
                 return Ok(app.clone());
             }
             Command::Create(name) => {
-                let updated_list = app.create_action();
+                let updated_list = app.append_default();
                 if let Some(name) = name {
                     return updated_list
-                        .rename_action(updated_list.action_list.len() - 1, name.to_string());
+                        .rename(updated_list.action_list.len() - 1, name.to_string());
                 }
                 Ok(updated_list)
             }
@@ -45,12 +48,12 @@ impl Command {
                 participant_1,
                 participant_2,
             } => {
-                let updated_list = app.create_relationship(variant, 
+                let updated_list = app.create_action_relationship(variant, 
                         *participant_1, *participant_2)?;
                 Ok(updated_list)
             }
             Command::ToggleCompletion(index) => {
-                let updated_list = app.toggle_action_completion_status(*index)?;
+                let updated_list = app.toggle_completion_status(*index)?;
                 Ok(updated_list)
             }
             Command::Remove(index) => {
@@ -58,7 +61,7 @@ impl Command {
                 Ok(updated_list)
             }
             Command::Rename { index, new_name } => {
-                let updated_list = app.rename_action(*index, new_name.to_string())?;
+                let updated_list = app.rename(*index, new_name.to_string())?;
                 Ok(updated_list)
             }
             Command::Reprioritize {
@@ -66,7 +69,7 @@ impl Command {
                 new_priority,
             } => {
                 let updated_list =
-                    app.change_action_priority(*index, new_priority.to_string())?;
+                    app.change_priority(*index, new_priority.to_string())?;
                 Ok(updated_list)
             }
         }
@@ -134,6 +137,8 @@ mod tests {
     use super::*;
     use crate::Priority;
 
+    use crate::functionality::tests::create_app_with_single_action;
+
     #[test]
     fn list_failure_empty_list() {
         let empty_list: ClearHeadApp = Default::default();
@@ -145,6 +150,7 @@ mod tests {
     #[test]
     fn create_successful_run() {
         let empty_list: ClearHeadApp = Default::default();
+
         let result = Command::Create(None)
             .run_subcommand(&empty_list)
             .unwrap();
@@ -157,7 +163,7 @@ mod tests {
     #[test]
     fn generate_create_success_message() {
         let empty_list: ClearHeadApp = Default::default();
-        let single_list = empty_list.create_action();
+        let single_list = empty_list.append_default();
 
         let message =
             Command::Create(None).create_end_user_message(&empty_list, &single_list);
@@ -167,7 +173,7 @@ mod tests {
     #[test]
     fn complete_successful_run() {
         let empty_list: ClearHeadApp = Default::default();
-        let single_action_lst = empty_list.create_action();
+        let single_action_lst = empty_list.append_default();
 
         let result = Command::ToggleCompletion(0).run_subcommand(&single_action_lst);
 
@@ -180,8 +186,8 @@ mod tests {
     #[test]
     fn reopen_successful_run() {
         let empty_app: ClearHeadApp = Default::default();
-        let single_action_app = empty_app.create_action();
-        let single_completed_action_app = single_action_app.toggle_action_completion_status(0).unwrap();
+        let single_action_app = empty_app.append_default();
+        let single_completed_action_app = single_action_app.toggle_completion_status(0).unwrap();
 
         let updated_list =
             Command::ToggleCompletion(0).run_subcommand(&single_completed_action_app).unwrap();
@@ -195,8 +201,8 @@ mod tests {
     #[test]
     fn generate_complete_message() {
         let empty_app = ClearHeadApp::default();
-        let single_action_app = empty_app.create_action();
-        let updated_action_app = single_action_app.toggle_action_completion_status(0).unwrap();
+        let single_action_app = empty_app.append_default();
+        let updated_action_app = single_action_app.toggle_completion_status(0).unwrap();
 
         let message = Command::ToggleCompletion(0)
             .create_end_user_message(&single_action_app, &updated_action_app);
@@ -218,7 +224,7 @@ mod tests {
     #[test]
     fn cli_remove_successful_run_test() {
         let empty_list: ClearHeadApp = Default::default();
-        let single_list = empty_list.create_action();
+        let single_list = empty_list.append_default();
 
         let result = Command::Remove(0).run_subcommand(&single_list);
         assert_eq!(result.unwrap(), ClearHeadApp::default());
@@ -227,7 +233,7 @@ mod tests {
     #[test]
     fn generate_remove_message() {
         let empty_app = ClearHeadApp::default();
-        let single_action_app = empty_app.create_action();
+        let single_action_app = empty_app.append_default();
         let updated_app_list = single_action_app.remove_action(0).unwrap();
 
         let message =
@@ -248,7 +254,7 @@ mod tests {
     #[test]
     fn cli_rename_successful_run_test() {
         let empty_list: ClearHeadApp = Default::default();
-        let single_list = empty_list.create_action();
+        let single_list = empty_list.append_default();
 
         let result = Command::Rename {
             index: 0,
@@ -265,9 +271,9 @@ mod tests {
     #[test]
     fn generate_rename_message() {
         let empty_app = ClearHeadApp::default();
-        let single_action_app = empty_app.create_action();
+        let single_action_app = empty_app.append_default();
         let updated_list = single_action_app
-            .rename_action(0, "New Name".to_string())
+            .rename(0, "New Name".to_string())
             .unwrap();
 
         let message = Command::Rename {
@@ -294,7 +300,7 @@ mod tests {
     #[test]
     fn cli_change_priority_successful_run_test() {
         let empty_list: ClearHeadApp = Default::default();
-        let single_list = empty_list.create_action();
+        let single_list = empty_list.append_default();
 
         let result = Command::Reprioritize {
             index: 0,
@@ -307,9 +313,9 @@ mod tests {
     #[test]
     fn generate_reprioritize_message() {
         let empty_app = ClearHeadApp::default();
-        let single_action_app = empty_app.create_action();
+        let single_action_app = empty_app.append_default();
         let updated_list = single_action_app
-            .change_action_priority(0, "low".to_string())
+            .change_priority(0, "low".to_string())
             .unwrap();
 
         let message = Command::Reprioritize {
@@ -339,7 +345,7 @@ mod tests {
     #[test]
     fn cli_create_related_relationship_successful_run() {
         let empty_list: ClearHeadApp = Default::default();
-        let updated_list = empty_list.create_action().create_action();
+        let updated_list = empty_list.append_default().append_default();
 
         let result = Command::CreateRelationship {
             variant: "related".to_string(),
@@ -357,7 +363,7 @@ mod tests {
     #[test]
     fn cli_create_sequential_relationship_successful_run() {
         let empty_list: ClearHeadApp = Default::default();
-        let updated_list = empty_list.create_action().create_action();
+        let updated_list = empty_list.append_default().append_default();
 
         let result = Command::CreateRelationship {
             variant: "sequential".to_string(),
@@ -371,7 +377,7 @@ mod tests {
     #[test]
     fn cli_create_parental_relationship_successful_run() {
         let empty_list: ClearHeadApp = Default::default();
-        let updated_list = empty_list.create_action().create_action();
+        let updated_list = empty_list.append_default().append_default();
 
         let result = Command::CreateRelationship {
             variant: "parental".to_string(),
@@ -384,9 +390,9 @@ mod tests {
 
     #[test]
     fn cli_create_relationship_successful_message() {
-        let empty_list: ClearHeadApp = ClearHeadApp::default().create_action().create_action();
-        let single_relationship_app = empty_list.create_relationship("related", 0, 1).unwrap();
-        let updated_list = single_relationship_app.create_action().create_action();
+        let empty_list: ClearHeadApp = ClearHeadApp::default().append_default().append_default();
+        let single_relationship_app = empty_list.create_action_relationship("related", 0, 1).unwrap();
+        let updated_list = single_relationship_app.append_default().append_default();
 
         let result = Command::CreateRelationship {
             variant: "related".to_string(),
