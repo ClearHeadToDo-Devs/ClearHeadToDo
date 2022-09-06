@@ -425,9 +425,43 @@ fn failed_get_participant_2_list_for_id() {
 #[test]
 fn get_either_participant_list_for_id() {
     let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_p2_relationship_list = single_relationship_list.update_participant_2(0, Uuid::new_v4()).unwrap();
 
-    let query_result = single_relationship_list
+    let query_result = single_p2_relationship_list
         .get_either_participant_list_for_id(Uuid::nil()).unwrap();
 
-    assert_eq!(query_result[0] , single_relationship_list.select_by_index(0).unwrap());
+    assert_eq!(query_result[0] , single_p2_relationship_list.select_by_index(0).unwrap());
+}
+
+#[test]
+fn get_either_participant_list_only_2_for_id() {
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_p1_relationship_list = single_relationship_list.update_participant_1(0, Uuid::new_v4()).unwrap();
+
+    let query_result = single_p1_relationship_list
+        .get_either_participant_list_for_id(Uuid::nil()).unwrap();
+
+    assert_eq!(query_result[0] , single_p1_relationship_list.select_by_index(0).unwrap());
+}
+
+#[test]
+fn get_either_participant_list_for_id_one_in_each(){
+    let empty_list: Vector<Relationship> = Vector::new();
+    let single_relationship_list = empty_list.add_related(Uuid::new_v4(), Uuid::nil());
+    let double_relationship_list = single_relationship_list.add_related(Uuid::nil(), Uuid::new_v4());
+
+    let query_result = double_relationship_list
+        .get_either_participant_list_for_id(Uuid::nil()).unwrap();
+
+    assert_eq!(query_result.len() , 2);
+}
+
+#[test]
+fn failed_get_either_participant_list_for_id() {
+    let empty_relationship_list = Vector::new();
+
+    let query_result = empty_relationship_list
+        .get_either_participant_list_for_id(Uuid::new_v4()).unwrap_err();
+
+    assert_eq!(query_result.to_string(), "Unable to find Relationship with given Id in either participant list");
 }
