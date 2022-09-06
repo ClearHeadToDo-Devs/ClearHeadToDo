@@ -1,5 +1,6 @@
 use crate::ClearHeadApp;
 
+use im::Vector;
 use relationships::RelationshipListManagement;
 use relationships::Relationship;
 use relationships::item::RelationshipVariant;
@@ -147,15 +148,16 @@ impl RelationshipListManagement for ClearHeadApp {
         self.relationship_list.id_is_present_in_either_participant_list(id)
     }
 
-    fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+    fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>> {
+        Ok(self.relationship_list.get_participant_1_list_for_id(id)?)
+
+    }
+
+    fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>> {
         todo!()
     }
 
-    fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
-        todo!()
-    }
-
-    fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+    fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>> {
         todo!()
     }
 }
@@ -527,5 +529,23 @@ mod tests {
         let result = test_app.id_is_present_in_either_participant_list(test_id);
 
         assert!(result == false);
+    }
+
+    #[test]
+    fn get_participant_1_list_for_id(){
+        let test_app = ClearHeadApp::default().add_related(Uuid::nil(), Uuid::new_v4());
+
+        let result = test_app.get_participant_1_list_for_id(Uuid::nil()).unwrap();
+
+        assert_eq!(result.select_by_index(0).unwrap(), test_app.select_by_index(0).unwrap());
+    }
+
+    #[test]
+    fn failed_get_participant_1_list_for_id(){
+        let test_app = ClearHeadApp::default();
+
+        let result = test_app.get_participant_1_list_for_id(Uuid::nil()).unwrap_err();
+
+        assert_eq!(result.to_string(), "Unable to find Relationship with given Id in participant 1 list");
     }
 }

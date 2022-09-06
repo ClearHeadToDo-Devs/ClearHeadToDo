@@ -41,9 +41,9 @@ pub trait RelationshipListManagement {
     fn id_is_present_in_participant_1_list(&self, id: Uuid) -> bool;
     fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool;
     fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool;
-    fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
-    fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
-    fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
+    fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
+    fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
+    fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
