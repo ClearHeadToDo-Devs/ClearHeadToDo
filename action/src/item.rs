@@ -14,8 +14,8 @@ use tabled::Tabled;
 pub struct Action {
     name: String,
     priority: Priority,
-    pub completed: bool,
-    pub id: Uuid,
+    completed: bool,
+    id: Uuid,
 }
 
 impl Default for Action {

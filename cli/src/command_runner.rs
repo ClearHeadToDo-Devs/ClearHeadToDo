@@ -99,7 +99,7 @@ impl Command {
             Command::ToggleCompletion(index) => {
                 format!(
                     "{} had its' completion status toggled to {}",
-                    updated_app.action_list[*index].get_name(), updated_app.action_list[*index].completed
+                    updated_app.action_list[*index].get_name(), updated_app.action_list[*index].get_completion_status()
                 )
             }
             Command::Remove(index) => {
@@ -175,7 +175,7 @@ mod tests {
         let result = Command::ToggleCompletion(0).run_subcommand(&single_action_lst);
 
         assert_eq!(
-            result.unwrap().action_list[0].completed,
+            result.unwrap().action_list[0].get_completion_status(),
             true
         );
     }
@@ -190,7 +190,7 @@ mod tests {
             Command::ToggleCompletion(0).run_subcommand(&single_completed_action_app).unwrap();
 
         assert_eq!(
-            updated_list.action_list[0].completed,
+            updated_list.action_list[0].get_completion_status(),
             false
         );
     }
@@ -353,8 +353,8 @@ mod tests {
         assert_eq!(result.relationship_list.len(), 1);
         assert_eq!(result.relationship_list[0].get_variant().to_string(),
             "Related: Undirected" );
-        assert_eq!(result.relationship_list[0].get_participant_1(), result.action_list[0].id);
-        assert_eq!(result.relationship_list[0].get_participant_2(), result.action_list[1].id);
+        assert_eq!(result.relationship_list[0].get_participant_1(), result.action_list[0].get_id());
+        assert_eq!(result.relationship_list[0].get_participant_2(), result.action_list[1].get_id());
     }
 
     #[test]

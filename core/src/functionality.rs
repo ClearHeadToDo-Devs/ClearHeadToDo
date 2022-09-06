@@ -34,9 +34,9 @@ impl ClearHeadApp {
         for action in &self.action_list {
             extended_list.push_str(&format!("{},{}\n",index, action.to_string()));
             index += 1;
-            if self.relationship_list.iter().find(|relationship| relationship.get_participant_1() == action.id).is_some() {
+            if self.relationship_list.iter().find(|relationship| relationship.get_participant_1() == action.get_id()).is_some() {
                 for relationship in self.relationship_list.iter().filter(
-                    |relationship| relationship.get_participant_1() == action.id) {
+                    |relationship| relationship.get_participant_1() == action.get_id()) {
                     extended_list.push_str(&format!(
                         "  - {},{}\n",relationship.get_variant(), 
                         &self.action_list.select_by_id(relationship.get_participant_2())?));
