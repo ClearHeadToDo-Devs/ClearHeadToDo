@@ -39,10 +39,10 @@ impl RelationshipListManagement for ClearHeadApp {
         return cloned_app;
     }
 
-    fn append_parental_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> ClearHeadApp {
+    fn append_sequential_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let mut cloned_app = self.clone();
 
-        let updated_relationship_list = self.relationship_list.append_parental_relationship(
+        let updated_relationship_list = self.relationship_list.append_sequential_relationship(
             participant_1,
             participant_2,
         );
@@ -51,10 +51,10 @@ impl RelationshipListManagement for ClearHeadApp {
         return cloned_app;
     }
 
-    fn append_sequential_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
+    fn append_parental_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> ClearHeadApp {
         let mut cloned_app = self.clone();
 
-        let updated_relationship_list = self.relationship_list.append_sequential_relationship(
+        let updated_relationship_list = self.relationship_list.append_parental_relationship(
             participant_1,
             participant_2,
         );
@@ -71,12 +71,12 @@ impl RelationshipListManagement for ClearHeadApp {
         Ok(self.relationship_list.select_relationship_by_index(index)?)
     }
 
-    fn get_relationship_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
-        Ok(self.relationship_list.get_relationship_variant(index)?)
-    }
-
     fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         Ok(self.relationship_list.get_relationship_id(index)?)
+    }
+
+    fn get_relationship_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
+        Ok(self.relationship_list.get_relationship_variant(index)?)
     }
 
     fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
@@ -105,6 +105,14 @@ impl RelationshipListManagement for ClearHeadApp {
         Ok(cloned_app)
     }
 
+    fn change_relationship_variant(&self, index: usize, variant: &str) -> Result<Self::L, Box<dyn Error>> {
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.change_relationship_variant(index, variant)?;
+        cloned_app.relationship_list = updated_relationship_list;
+        Ok(cloned_app)
+    }
+
     fn update_relationship_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         let mut cloned_app = self.clone();
 
@@ -117,14 +125,6 @@ impl RelationshipListManagement for ClearHeadApp {
         let mut cloned_app = self.clone();
 
         let updated_relationship_list = self.relationship_list.update_relationship_participant_2(index, new_id)?;
-        cloned_app.relationship_list = updated_relationship_list;
-        Ok(cloned_app)
-    }
-
-    fn change_relationship_variant(&self, index: usize, variant: &str) -> Result<Self::L, Box<dyn Error>> {
-        let mut cloned_app = self.clone();
-
-        let updated_relationship_list = self.relationship_list.change_relationship_variant(index, variant)?;
         cloned_app.relationship_list = updated_relationship_list;
         Ok(cloned_app)
     }
@@ -152,6 +152,10 @@ impl RelationshipListManagement for ClearHeadApp {
 
     fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>> {
         Ok(self.relationship_list.get_either_participant_list_for_id(id)?)
+    }
+
+    fn get_relationship_list_as_table(&self) -> Result<String, Box<dyn Error>> {
+        todo!()
     }
 }
 

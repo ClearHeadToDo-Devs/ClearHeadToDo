@@ -465,3 +465,13 @@ fn failed_get_either_participant_list_for_id() {
 
     assert_eq!(query_result.to_string(), "Unable to find Relationship with given Id in either participant list");
 }
+
+#[test]
+fn print_relationship_table() {
+    let single_relationship_list = 
+    create_relationship_list_with_single_related_relationship();
+
+    let query_result = single_relationship_list.get_relationship_list_as_table().unwrap();
+
+    assert_eq!(query_result, "Relationship Id\tParticipant 1\tParticipant 2");
+}

@@ -44,6 +44,8 @@ pub trait RelationshipListManagement {
     fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
     fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
     fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
+
+    fn get_relationship_list_as_table(&self) -> Result<String, Box<dyn Error>>;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -91,19 +93,6 @@ impl RelationshipListManagement for Vector<Relationship> {
         return cloned_list;
     }
 
-    fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
-        match self.select_relationship_by_index(index){
-            Ok(_) => {
-                let mut cloned_list = self.clone();
-
-                cloned_list.remove(index);
-
-                return Ok(cloned_list);
-            },
-            Err(e) => return Err(e)
-        }
-    }
-
     fn select_relationship_by_id(&self, id: Uuid) -> Result<Relationship, String> {
         let query_result = self.iter().find(|relationship| relationship.get_id() == id)
             .ok_or("cannot find this id within the relationship list".to_string());
@@ -127,27 +116,40 @@ impl RelationshipListManagement for Vector<Relationship> {
         }
     }
 
-    fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        let relationship_clone = self.select_relationship_by_index(index)?;
-
-        Ok(relationship_clone.get_participant_1())
-    }
-
-    fn get_relationship_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+    fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         let cloned_relationship = self.select_relationship_by_index(index)?;
 
-        Ok(cloned_relationship.get_participant_2())
+        Ok(cloned_relationship.get_id())
     }
+
     fn get_relationship_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
         let cloned_relationship = self.select_relationship_by_index(index)?;
 
         Ok(cloned_relationship.get_variant())
     }
 
-    fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+    fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        let relationship_clone = self.select_relationship_by_index(index)?;
+
+        Ok(relationship_clone.get_participant_1())
+    }
+    fn get_relationship_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         let cloned_relationship = self.select_relationship_by_index(index)?;
 
-        Ok(cloned_relationship.get_id())
+        Ok(cloned_relationship.get_participant_2())
+    }
+
+    fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
+        match self.select_relationship_by_index(index){
+            Ok(_) => {
+                let mut cloned_list = self.clone();
+
+                cloned_list.remove(index);
+
+                return Ok(cloned_list);
+            },
+            Err(e) => return Err(e)
+        }
     }
 
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
@@ -276,6 +278,10 @@ impl RelationshipListManagement for Vector<Relationship> {
                 )));
             }
         }
+    }
+
+    fn get_relationship_list_as_table(&self) -> Result<String, Box<dyn Error>> {
+        todo!()
     }
 }
 

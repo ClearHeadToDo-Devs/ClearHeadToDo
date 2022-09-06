@@ -6,8 +6,9 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::error::Error;
 use std::str::FromStr;
+use tabled::Tabled;
 
-#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Tabled)]
 pub struct Relationship {
     id: Uuid,
     variant: RelationshipVariant,

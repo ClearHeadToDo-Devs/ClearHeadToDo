@@ -1,13 +1,15 @@
 use serde::Deserialize;
 use serde::Serialize;
+use tabled::Tabled;
 use std::fmt;
 use std::str::FromStr;
 
 pub mod edge_direction;
 pub use edge_direction::*;
 
-#[allow(dead_code)]
-#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
+
+
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy, Tabled)]
 #[non_exhaustive]
 pub enum RelationshipVariant {
     Parental(EdgeDirectionality),
