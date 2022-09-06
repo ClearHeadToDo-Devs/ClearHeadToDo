@@ -471,7 +471,15 @@ fn print_relationship_table() {
     let single_relationship_list = 
     create_relationship_list_with_single_related_relationship();
 
-    let query_result = single_relationship_list.get_relationship_list_as_table().unwrap();
+    let query_result = single_relationship_list.get_relationship_list_as_table();
 
-    assert_eq!(query_result, "Relationship Id\tParticipant 1\tParticipant 2");
+    assert_eq!(query_result, format!(
+"+--------------------------------------+---------------------+--------------------------------------+--------------------------------------+
+| id                                   | variant             | participant_1                        | participant_2                        |
++--------------------------------------+---------------------+--------------------------------------+--------------------------------------+
+| {} | Related: Undirected | {nil} | {nil} |
++--------------------------------------+---------------------+--------------------------------------+--------------------------------------+",
+        single_relationship_list.get_relationship_id(0).unwrap(),
+        nil = Uuid::nil()
+    ));
 }

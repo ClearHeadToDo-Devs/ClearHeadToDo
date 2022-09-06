@@ -154,7 +154,7 @@ impl RelationshipListManagement for ClearHeadApp {
         Ok(self.relationship_list.get_either_participant_list_for_id(id)?)
     }
 
-    fn get_relationship_list_as_table(&self) -> Result<String, Box<dyn Error>> {
+    fn get_relationship_list_as_table(&self) -> String{
         todo!()
     }
 }

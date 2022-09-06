@@ -7,6 +7,7 @@ pub use crate::item::Relationship;
 use crate::item::RelationshipVariant;
 
 use std::error::Error;
+use tabled::Table;
 use uuid::Uuid;
 
 use im::Vector;
@@ -45,7 +46,7 @@ pub trait RelationshipListManagement {
     fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
     fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
 
-    fn get_relationship_list_as_table(&self) -> Result<String, Box<dyn Error>>;
+    fn get_relationship_list_as_table(&self) -> String;
 }
 
 impl RelationshipListManagement for Vector<Relationship> {
@@ -280,8 +281,9 @@ impl RelationshipListManagement for Vector<Relationship> {
         }
     }
 
-    fn get_relationship_list_as_table(&self) -> Result<String, Box<dyn Error>> {
-        todo!()
+    fn get_relationship_list_as_table(&self) -> String {
+        Table::new(self).to_string()
+        
     }
 }
 
