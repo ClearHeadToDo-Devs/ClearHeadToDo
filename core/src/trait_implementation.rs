@@ -112,7 +112,16 @@ impl RelationshipListManagement for ClearHeadApp {
     }
 
     fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> ClearHeadApp {
-        unimplemented!()
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.add_related(
+            participant_1,
+            participant_2,
+        );
+
+        cloned_app.relationship_list = updated_relationship_list;
+
+        return cloned_app;
     }
 
     fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> ClearHeadApp {
@@ -132,7 +141,7 @@ impl RelationshipListManagement for ClearHeadApp {
     }
 
     fn get_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
-        unimplemented!()
+        Ok(self.relationship_list.get_variant(index)?)
     }
 
     fn get_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
@@ -171,9 +180,13 @@ impl RelationshipListManagement for ClearHeadApp {
 
 #[cfg(test)]
 mod tests{
-    use crate::{ClearHeadApp, functionality::tests::{create_app_with_single_action, failed_action_index_error, get_first_action, create_minimal_related_app, create_app_with_two_actions}};
+    use crate::{ClearHeadApp, functionality::tests::{create_app_with_single_action, failed_action_index_error, get_first_action, create_minimal_related_app, create_app_with_two_actions, failed_relationship_index_error}};
 
     use super::*;
+
+    pub fn create_app_with_single_relationship() -> ClearHeadApp {
+        ClearHeadApp::default().add_new("related", Uuid::nil(), Uuid::nil()).unwrap()
+    }
 
     #[test]
     fn append_default_action(){
@@ -417,6 +430,33 @@ mod tests{
 
         let updated_app = test_app.add_new("parental", Uuid::nil(), Uuid::nil()).unwrap();
 
+        assert_eq!(updated_app.get_variant(0).unwrap(), RelationshipVariant::create_parental());
+    }
+
+    #[test]
+    fn create_related_direct(){
+        let test_app = ClearHeadApp::default();
+
+        let updated_app = test_app.add_related(Uuid::nil(), Uuid::nil());
+
         assert_eq!(updated_app.relationship_list.len(), 1);
+    }
+
+    #[test]
+    fn get_variant(){
+        let test_app = create_app_with_single_relationship();
+
+        let variant = test_app.get_variant(0).unwrap();
+
+        assert_eq!(variant, RelationshipVariant::create_related());
+    }
+
+    #[test]
+    fn failed_get_variant(){
+        let empty_app = ClearHeadApp::default();
+
+        let index_error = empty_app.get_variant(0).unwrap_err();
+
+        assert_eq!(index_error.to_string(), failed_relationship_index_error());
     }
 }
