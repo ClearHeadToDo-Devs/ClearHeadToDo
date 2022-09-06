@@ -93,12 +93,80 @@ impl ActionListManipulation for ClearHeadApp {
 
         Ok(updated_app)
     }
-
 }
+
+impl RelationshipListManagement for ClearHeadApp {
+    type L = ClearHeadApp;
+    fn add_new(
+            &self,
+            target_variant: &str,
+            participant_1: Uuid,
+            participant_2: Uuid,
+        ) -> Result<Self::L, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn add_related(&self, participant_1: Uuid, participant_2: Uuid) -> ClearHeadApp {
+        unimplemented!()
+    }
+
+    fn add_parental(&self, participant_1: Uuid, participant_2: Uuid) -> ClearHeadApp {
+        unimplemented!()
+    }
+
+    fn add_sequential(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
+        unimplemented!()
+    }
+
+    fn select_by_id(&self, id: Uuid) -> Result<Relationship, String> {
+        unimplemented!()
+    }
+
+    fn select_by_index(&self, index: usize) -> Result<Relationship, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn get_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn get_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn get_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn get_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn remove_with_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn update_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn update_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        unimplemented!()
+    }
+
+    fn change_variant(&self, index: usize, variant: &str) -> Result<Self::L, Box<dyn Error>> {
+        unimplemented!()
+    }
+}
+
 
 #[cfg(test)]
 mod tests{
-    use crate::{ClearHeadApp, functionality::tests::{create_app_with_single_action, failed_action_index_error, get_first_action}};
+    use crate::{ClearHeadApp, functionality::tests::{create_app_with_single_action, failed_action_index_error, get_first_action, create_minimal_related_app, create_app_with_two_actions}};
 
     use super::*;
 
@@ -188,7 +256,7 @@ mod tests{
     fn get_action_by_index(){
         let test_app = create_app_with_single_action();
 
-        let action = test_app.select_by_index(0).unwrap();
+        let action = action::ActionListManipulation::select_by_index(&test_app, 0).unwrap();
 
         assert_eq!(action, get_first_action(&test_app));
     }
@@ -197,7 +265,7 @@ mod tests{
     fn failed_get_action_by_index(){
         let empty_app = ClearHeadApp::default();
 
-        let index_error = empty_app.select_by_index(0).unwrap_err();
+        let index_error = action::ActionListManipulation::select_by_index(&empty_app, 0).unwrap_err();
 
         assert_eq!(index_error.to_string(), failed_action_index_error(0));
     }
@@ -206,7 +274,7 @@ mod tests{
     fn get_action_by_id(){
         let test_app = create_app_with_single_action();
 
-        let action = test_app.select_by_id(test_app.action_list[0].get_id()).unwrap();
+        let action = action::ActionListManipulation::select_by_id(&test_app, test_app.action_list[0].get_id()).unwrap();
 
         assert_eq!(action, get_first_action(&test_app));
     }
@@ -215,7 +283,7 @@ mod tests{
     fn failed_get_action_by_id(){
         let empty_app = ClearHeadApp::default();
 
-        let index_error = empty_app.select_by_id(Uuid::nil()).unwrap_err();
+        let index_error = action::ActionListManipulation::select_by_id(&empty_app, Uuid::nil()).unwrap_err();
 
         let expected_error = format!("No Action with Id {}", Uuid::nil());
         assert_eq!(index_error.to_string(), expected_error);
@@ -300,5 +368,14 @@ mod tests{
         let index_error = test_app.change_priority(0, "invalid".to_string()).unwrap_err();
 
         assert_eq!(index_error.to_string(), "invalid is an Invalid Priority Option");
+    }
+
+    #[test]
+    fn create_relationship() {
+        let test_app = create_app_with_two_actions();
+        let action_1_id = test_app.get_action_id(0).unwrap();
+        let action_2_id = test_app.get_action_id(1).unwrap();
+
+        let updated_app = test_app.add_new("related", action_1_id, action_2_id).unwrap();
     }
 }
