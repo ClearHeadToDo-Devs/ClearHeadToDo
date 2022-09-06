@@ -13,7 +13,8 @@ pub use functionality::*;
 pub mod storage;
 pub use storage::*;
 
-pub mod trait_implementation;
+pub mod action_implementation;
+pub mod relationship_implementation;
 pub use functionality::*;
 
 
