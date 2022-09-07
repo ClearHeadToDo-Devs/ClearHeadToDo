@@ -1,4 +1,5 @@
 use tabled::Alignment;
+use tabled::Footer;
 use tabled::Header;
 use relationships::Relationship;
 use relationships::RelationshipListManagement;
@@ -32,6 +33,8 @@ impl ClearHeadApp {
             .index().build()
             .with(Header("Action List"))
             .with(Modify::new(Rows::first()).with(Alignment::center()))
+            .with(Footer(format!("{} Item(s)", self.action_list.len())))
+            .with(Modify::new(Rows::last()).with(Alignment::center()))
     }
 
     pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
@@ -115,7 +118,7 @@ pub mod tests {
     }
 
     #[test]
-    fn list_all_actions(){
+    fn list_single_action_table(){
         let test_app = create_app_with_single_action();
 
         let action_list_string = test_app.get_list();
@@ -127,6 +130,31 @@ pub mod tests {
             |   | Name           | Priority | Completed |
             +---+----------------+----------+-----------+
             | 0 | Default Action | Optional | false     |
+            +---+----------------+----------+-----------+
+            |                 1 Item(s)                 |
+            +---+----------------+----------+-----------+");
+
+        assert_eq!(action_list_string.to_string(), expected_string);
+
+    }
+
+    #[test]
+    fn list_double_action_table(){
+        let test_app = create_app_with_two_actions();
+
+        let action_list_string = test_app.get_list();
+
+        let expected_string = indoc!("
+            +---+----------------+----------+-----------+
+            |                Action List                |
+            +---+----------------+----------+-----------+
+            |   | Name           | Priority | Completed |
+            +---+----------------+----------+-----------+
+            | 0 | Default Action | Optional | false     |
+            +---+----------------+----------+-----------+
+            | 1 | Default Action | Optional | false     |
+            +---+----------------+----------+-----------+
+            |                 2 Item(s)                 |
             +---+----------------+----------+-----------+");
 
         assert_eq!(action_list_string.to_string(), expected_string);
