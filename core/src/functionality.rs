@@ -22,8 +22,8 @@ pub struct ClearHeadApp  {
 
 impl ClearHeadApp {
 
-    pub fn get_list(&self) -> String {
-        Table::new(&self.action_list).to_string()
+    pub fn get_list(&self) -> Table {
+        Table::new(&self.action_list)
     }
 
     pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
@@ -111,7 +111,6 @@ pub mod tests {
 
         let action_list_string = test_app.get_list();
 
-
         let expected_string = format!(
 "+----------------+----------+-----------+--------------------------------------+
 | name           | priority | completed | id                                   |
@@ -120,7 +119,7 @@ pub mod tests {
 +----------------+----------+-----------+--------------------------------------+"
             ,test_app.action_list[0].get_id().hyphenated());
 
-        assert_eq!(action_list_string, expected_string);
+        assert_eq!(action_list_string.to_string(), expected_string);
 
     }
 
