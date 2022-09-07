@@ -1,3 +1,4 @@
+use tabled::Header;
 use relationships::Relationship;
 use relationships::RelationshipListManagement;
 
@@ -23,7 +24,9 @@ pub struct ClearHeadApp  {
 impl ClearHeadApp {
 
     pub fn get_list(&self) -> Table {
-        Table::builder(&self.action_list).index().build()
+        Table::builder(&self.action_list)
+            .index().build()
+            .with(Header("Action List"))
     }
 
     pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
@@ -113,6 +116,8 @@ pub mod tests {
         let action_list_string = test_app.get_list();
 
         let expected_string = indoc!("
+            +---+----------------+----------+-----------+
+            | Action List                               |
             +---+----------------+----------+-----------+
             |   | Name           | Priority | Completed |
             +---+----------------+----------+-----------+
