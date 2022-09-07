@@ -1,9 +1,13 @@
+use tabled::Alignment;
 use tabled::Header;
 use relationships::Relationship;
 use relationships::RelationshipListManagement;
 
 use action::Action;
 use action::ActionListManipulation;
+use tabled::Modify;
+use tabled::object::Rows;
+use tabled::object::Segment;
 
 
 use std::fmt::Debug;
@@ -27,6 +31,7 @@ impl ClearHeadApp {
         Table::builder(&self.action_list)
             .index().build()
             .with(Header("Action List"))
+            .with(Modify::new(Rows::first()).with(Alignment::center()))
     }
 
     pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
@@ -117,7 +122,7 @@ pub mod tests {
 
         let expected_string = indoc!("
             +---+----------------+----------+-----------+
-            | Action List                               |
+            |                Action List                |
             +---+----------------+----------+-----------+
             |   | Name           | Priority | Completed |
             +---+----------------+----------+-----------+
