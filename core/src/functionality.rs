@@ -23,7 +23,7 @@ pub struct ClearHeadApp  {
 impl ClearHeadApp {
 
     pub fn get_list(&self) -> Table {
-        Table::new(&self.action_list)
+        Table::builder(&self.action_list).index().build()
     }
 
     pub fn get_extended_list(&self) -> Result<String, Box<dyn Error>> {
@@ -113,11 +113,11 @@ pub mod tests {
         let action_list_string = test_app.get_list();
 
         let expected_string = indoc!("
-            +----------------+----------+-----------+
-            | Name           | Priority | Completed |
-            +----------------+----------+-----------+
-            | Default Action | Optional | false     |
-            +----------------+----------+-----------+");
+            +---+----------------+----------+-----------+
+            |   | Name           | Priority | Completed |
+            +---+----------------+----------+-----------+
+            | 0 | Default Action | Optional | false     |
+            +---+----------------+----------+-----------+");
 
         assert_eq!(action_list_string.to_string(), expected_string);
 

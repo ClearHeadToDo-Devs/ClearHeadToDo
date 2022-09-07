@@ -1,8 +1,6 @@
 use action::Action;
 use im::Vector;
 
-use uuid::Uuid;
-
 pub struct ExtendedAction{
     pub action: Action,
     pub children: Vector<Action>,
