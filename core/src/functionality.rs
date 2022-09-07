@@ -114,7 +114,7 @@ pub mod tests {
 
         let expected_string = indoc!("
             +----------------+----------+-----------+
-            | name           | priority | completed |
+            | Name           | Priority | Completed |
             +----------------+----------+-----------+
             | Default Action | Optional | false     |
             +----------------+----------+-----------+");

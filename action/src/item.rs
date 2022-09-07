@@ -12,8 +12,11 @@ use tabled::Tabled;
 
 #[derive(PartialEq, Debug, Clone, Deserialize, Serialize, Tabled)]
 pub struct Action {
+    #[tabled(rename = "Name")]
     name: String,
+    #[tabled(rename = "Priority")]
     priority: Priority,
+    #[tabled(rename = "Completed")]
     completed: bool,
     #[tabled(skip)]
     id: Uuid,

@@ -99,7 +99,7 @@ fn action_print_table_successful() {
 
     assert_eq!(table.to_string(),indoc!("
         +----------------+----------+-----------+
-        | name           | priority | completed |
+        | Name           | Priority | Completed |
         +----------------+----------+-----------+
         | Default Action | Optional | false     |
         +----------------+----------+-----------+"));
