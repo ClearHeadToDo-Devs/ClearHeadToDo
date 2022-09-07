@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
  "csv",
  "im",
+ "indoc",
  "serde",
  "serde_test",
  "tabled",
@@ -112,6 +113,7 @@ dependencies = [
  "action",
  "csv",
  "im",
+ "indoc",
  "relationships",
  "serde",
  "serde_json",
@@ -203,6 +205,12 @@ dependencies = [
  "autocfg",
  "hashbrown",
 ]
+
+[[package]]
+name = "indoc"
+version = "1.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "adab1eaa3408fb7f0c777a73e7465fd5656136fc93b670eb6df3c88c2c1344e3"
 
 [[package]]
 name = "itoa"

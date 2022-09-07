@@ -2,6 +2,8 @@ use tabled::Table;
 use uuid::Uuid;
 use im::Vector;
 
+use indoc::indoc;
+
 use action::*;
 
 fn create_single_action_list() -> Vector<Action> {
@@ -95,13 +97,12 @@ fn action_print_table_successful() {
 
     let table = Table::new(action_list.clone());
 
-    assert_eq!(table.to_string(),format!(
-"+----------------+----------+-----------+--------------------------------------+
-| name           | priority | completed | id                                   |
-+----------------+----------+-----------+--------------------------------------+
-| Default Action | Optional | false     | {} |
-+----------------+----------+-----------+--------------------------------------+",
-        &action_list[0].get_id()));
+    assert_eq!(table.to_string(),indoc!("
+        +----------------+----------+-----------+
+        | name           | priority | completed |
+        +----------------+----------+-----------+
+        | Default Action | Optional | false     |
+        +----------------+----------+-----------+"));
     }
 
 #[test]

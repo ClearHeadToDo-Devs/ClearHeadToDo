@@ -15,6 +15,7 @@ pub struct Action {
     name: String,
     priority: Priority,
     completed: bool,
+    #[tabled(skip)]
     id: Uuid,
 }
 

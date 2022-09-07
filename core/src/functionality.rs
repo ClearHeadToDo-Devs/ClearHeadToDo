@@ -61,6 +61,7 @@ impl ClearHeadApp {
 pub mod tests {
     use super::*;
     use im::Vector;
+    use indoc::indoc;
 
 
     pub fn create_app_with_single_action() -> ClearHeadApp {
@@ -111,13 +112,12 @@ pub mod tests {
 
         let action_list_string = test_app.get_list();
 
-        let expected_string = format!(
-"+----------------+----------+-----------+--------------------------------------+
-| name           | priority | completed | id                                   |
-+----------------+----------+-----------+--------------------------------------+
-| Default Action | Optional | false     | {} |
-+----------------+----------+-----------+--------------------------------------+"
-            ,test_app.action_list[0].get_id().hyphenated());
+        let expected_string = indoc!("
+            +----------------+----------+-----------+
+            | name           | priority | completed |
+            +----------------+----------+-----------+
+            | Default Action | Optional | false     |
+            +----------------+----------+-----------+");
 
         assert_eq!(action_list_string.to_string(), expected_string);
 
