@@ -43,6 +43,8 @@ pub trait RelationshipListManagement {
     fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool;
     fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool;
 
+    fn filter_by_participants(&self, list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>>;
+
     fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
     fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
     fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
@@ -220,6 +222,27 @@ impl RelationshipListManagement for Vector<Relationship> {
         || self.id_is_present_in_participant_2_list(id)
     }
 
+    fn filter_by_participants(&self,list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        match list.as_str(){
+            "participant_1" | "p1" | "1" | "list1" => {
+                Ok(self.get_participant_1_list_for_id(id)?)
+            },
+            "participant_2" | "p2" | "2" | "list2" => {
+                Ok(self.get_participant_2_list_for_id(id)?)
+            },
+            "either" | "P1orP2" | "3" | "list1or2" => {
+                Ok(self.get_either_participant_list_for_id(id)?)
+            },
+            _ => {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Invalid List Name",
+                )));
+            }
+        }
+
+    }
+
     fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         match self.id_is_present_in_participant_1_list(id){
             true => {
@@ -286,6 +309,17 @@ impl RelationshipListManagement for Vector<Relationship> {
         }
     }
 
+    fn filter_by_variant(&self, variant: &str) -> Result<Vector<Relationship>, Box<dyn Error>> {
+        let filter_variant = RelationshipVariant::from_str(variant)?;
+
+        let filtered_list = self.iter()
+            .filter(|relationship| relationship.get_variant() == filter_variant)
+            .map(|relationship| relationship.clone())
+            .collect::<Vector<Relationship>>();
+
+        return Ok(filtered_list);
+    }
+
     fn get_children_for_id(&self, id: Uuid) -> Result<Vector<Uuid>, Box<dyn Error>> {
         let mut child_id_list: Vector<Uuid> = Vector::new();
 
@@ -304,17 +338,6 @@ impl RelationshipListManagement for Vector<Relationship> {
     fn get_relationship_list_as_table(&self) -> String {
         Table::new(self).to_string()
         
-    }
-
-    fn filter_by_variant(&self, variant: &str) -> Result<Vector<Relationship>, Box<dyn Error>> {
-        let filter_variant = RelationshipVariant::from_str(variant)?;
-
-        let filtered_list = self.iter()
-            .filter(|relationship| relationship.get_variant() == filter_variant)
-            .map(|relationship| relationship.clone())
-            .collect::<Vector<Relationship>>();
-
-        return Ok(filtered_list);
     }
 }
 

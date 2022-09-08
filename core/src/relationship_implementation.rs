@@ -141,6 +141,10 @@ impl RelationshipListManagement for ClearHeadApp {
         self.relationship_list.id_is_present_in_either_participant_list(id)
     }
 
+    fn filter_by_participants(&self, list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        todo!()
+    }
+
     fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>> {
         Ok(self.relationship_list.get_participant_1_list_for_id(id)?)
 
