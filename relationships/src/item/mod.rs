@@ -10,8 +10,11 @@ use tabled::Tabled;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Tabled)]
 pub struct Relationship {
+    #[tabled(rename = "Variant")]
     variant: RelationshipVariant,
+    #[tabled(rename = "Participant 1")]
     participant_1: Uuid,
+    #[tabled(rename = "Participant 2")]
     participant_2: Uuid,
     #[tabled(skip)]
     id: Uuid,
