@@ -13,6 +13,7 @@ pub struct Relationship {
     variant: RelationshipVariant,
     participant_1: Uuid,
     participant_2: Uuid,
+    #[tabled(skip)]
     id: Uuid,
 }
 

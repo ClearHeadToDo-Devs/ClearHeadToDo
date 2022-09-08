@@ -370,6 +370,7 @@ version = "0.1.0"
 dependencies = [
  "csv",
  "im",
+ "indoc",
  "serde",
  "serde_json",
  "serde_test",

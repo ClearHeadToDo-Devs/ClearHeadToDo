@@ -6,6 +6,7 @@ use im::Vector;
 use relationships::item::Relationship;
 use relationships::item::RelationshipVariant;
 use relationships::RelationshipListManagement;
+use indoc::indoc;
 
 
 pub fn invalid_index_error_string() -> String {
@@ -474,5 +475,10 @@ fn print_relationship_table() {
 
     let query_result = single_relationship_list.get_relationship_list_as_table();
 
-    assert_eq!(query_result, Table::new(single_relationship_list).to_string());
+    assert_eq!(query_result, indoc!("
+        +---------------------+--------------------------------------+--------------------------------------+
+        | variant             | participant_1                        | participant_2                        |
+        +---------------------+--------------------------------------+--------------------------------------+
+        | Related: Undirected | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 |
+        +---------------------+--------------------------------------+--------------------------------------+"));
 }
