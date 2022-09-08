@@ -480,6 +480,50 @@ fn get_children_for_id() {
 }
 
 #[test]
+fn get_parental_relationship_list(){
+    let single_relationship_list = create_relationship_list_with_single_relationship("parental");
+    let double_relationship_list = single_relationship_list.append_related_relationship(Uuid::nil(), Uuid::nil());
+
+    let query_result = double_relationship_list
+        .filter_by_variant("parental").unwrap();
+
+    assert_eq!(query_result[0] , double_relationship_list[0]);
+}
+
+#[test]
+fn get_sequential_relationship_list(){
+    let single_relationship_list = create_relationship_list_with_single_relationship("sequential");
+    let double_relationship_list = single_relationship_list.append_related_relationship(Uuid::nil(), Uuid::nil());
+
+    let query_result = double_relationship_list
+        .filter_by_variant("sequential").unwrap();
+
+    assert_eq!(query_result[0] , double_relationship_list[0]);
+}
+
+#[test]
+fn get_related_relationship_list(){
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
+    let double_relationship_list = single_relationship_list.append_parental_relationship(Uuid::nil(), Uuid::nil());
+
+    let query_result = double_relationship_list
+        .filter_by_variant("related").unwrap();
+
+    assert_eq!(query_result[0] , double_relationship_list[0]);
+}
+
+#[test]
+fn failed_filter_relationship_list_test(){
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
+    let double_relationship_list = single_relationship_list.append_parental_relationship(Uuid::nil(), Uuid::nil());
+
+    let query_result = double_relationship_list
+        .filter_by_variant("bad variant").unwrap_err();
+
+    assert_eq!(query_result.to_string(), "invalid relationship variant");
+}
+
+#[test]
 fn print_relationship_table() {
     let single_relationship_list = 
     create_relationship_list_with_single_related_relationship();
