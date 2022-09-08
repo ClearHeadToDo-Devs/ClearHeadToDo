@@ -469,6 +469,17 @@ fn failed_get_either_participant_list_for_id() {
 }
 
 #[test]
+fn get_children_for_id() {
+    let single_relationship_list = create_relationship_list_with_single_relationship("parental");
+    let single_p2_relationship_list = single_relationship_list.update_relationship_participant_2(0, Uuid::new_v4()).unwrap();
+
+    let query_result = single_p2_relationship_list
+        .get_children_for_id(Uuid::nil()).unwrap();
+
+    assert_eq!(query_result[0] , single_p2_relationship_list.select_relationship_by_index(0).unwrap().get_participant_2());
+}
+
+#[test]
 fn print_relationship_table() {
     let single_relationship_list = 
     create_relationship_list_with_single_related_relationship();

@@ -45,6 +45,7 @@ pub trait RelationshipListManagement {
     fn get_participant_1_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
     fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
     fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Vector<Relationship>, Box<dyn Error>>;
+    fn get_children_for_id(&self, id: Uuid) -> Result<Vector<Uuid>, Box<dyn Error>>;
 
     fn get_relationship_list_as_table(&self) -> String;
 }
@@ -279,6 +280,21 @@ impl RelationshipListManagement for Vector<Relationship> {
                 )));
             }
         }
+    }
+
+    fn get_children_for_id(&self, id: Uuid) -> Result<Vector<Uuid>, Box<dyn Error>> {
+        let mut child_id_list: Vector<Uuid> = Vector::new();
+
+        let participant_1_list = self.get_participant_1_list_for_id(id)?;
+        let children_relationship_list = participant_1_list.iter()
+            .filter(|relationship| relationship.get_variant() 
+                == RelationshipVariant::create_parental());
+
+        for relationship in children_relationship_list{
+            child_id_list.push_back(relationship.get_participant_2());
+        }
+
+        return Ok(child_id_list);
     }
 
     fn get_relationship_list_as_table(&self) -> String {

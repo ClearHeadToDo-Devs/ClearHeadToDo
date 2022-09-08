@@ -157,6 +157,10 @@ impl RelationshipListManagement for ClearHeadApp {
     fn get_relationship_list_as_table(&self) -> String{
         todo!()
     }
+
+    fn get_children_for_id(&self, id: Uuid) -> Result<Vector<Uuid>, Box<dyn Error>> {
+        todo!()
+    }
 }
 
 #[cfg(test)]
