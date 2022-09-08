@@ -72,7 +72,7 @@ impl ClearHeadApp {
 pub mod tests {
     use super::*;
     use im::Vector;
-    use indoc::indoc;
+    use indoc::{indoc, formatdoc};
 
 
     pub fn create_app_with_single_action() -> ClearHeadApp {
@@ -168,16 +168,15 @@ pub mod tests {
         let all_actions = test_app.get_extended_list().unwrap();
 
 
-        let expected_string = format!(
-"Order,Name,Priority,Completed,Id
-0,Default Action,Optional,false,{}
-  - Parental: Directed,Default Action,Optional,false,{}
-1,Default Action,Optional,false,{}\n", 
-            test_app.action_list[0].get_id(),
-            test_app.action_list[1].get_id(),
-            test_app.action_list[1].get_id());
+        let expected_string = formatdoc!("
+            Order,Name,Priority,Completed,Id
+            0,Default Action,Optional,false,{}
+              - Parental: Directed,Default Action,Optional,false,{}
+            1,Default Action,Optional,false,{}\n", 
+                test_app.action_list[0].get_id(),
+                test_app.action_list[1].get_id(),
+                test_app.action_list[1].get_id());
 
         assert_eq!(all_actions, expected_string);
-
     }
 }
