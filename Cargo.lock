@@ -3,19 +3,6 @@
 version = 3
 
 [[package]]
-name = "action"
-version = "0.1.0"
-dependencies = [
- "csv",
- "im",
- "indoc",
- "serde",
- "serde_test",
- "tabled",
- "uuid",
-]
-
-[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -110,13 +97,13 @@ dependencies = [
 name = "clear_head_todo_core"
 version = "0.1.0"
 dependencies = [
- "action",
  "csv",
  "im",
  "indoc",
  "relationships",
  "serde",
  "serde_json",
+ "serde_test",
  "tabled",
  "uuid",
 ]
@@ -417,9 +404,9 @@ dependencies = [
 
 [[package]]
 name = "serde_test"
-version = "1.0.139"
+version = "1.0.144"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc933653ac6800dd970d54829f0646dcfd078bcaae7fbd19c6e58a584564a5de"
+checksum = "6c7f3621491f256177206a7c2152c17f322c0d0b30af05359088172437d29e25"
 dependencies = [
  "serde",
 ]

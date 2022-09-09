@@ -1,4 +1,4 @@
-pub extern crate action;
+pub mod action;
 pub use action::*;
 
 extern crate relationships;

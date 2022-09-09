@@ -1,9 +1,9 @@
 use crate::ClearHeadApp;
 
 
-use action::ActionListManipulation;
-use action::Action;
-use action::Priority;
+use crate::action::ActionListManipulation;
+use crate::action::Action;
+use crate::action::Priority;
 
 
 use std::error::Error;
@@ -182,7 +182,7 @@ mod tests{
     fn get_action_by_index(){
         let test_app = create_app_with_single_action();
 
-        let action = action::ActionListManipulation::select_action_by_index(&test_app, 0).unwrap();
+        let action = ActionListManipulation::select_action_by_index(&test_app, 0).unwrap();
 
         assert_eq!(action, get_first_action(&test_app));
     }
@@ -191,7 +191,7 @@ mod tests{
     fn failed_get_action_by_index(){
         let empty_app = ClearHeadApp::default();
 
-        let index_error = action::ActionListManipulation::select_action_by_index(&empty_app, 0).unwrap_err();
+        let index_error = ActionListManipulation::select_action_by_index(&empty_app, 0).unwrap_err();
 
         assert_eq!(index_error.to_string(), failed_action_index_error(0));
     }
@@ -200,7 +200,7 @@ mod tests{
     fn get_action_by_id(){
         let test_app = create_app_with_single_action();
 
-        let action = action::ActionListManipulation::select_action_by_id(&test_app, test_app.action_list[0].get_id()).unwrap();
+        let action = ActionListManipulation::select_action_by_id(&test_app, test_app.action_list[0].get_id()).unwrap();
 
         assert_eq!(action, get_first_action(&test_app));
     }
@@ -209,7 +209,7 @@ mod tests{
     fn failed_get_action_by_id(){
         let empty_app = ClearHeadApp::default();
 
-        let index_error = action::ActionListManipulation::select_action_by_id(&empty_app, Uuid::nil()).unwrap_err();
+        let index_error = ActionListManipulation::select_action_by_id(&empty_app, Uuid::nil()).unwrap_err();
 
         let expected_error = format!("No Action with Id {}", Uuid::nil());
         assert_eq!(index_error.to_string(), expected_error);

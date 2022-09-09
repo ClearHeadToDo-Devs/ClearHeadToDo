@@ -1,14 +1,13 @@
-use tabled::Alignment;
-use tabled::Footer;
-use tabled::Header;
 use relationships::Relationship;
 use relationships::RelationshipListManagement;
 
-use action::Action;
-use action::ActionListManipulation;
+use crate::action::Action;
+use crate::action::ActionListManipulation;
 use tabled::Modify;
 use tabled::object::Rows;
-use tabled::object::Segment;
+use tabled::Alignment;
+use tabled::Footer;
+use tabled::Header;
 
 
 use std::fmt::Debug;

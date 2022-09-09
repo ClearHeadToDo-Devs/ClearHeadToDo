@@ -4,7 +4,7 @@ use im::Vector;
 
 use indoc::indoc;
 
-use action::*;
+use clear_head_todo_core::action::*;
 
 fn create_single_action_list() -> Vector<Action> {
     let mut action_list = Vector::new();

@@ -1,4 +1,4 @@
-use action::Action;
+use crate::action::Action;
 use im::Vector;
 
 pub struct ExtendedAction{
@@ -25,7 +25,7 @@ impl Default for ExtendedAction{
 
 #[cfg(test)]
 mod tests{
-    use action::Priority;
+    use crate::action::Priority;
 
     use super::*;
 
