@@ -100,7 +100,6 @@ dependencies = [
  "csv",
  "im",
  "indoc",
- "relationships",
  "serde",
  "serde_json",
  "serde_test",
@@ -350,20 +349,6 @@ name = "regex-automata"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c230d73fb8d8c1b9c0b3135c5142a8acee3a0558fb8db5cf1cb65f8d7862132"
-
-[[package]]
-name = "relationships"
-version = "0.1.0"
-dependencies = [
- "csv",
- "im",
- "indoc",
- "serde",
- "serde_json",
- "serde_test",
- "tabled",
- "uuid",
-]
 
 [[package]]
 name = "ryu"

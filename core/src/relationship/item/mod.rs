@@ -1,7 +1,7 @@
 pub mod variants;
 pub use variants::*;
 
-use crate::Uuid;
+use uuid::Uuid;
 use serde::Deserialize;
 use serde::Serialize;
 use std::error::Error;

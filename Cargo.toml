@@ -3,5 +3,4 @@
 members = [
 	"core",
 	"cli",
-	"relationships",
 ]

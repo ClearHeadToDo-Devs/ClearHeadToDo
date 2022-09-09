@@ -1,8 +1,8 @@
 pub mod action;
 pub use action::*;
 
-extern crate relationships;
-pub use relationships::*;
+pub mod relationship;
+pub use relationship::*;
 
 pub mod functionality;
 pub use functionality::*;

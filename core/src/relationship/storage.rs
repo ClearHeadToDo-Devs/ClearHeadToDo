@@ -1,4 +1,4 @@
-use crate::Relationship;
+use crate::relationship::Relationship;
 use crate::RelationshipListManagement;
 
 use std::fs::File;
@@ -46,7 +46,7 @@ mod test {
 
     use super::*;
 
-    use crate::tests::create_vector_with_nill_relationship;
+    use crate::relationship::tests::create_vector_with_nill_relationship;
 
     #[test]
     fn successfully_write_pretty_json() {

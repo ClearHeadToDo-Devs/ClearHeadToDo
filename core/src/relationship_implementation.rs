@@ -1,9 +1,9 @@
 use crate::ClearHeadApp;
 
 use im::Vector;
-use relationships::RelationshipListManagement;
-use relationships::Relationship;
-use relationships::item::RelationshipVariant;
+use crate::relationship::RelationshipListManagement;
+use crate::relationship::Relationship;
+use crate::relationship::item::RelationshipVariant;
 
 use std::error::Error;
 use uuid::Uuid;

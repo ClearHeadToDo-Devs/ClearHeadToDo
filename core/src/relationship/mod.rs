@@ -2,9 +2,9 @@ pub mod item;
 
 pub mod storage;
 
-pub use crate::item::Relationship;
+pub use item::Relationship;
 
-use crate::item::RelationshipVariant;
+pub use item::RelationshipVariant;
 
 use std::{error::Error, str::FromStr};
 use tabled::Table;

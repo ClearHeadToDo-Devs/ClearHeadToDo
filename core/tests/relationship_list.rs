@@ -1,11 +1,11 @@
-use relationships::item::edge_direction::EdgeDirectionality;
+use clear_head_todo_core::relationship::item::edge_direction::EdgeDirectionality;
 
 use tabled::Table;
 use uuid::Uuid;
 use im::Vector;
-use relationships::item::Relationship;
-use relationships::item::RelationshipVariant;
-use relationships::RelationshipListManagement;
+use clear_head_todo_core::relationship::item::Relationship;
+use clear_head_todo_core::relationship::item::RelationshipVariant;
+use clear_head_todo_core::relationship::RelationshipListManagement;
 use indoc::indoc;
 
 
