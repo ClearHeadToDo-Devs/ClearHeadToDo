@@ -3,8 +3,6 @@ use crate::ClearHeadApp;
 
 use crate::action::ActionListManipulation;
 use crate::action::Action;
-use crate::action::Priority;
-
 
 use std::error::Error;
 use uuid::Uuid;
@@ -141,7 +139,7 @@ mod tests{
 
         let action_priority = test_app.get_action_priority(0);
 
-        assert_eq!(action_priority.unwrap(), Priority::default().to_string());
+        assert_eq!(action_priority.unwrap(), "Optional");
     }
 
     #[test]

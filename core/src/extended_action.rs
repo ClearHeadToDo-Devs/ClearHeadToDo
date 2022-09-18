@@ -1,5 +1,4 @@
 use crate::action::Action;
-use crate::action_implementation::ActionImplementation;
 use im::Vector;
 
 
@@ -27,9 +26,9 @@ impl Default for ExtendedAction{
 
 #[cfg(test)]
 mod tests{
-    use crate::action::Priority;
-
     use super::*;
+    use crate::action_implementation::ActionImplementation;
+
 
     #[test]
     fn create_default_extended_action(){
