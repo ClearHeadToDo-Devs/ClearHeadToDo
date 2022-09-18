@@ -9,6 +9,17 @@ use crate::action::Priority;
 use std::error::Error;
 use uuid::Uuid;
 
+pub trait ActionImplementation {
+    fn get_name(&self) -> String;
+    fn get_priority(&self) -> String;
+    fn get_description(&self) -> String;
+    fn get_id(&self) -> Uuid;
+
+    fn rename(&self, new_name: &str) -> Self;
+    fn set_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>> where Self: Sized;
+    fn toggle_completion_status(&self) -> Self;
+}
+
 
 impl ActionListManipulation for ClearHeadApp {
     fn append_default_action(&self) -> Self {
