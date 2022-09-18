@@ -4,6 +4,7 @@ use im::Vector;
 
 use indoc::indoc;
 
+use clear_head_todo_core::action_implementation::ActionImplementation;
 use clear_head_todo_core::action::*;
 
 fn create_single_action_list() -> Vector<Action> {
@@ -180,7 +181,7 @@ fn action_reprioritize() {
         .change_action_priority(0, "low".to_string())
         .unwrap();
 
-    assert_eq!(changed_action_list[0].get_priority(), Priority::Low);
+    assert_eq!(changed_action_list[0].get_priority(), "Low");
 }
 
 #[test]

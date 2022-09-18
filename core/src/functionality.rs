@@ -3,6 +3,7 @@ use crate::relationship::RelationshipListManagement;
 
 use crate::action::Action;
 use crate::action::ActionListManipulation;
+use crate::action_implementation::ActionImplementation;
 use tabled::Modify;
 use tabled::object::Rows;
 use tabled::Alignment;
@@ -26,7 +27,6 @@ pub struct ClearHeadApp  {
 }
 
 impl ClearHeadApp {
-
     pub fn get_list(&self) -> Table {
         Table::builder(&self.action_list)
             .index().build()

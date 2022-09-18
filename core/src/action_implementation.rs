@@ -12,11 +12,11 @@ use uuid::Uuid;
 pub trait ActionImplementation {
     fn get_name(&self) -> String;
     fn get_priority(&self) -> String;
-    fn get_description(&self) -> String;
+    fn get_completion_status(&self) -> bool;
     fn get_id(&self) -> Uuid;
 
     fn rename(&self, new_name: &str) -> Self;
-    fn set_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>> where Self: Sized;
+    fn change_priority(&self, new_priority: &str) -> Result<Self, Box<dyn Error>> where Self: Sized;
     fn toggle_completion_status(&self) -> Self;
 }
 
@@ -75,7 +75,7 @@ impl ActionListManipulation for ClearHeadApp {
         self.action_list.get_action_name(index)
     }
 
-    fn get_action_priority(&self, index: usize) -> Result<Priority, Box<dyn Error>> {
+    fn get_action_priority(&self, index: usize) -> Result<String, Box<dyn Error>> {
         self.action_list.get_action_priority(index)
     }
 
@@ -141,7 +141,7 @@ mod tests{
 
         let action_priority = test_app.get_action_priority(0);
 
-        assert_eq!(action_priority.unwrap(), Priority::default());
+        assert_eq!(action_priority.unwrap(), Priority::default().to_string());
     }
 
     #[test]
@@ -286,7 +286,7 @@ mod tests{
 
         let updated_app = test_app.change_action_priority(0, "high".to_string()).unwrap();
 
-        assert_eq!(get_first_action(&updated_app).get_priority(), Priority::High);
+        assert_eq!(get_first_action(&updated_app).get_priority(), "High");
     }
 
     #[test]

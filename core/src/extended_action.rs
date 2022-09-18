@@ -1,5 +1,7 @@
 use crate::action::Action;
+use crate::action_implementation::ActionImplementation;
 use im::Vector;
+
 
 pub struct ExtendedAction{
     pub action: Action,
@@ -34,7 +36,7 @@ mod tests{
         let test_action = ExtendedAction::default();
 
         assert_eq!(test_action.action.get_name(), "Default Action");
-        assert_eq!(test_action.action.get_priority(), Priority::Optional);
+        assert_eq!(test_action.action.get_priority(), "Optional");
         assert_eq!(test_action.action.get_completion_status(), false);
         assert_eq!(test_action.action.get_id().is_nil(), false);
         assert_eq!(test_action.children, Vector::new());

@@ -11,6 +11,8 @@ use std::error::Error;
 use uuid::Uuid;
 use im::Vector;
 
+use crate::action_implementation::ActionImplementation;
+
 pub trait ActionListManipulation {
     fn append_default_action(&self) -> Self;
 
@@ -32,7 +34,7 @@ pub trait ActionListManipulation {
     fn select_action_by_index(&self, index: usize) -> Result<Action, Box<dyn Error>>;
 
     fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>>;
-    fn get_action_priority(&self, index: usize) -> Result<Priority, Box<dyn Error>>;
+    fn get_action_priority(&self, index: usize) -> Result<String, Box<dyn Error>>;
     fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>>;
     fn get_action_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
 
@@ -125,7 +127,7 @@ impl ActionListManipulation for Vector<Action> {
         Ok(self.select_action_by_index(index)?.get_name())
     }
 
-    fn get_action_priority(&self, index: usize) -> Result<Priority, Box<dyn Error>> {
+    fn get_action_priority(&self, index: usize) -> Result<String, Box<dyn Error>> {
         Ok(self.select_action_by_index(index)?.get_priority())
     }
     fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>> {

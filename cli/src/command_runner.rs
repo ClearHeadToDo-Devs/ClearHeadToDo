@@ -1,5 +1,6 @@
 use crate::ClearHeadApp;
 use clear_head_todo_core::ActionListManipulation;
+use clear_head_todo_core::action_implementation::ActionImplementation;
 
 use std::error::Error;
 
@@ -176,7 +177,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(result.action_list[0].get_name(), "Default Action".to_string());
-        assert_eq!(result.action_list[0].get_priority(), Priority::Optional);
+        assert_eq!(result.action_list[0].get_priority(), "Optional");
         assert_eq!(result.action_list[0].get_completion_status(), false);
     }
 
@@ -314,7 +315,7 @@ mod tests {
             new_priority: "High".to_string(),
         }
         .run_subcommand(&single_action_app).unwrap();
-        assert_eq!(result.get_action_priority(0).unwrap(), Priority::High);
+        assert_eq!(result.get_action_priority(0).unwrap(), "High");
     }
 
     #[test]

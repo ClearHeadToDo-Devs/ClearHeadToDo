@@ -9,6 +9,8 @@ use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
+use crate::action_implementation::ActionImplementation;
+
 
 #[derive(PartialEq, Debug, Clone, Deserialize, Serialize, Tabled)]
 pub struct Action {
@@ -42,39 +44,39 @@ impl Display for Action {
     }
 }
 
-impl Action {
-    pub fn rename(&self, new_action_name: &str) -> Action {
+impl ActionImplementation for Action {
+    fn rename(&self, new_action_name: &str) -> Action {
         return Action {
             name: new_action_name.to_owned(),
             ..self.to_owned()
         };
     }
-    pub fn toggle_completion_status(&self) -> Action {
+    fn toggle_completion_status(&self) -> Action {
         Action {
             completed: !self.completed,
             ..self.to_owned()
         }
     }
-    pub fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
+    fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
         return Ok(Action {
             priority: Priority::from_str(new_priority)?,
             ..self.to_owned()
         });
     }
 
-    pub fn get_id(&self) -> Uuid {
+    fn get_id(&self) -> Uuid {
         self.id.clone()
     }
 
-    pub fn get_name(&self) -> String {
+    fn get_name(&self) -> String {
         self.name.clone()
     }
 
-    pub fn get_priority(&self) -> Priority {
-        self.priority.clone()
+    fn get_priority(&self) -> String {
+        self.priority.to_string()
     }
 
-    pub fn get_completion_status(&self) -> bool {
+    fn get_completion_status(&self) -> bool {
         self.completed.clone()
     }
 }
@@ -96,7 +98,7 @@ pub mod tests{
     fn default_action_creation() {
         let test_action = create_nil_action();
         assert!(test_action.get_name() == "Default Action".to_string());
-        assert!(test_action.get_priority() == Priority::Optional);
+        assert!(test_action.get_priority() == "Optional");
         assert!(test_action.get_completion_status() == false);
         assert!(test_action.get_id() == Uuid::nil());
     }
@@ -124,7 +126,7 @@ pub mod tests{
     fn get_priority(){
         let test_action = Action::default();
 
-        assert_eq!(test_action.get_priority(), Priority::Optional);
+        assert_eq!(test_action.get_priority(), Priority::Optional.to_string());
     }
 
     #[test]
@@ -178,7 +180,7 @@ pub mod tests{
             .change_priority("High")
             .unwrap();
 
-        assert_eq!(reprioritized_action.get_priority(), Priority::High);
+        assert_eq!(reprioritized_action.get_priority(), Priority::High.to_string());
     }
 
     #[test]
