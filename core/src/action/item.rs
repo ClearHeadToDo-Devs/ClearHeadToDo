@@ -45,6 +45,7 @@ impl Display for Action {
 }
 
 impl ActionImplementation for Action {
+    type Action = Action;
     fn rename(&self, new_action_name: &str) -> Action {
         return Action {
             name: new_action_name.to_owned(),
