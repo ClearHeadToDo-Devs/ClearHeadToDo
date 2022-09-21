@@ -14,6 +14,7 @@ use im::Vector;
 use crate::action_implementation::ActionImplementation;
 
 pub trait ActionListManipulation {
+    type Item;
     fn append_default_action(&self) -> Self;
 
     fn rename_action(&self, index: usize, new_name: String) -> Result<Self, Box<dyn Error>>
@@ -30,7 +31,7 @@ pub trait ActionListManipulation {
     where
         Self: Sized;
 
-    fn select_action_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>>;
+    fn select_action_by_id(&self, id: Uuid) -> Result<Self::Item, Box<dyn Error>>;
     fn select_action_by_index(&self, index: usize) -> Result<Action, Box<dyn Error>>;
 
     fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>>;
@@ -44,6 +45,7 @@ pub trait ActionListManipulation {
 }
 
 impl ActionListManipulation for Vector<Action> {
+    type Item = Action;
     fn append_default_action(&self) -> Self {
         let mut new_list = self.clone();
 
