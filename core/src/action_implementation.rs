@@ -20,8 +20,8 @@ pub trait ActionImplementation {
 }
 
 
-impl ActionListManipulation for ClearHeadApp {
-    fn append_default_action(&self) -> Self {
+impl ClearHeadApp {
+    pub fn append_default_action(&self) -> Self {
         let mut new_app = self.clone();
 
         new_app.action_list = new_app.action_list.append_default_action();
@@ -29,7 +29,7 @@ impl ActionListManipulation for ClearHeadApp {
         new_app
     }
 
-    fn change_action_priority(
+    pub fn change_action_priority(
             &self,
             index: usize,
             new_priority: String,
@@ -43,7 +43,7 @@ impl ActionListManipulation for ClearHeadApp {
         Ok(new_app)
     }
 
-    fn rename_action(&self, index: usize, new_name: String) -> Result<Self, Box<dyn Error>>
+    pub fn rename_action(&self, index: usize, new_name: String) -> Result<Self, Box<dyn Error>>
         where
             Self: Sized {
         let mut updated_list = self.clone();
@@ -53,7 +53,7 @@ impl ActionListManipulation for ClearHeadApp {
         Ok(updated_list)
     }
 
-    fn toggle_action_completion_status(&self, index: usize) -> Result<Self, Box<dyn Error>>
+    pub fn toggle_action_completion_status(&self, index: usize) -> Result<Self, Box<dyn Error>>
         where
             Self: Sized {
         let mut updated_list = self.clone();
@@ -62,31 +62,31 @@ impl ActionListManipulation for ClearHeadApp {
         Ok(updated_list)
     }
 
-    fn select_action_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {
+    pub fn select_action_by_id(&self, id: Uuid) -> Result<Action, Box<dyn Error>> {
         self.action_list.select_action_by_id(id)
     }
 
-    fn select_action_by_index(&self, index: usize) -> Result<Action, Box<dyn Error>> {
+    pub fn select_action_by_index(&self, index: usize) -> Result<Action, Box<dyn Error>> {
         self.action_list.select_action_by_index(index)
     }
 
-    fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>> {
+    pub fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>> {
         self.action_list.get_action_name(index)
     }
 
-    fn get_action_priority(&self, index: usize) -> Result<String, Box<dyn Error>> {
+    pub fn get_action_priority(&self, index: usize) -> Result<String, Box<dyn Error>> {
         self.action_list.get_action_priority(index)
     }
 
-    fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>> {
+    pub fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>> {
         self.action_list.get_action_completion_status(index)
     }
 
-    fn get_action_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+    pub fn get_action_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         self.action_list.get_action_id(index)
     }
 
-    fn remove_action(&self, index: usize) -> Result<Self, Box<dyn Error>>
+    pub fn remove_action(&self, index: usize) -> Result<Self, Box<dyn Error>>
         where
             Self: Sized {
         let mut updated_app = self.clone();
@@ -192,7 +192,7 @@ mod tests{
     fn get_action_by_index(){
         let test_app = create_app_with_single_action();
 
-        let action = ActionListManipulation::select_action_by_index(&test_app, 0).unwrap();
+        let action = test_app.select_action_by_index(0).unwrap();
 
         assert_eq!(action, get_first_action(&test_app));
     }
@@ -201,7 +201,7 @@ mod tests{
     fn failed_get_action_by_index(){
         let empty_app = ClearHeadApp::default();
 
-        let index_error = ActionListManipulation::select_action_by_index(&empty_app, 0).unwrap_err();
+        let index_error = empty_app.select_action_by_index(0).unwrap_err();
 
         assert_eq!(index_error.to_string(), failed_action_index_error(0));
     }
@@ -210,7 +210,7 @@ mod tests{
     fn get_action_by_id(){
         let test_app = create_app_with_single_action();
 
-        let action = ActionListManipulation::select_action_by_id(&test_app, test_app.action_list[0].get_id()).unwrap();
+        let action = test_app.select_action_by_id(test_app.action_list[0].get_id()).unwrap();
 
         assert_eq!(action, get_first_action(&test_app));
     }
@@ -219,7 +219,7 @@ mod tests{
     fn failed_get_action_by_id(){
         let empty_app = ClearHeadApp::default();
 
-        let index_error = ActionListManipulation::select_action_by_id(&empty_app, Uuid::nil()).unwrap_err();
+        let index_error = empty_app.select_action_by_id(Uuid::nil()).unwrap_err();
 
         let expected_error = format!("No Action with Id {}", Uuid::nil());
         assert_eq!(index_error.to_string(), expected_error);
