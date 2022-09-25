@@ -1,14 +1,12 @@
 use crate::ClearHeadApp;
 
-
-use crate::action::ActionListManipulation;
 use crate::action::Action;
 
 use std::error::Error;
 use uuid::Uuid;
 
-pub trait ActionImplementation {
-    type Action: ActionImplementation;
+pub trait ActionFunctionality {
+    type Action: ActionFunctionality;
     fn get_name(&self) -> String;
     fn get_priority(&self) -> String;
     fn get_completion_status(&self) -> bool;
@@ -17,6 +15,37 @@ pub trait ActionImplementation {
     fn rename(&self, new_name: &str) -> Self::Action;
     fn change_priority(&self, new_priority: &str) -> Result<Self::Action, Box<dyn Error>> where Self: Sized;
     fn toggle_completion_status(&self) -> Self::Action;
+}
+
+pub trait ActionListManipulation {
+    type Item;
+    fn append_default_action(&self) -> Self;
+
+    fn rename_action(&self, index: usize, new_name: String) -> Result<Self, Box<dyn Error>>
+    where
+        Self: Sized;
+    fn toggle_action_completion_status(&self, index: usize) -> Result<Self, Box<dyn Error>>
+    where
+        Self: Sized;
+    fn change_action_priority(
+        &self,
+        index: usize,
+        new_priority: String,
+    ) -> Result<Self, Box<dyn Error>>
+    where
+        Self: Sized;
+
+    fn select_action_by_id(&self, id: Uuid) -> Result<Self::Item, Box<dyn Error>>;
+    fn select_action_by_index(&self, index: usize) -> Result<Self::Item, Box<dyn Error>>;
+
+    fn get_action_name(&self, index: usize) -> Result<String, Box<dyn Error>>;
+    fn get_action_priority(&self, index: usize) -> Result<String, Box<dyn Error>>;
+    fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>>;
+    fn get_action_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>>;
+
+    fn remove_action(&self, index: usize) -> Result<Self, Box<dyn Error>>
+    where
+        Self: Sized;
 }
 
 

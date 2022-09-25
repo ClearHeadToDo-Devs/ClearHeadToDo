@@ -9,7 +9,7 @@ use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
-use crate::action_implementation::ActionImplementation;
+use crate::action_implementation::ActionFunctionality;
 
 
 #[derive(PartialEq, Debug, Clone, Deserialize, Serialize, Tabled)]
@@ -44,7 +44,7 @@ impl Display for Action {
     }
 }
 
-impl ActionImplementation for Action {
+impl ActionFunctionality for Action {
     type Action = Action;
     fn rename(&self, new_action_name: &str) -> Action {
         return Action {

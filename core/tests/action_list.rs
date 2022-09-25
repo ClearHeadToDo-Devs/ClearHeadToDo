@@ -4,7 +4,8 @@ use im::Vector;
 
 use indoc::indoc;
 
-use clear_head_todo_core::action_implementation::ActionImplementation;
+use clear_head_todo_core::action_implementation::ActionFunctionality;
+use clear_head_todo_core::action_implementation::ActionListManipulation;
 use clear_head_todo_core::action::*;
 
 fn create_single_action_list() -> Vector<Action> {
