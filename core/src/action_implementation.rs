@@ -5,18 +5,6 @@ use crate::action::Action;
 use std::error::Error;
 use uuid::Uuid;
 
-pub trait ActionFunctionality {
-    type Action: ActionFunctionality;
-    fn get_name(&self) -> String;
-    fn get_priority(&self) -> String;
-    fn get_completion_status(&self) -> bool;
-    fn get_id(&self) -> Uuid;
-
-    fn rename(&self, new_name: &str) -> Self::Action;
-    fn change_priority(&self, new_priority: &str) -> Result<Self::Action, Box<dyn Error>> where Self: Sized;
-    fn toggle_completion_status(&self) -> Self::Action;
-}
-
 pub trait ActionListManipulation {
     type Item;
     fn append_default_action(&self) -> Self;

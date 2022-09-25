@@ -1,6 +1,5 @@
 use crate::ClearHeadApp;
 use clear_head_todo_core::ActionListManipulation;
-use clear_head_todo_core::action_implementation::ActionFunctionality;
 
 use std::error::Error;
 
