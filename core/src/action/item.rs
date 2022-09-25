@@ -9,9 +9,6 @@ use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
-use crate::action_implementation::ActionFunctionality;
-
-
 #[derive(PartialEq, Debug, Clone, Deserialize, Serialize, Tabled)]
 pub struct Action {
     #[tabled(rename = "Name")]

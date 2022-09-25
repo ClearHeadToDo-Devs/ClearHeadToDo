@@ -3,7 +3,6 @@ use crate::relationship::RelationshipListManagement;
 
 use crate::action::Action;
 use crate::action_implementation::ActionListManipulation;
-use crate::action_implementation::ActionFunctionality;
 use tabled::Modify;
 use tabled::object::Rows;
 use tabled::Alignment;
