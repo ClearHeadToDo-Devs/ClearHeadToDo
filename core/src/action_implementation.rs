@@ -48,7 +48,6 @@ pub trait ActionListManipulation {
         Self: Sized;
 }
 
-
 impl ClearHeadApp {
     pub fn append_default_action(&self) -> Self {
         let mut new_app = self.clone();
@@ -125,8 +124,6 @@ impl ClearHeadApp {
         Ok(updated_app)
     }
 }
-
-
 
 #[cfg(test)]
 mod tests{

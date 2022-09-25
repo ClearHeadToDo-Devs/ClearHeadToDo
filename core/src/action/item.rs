@@ -44,40 +44,39 @@ impl Display for Action {
     }
 }
 
-impl ActionFunctionality for Action {
-    type Action = Action;
-    fn rename(&self, new_action_name: &str) -> Action {
+impl Action {
+    pub fn rename(&self, new_action_name: &str) -> Action {
         return Action {
             name: new_action_name.to_owned(),
             ..self.to_owned()
         };
     }
-    fn toggle_completion_status(&self) -> Action {
+    pub fn toggle_completion_status(&self) -> Action {
         Action {
             completed: !self.completed,
             ..self.to_owned()
         }
     }
-    fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
+    pub fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
         return Ok(Action {
             priority: Priority::from_str(new_priority)?,
             ..self.to_owned()
         });
     }
 
-    fn get_id(&self) -> Uuid {
+    pub fn get_id(&self) -> Uuid {
         self.id.clone()
     }
 
-    fn get_name(&self) -> String {
+    pub fn get_name(&self) -> String {
         self.name.clone()
     }
 
-    fn get_priority(&self) -> String {
+    pub fn get_priority(&self) -> String {
         self.priority.to_string()
     }
 
-    fn get_completion_status(&self) -> bool {
+    pub fn get_completion_status(&self) -> bool {
         self.completed.clone()
     }
 }
