@@ -159,8 +159,12 @@ impl RelationshipListManagement for ClearHeadApp {
         Ok(self.relationship_list.get_either_participant_list_for_id(id)?)
     }
 
-    fn filter_by_participants(&self, list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
-        todo!()
+    fn filter_by_participants(&self, participant_list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        let mut cloned_app = self.clone();
+
+        let updated_relationship_list = self.relationship_list.filter_by_participants(participant_list, id)?;
+        cloned_app.relationship_list = updated_relationship_list;
+        Ok(cloned_app)
     }
 
     fn filter_by_variant(&self, variant: &str) -> Result<Vector<Relationship>, Box<dyn Error>> {

@@ -1,6 +1,5 @@
 use clear_head_todo_core::relationship::item::edge_direction::EdgeDirectionality;
 
-use tabled::Table;
 use uuid::Uuid;
 use im::Vector;
 use clear_head_todo_core::relationship::item::Relationship;
