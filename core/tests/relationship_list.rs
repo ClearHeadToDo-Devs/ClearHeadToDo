@@ -572,15 +572,13 @@ fn failed_filter_by_participant_list_bad_list(){
 }
 
 #[test]
-fn failed_filter_by_participant_list_no_ip(){
+fn empty_filter_by_participant_list_no_ip(){
     let single_relationship_list = create_relationship_list_with_single_related_relationship();
-    let double_relationship_list = single_relationship_list
-        .append_related_relationship(Uuid::nil(), Uuid::new_v4());
 
-    let query_result = double_relationship_list
-        .filter_by_participants("bad".to_string(), Uuid::nil()).unwrap_err();
+    let query_result = single_relationship_list
+        .filter_by_participants("3".to_string(), Uuid::new_v4()).unwrap_err();
 
-    assert_eq!(query_result.to_string(), "Invalid List Name");
+    assert_eq!(query_result.to_string(), "Unable to find Relationship with given Id in either participant list");
 }
 
 #[test]
