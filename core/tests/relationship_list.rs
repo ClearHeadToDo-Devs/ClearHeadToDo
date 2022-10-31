@@ -524,7 +524,7 @@ fn failed_filter_relationship_list_test(){
 }
 
 #[test]
-fn filter_by_participant(){
+fn filter_by_participant_1_list(){
     let single_relationship_list = create_relationship_list_with_single_related_relationship();
     let double_relationship_list = single_relationship_list
         .append_related_relationship(Uuid::new_v4(), Uuid::nil());
@@ -533,6 +533,54 @@ fn filter_by_participant(){
         .filter_by_participants("p1".to_string(), Uuid::nil()).unwrap();
 
     assert_eq!(query_result[0] , double_relationship_list[0]);
+}
+
+#[test]
+fn filter_by_participant_2_list(){
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let double_relationship_list = single_relationship_list
+        .append_related_relationship(Uuid::nil(), Uuid::new_v4());
+
+    let query_result = double_relationship_list
+        .filter_by_participants("p2".to_string(), Uuid::nil()).unwrap();
+
+    assert_eq!(query_result[0] , double_relationship_list[0]);
+}
+
+#[test]
+fn filter_by_either_participant_list(){
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let double_relationship_list = single_relationship_list
+        .append_related_relationship(Uuid::nil(), Uuid::new_v4());
+
+    let query_result = double_relationship_list
+        .filter_by_participants("3".to_string(), Uuid::nil()).unwrap();
+
+    assert_eq!(query_result.len() , 2);
+}
+
+#[test]
+fn failed_filter_by_participant_list_bad_list(){
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let double_relationship_list = single_relationship_list
+        .append_related_relationship(Uuid::nil(), Uuid::new_v4());
+
+    let query_result = double_relationship_list
+        .filter_by_participants("bad".to_string(), Uuid::nil()).unwrap_err();
+
+    assert_eq!(query_result.to_string(), "Invalid List Name");
+}
+
+#[test]
+fn failed_filter_by_participant_list_no_ip(){
+    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let double_relationship_list = single_relationship_list
+        .append_related_relationship(Uuid::nil(), Uuid::new_v4());
+
+    let query_result = double_relationship_list
+        .filter_by_participants("bad".to_string(), Uuid::nil()).unwrap_err();
+
+    assert_eq!(query_result.to_string(), "Invalid List Name");
 }
 
 #[test]
@@ -549,3 +597,4 @@ fn print_relationship_table() {
         | Related: Undirected | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 |
         +---------------------+--------------------------------------+--------------------------------------+"));
 }
+

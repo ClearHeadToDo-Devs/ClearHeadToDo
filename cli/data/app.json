@@ -23,32 +23,38 @@
       "priority": "Optional",
       "completed": false,
       "id": "cad2950a-d21a-42c9-947f-040da6f98f74"
+    },
+    {
+      "name": "Default Action",
+      "priority": "Optional",
+      "completed": false,
+      "id": "46657bcc-db37-443e-8d1b-cfdd4f788ed1"
     }
   ],
   "relationship_list": [
     {
-      "id": "e28fea78-80b7-49fc-8be7-143b06faab22",
       "variant": {
         "Parental": "Directed"
       },
       "participant_1": "deee7a90-19ff-4a30-8179-9683e0ae19c1",
-      "participant_2": "d9a07453-8cf0-44b9-a3e5-6b38145b86d3"
+      "participant_2": "d9a07453-8cf0-44b9-a3e5-6b38145b86d3",
+      "id": "e28fea78-80b7-49fc-8be7-143b06faab22"
     },
     {
-      "id": "73d8eff8-00a7-4e90-816d-299b5bcb80ee",
       "variant": {
         "Sequential": "Directed"
       },
       "participant_1": "d9a07453-8cf0-44b9-a3e5-6b38145b86d3",
-      "participant_2": "7bf6014e-9c79-4e09-acf8-3dff6c6763d3"
+      "participant_2": "7bf6014e-9c79-4e09-acf8-3dff6c6763d3",
+      "id": "73d8eff8-00a7-4e90-816d-299b5bcb80ee"
     },
     {
-      "id": "b34373a3-7036-44a2-ae1a-b56ad23f7cd9",
       "variant": {
         "Related": "Undirected"
       },
       "participant_1": "7bf6014e-9c79-4e09-acf8-3dff6c6763d3",
-      "participant_2": "cad2950a-d21a-42c9-947f-040da6f98f74"
+      "participant_2": "cad2950a-d21a-42c9-947f-040da6f98f74",
+      "id": "b34373a3-7036-44a2-ae1a-b56ad23f7cd9"
     }
   ]
 }

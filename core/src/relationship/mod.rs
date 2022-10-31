@@ -222,8 +222,8 @@ impl RelationshipListManagement for Vector<Relationship> {
         || self.id_is_present_in_participant_2_list(id)
     }
 
-    fn filter_by_participants(&self,list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
-        match list.as_str(){
+    fn filter_by_participants(&self,participant_list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        match participant_list.as_str(){
             "participant_1" | "p1" | "1" | "list1" => {
                 Ok(self.get_participant_1_list_for_id(id)?)
             },

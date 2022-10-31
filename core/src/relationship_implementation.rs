@@ -7,6 +7,7 @@ use crate::relationship::item::RelationshipVariant;
 
 use std::error::Error;
 use uuid::Uuid;
+
 impl RelationshipListManagement for ClearHeadApp {
     type L = ClearHeadApp;
     fn append_new_relationship(
@@ -141,7 +142,7 @@ impl RelationshipListManagement for ClearHeadApp {
         self.relationship_list.id_is_present_in_either_participant_list(id)
     }
 
-    fn filter_by_participants(&self, list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+    fn get_children_for_id(&self, id: Uuid) -> Result<Vector<Uuid>, Box<dyn Error>> {
         todo!()
     }
 
@@ -158,13 +159,14 @@ impl RelationshipListManagement for ClearHeadApp {
         Ok(self.relationship_list.get_either_participant_list_for_id(id)?)
     }
 
+    fn filter_by_participants(&self, list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
+        todo!()
+    }
+
     fn filter_by_variant(&self, variant: &str) -> Result<Vector<Relationship>, Box<dyn Error>> {
         todo!()
     }
 
-    fn get_children_for_id(&self, id: Uuid) -> Result<Vector<Uuid>, Box<dyn Error>> {
-        todo!()
-    }
 
     fn get_relationship_list_as_table(&self) -> String{
         todo!()
