@@ -55,6 +55,12 @@ pub trait ActionManipulation {
     fn get_completion_status(&self) -> bool;
 }
 
+pub trait ActionBuilding {
+    fn set_name(&mut self, name: &str);
+    fn set_priority(&mut self, priority: &str) -> Result<(), Box<dyn Error>>;
+    fn toggle_completed(&mut self);
+}
+
 impl ActionManipulation for Action {
     fn rename(&self, new_action_name: &str) -> Action {
         return Action {
@@ -100,6 +106,21 @@ pub struct ActionBuilder {
     priority: Priority,
     completed: bool,
     id: Uuid,
+}
+
+impl ActionBuilding for ActionBuilder {
+    fn set_name(&mut self, name: &str) {
+        self.name = name.to_owned();
+    }
+
+    fn set_priority(&mut self, priority: &str) -> Result<(), Box<dyn Error>> {
+        self.priority = Priority::from_str(priority)?;
+        Ok(())
+    }
+
+    fn toggle_completed(&mut self) {
+        self.completed = !self.completed;
+    }
 }
 
 #[cfg(test)]
@@ -283,6 +304,45 @@ mod tests {
         assert_eq!(test_builder.name, "");
         assert_eq!(test_builder.priority, Priority::Optional);
         assert_eq!(test_builder.completed, false);
-        assert_eq!(test_builder.id.is_nil(), false);
+        assert_eq!(test_builder.id.is_nil(), true);
+    }
+
+    #[test]
+    fn set_builder_name() {
+        let mut test_builder = ActionBuilder::default();
+
+        test_builder.set_name("Test Name");
+
+        assert_eq!(test_builder.name, "Test Name");
+    }
+
+    #[test]
+    fn set_builder_priority() {
+        let mut test_builder = ActionBuilder::default();
+
+        test_builder.set_priority("High").unwrap();
+
+        assert_eq!(test_builder.priority, Priority::High);
+    }
+
+    #[test]
+    fn failed_set_builder_priority() {
+        let mut test_builder = ActionBuilder::default();
+
+        let priority_error = test_builder.set_priority("Not a priority").unwrap_err();
+
+        assert_eq!(
+            priority_error.to_string(),
+            "Not a priority is an Invalid Priority Option"
+        );
+    }
+
+    #[test]
+    fn set_builder_completion_status() {
+        let mut test_builder = ActionBuilder::default();
+
+        test_builder.toggle_completed();
+
+        assert_eq!(test_builder.completed, true);
     }
 }
