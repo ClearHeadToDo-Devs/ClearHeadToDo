@@ -194,6 +194,13 @@ pub mod tests {
 
     #[test]
     fn create_child_action() {
-        let test_app = create_app_with_single_action();
+        let test_app = create_app_with_two_actions();
+
+        let updated_app = test_app.create_action_relationship("child", 0, 1).unwrap();
+
+        assert_eq!(
+            updated_app.get_relationship_variant(0).unwrap().to_string(),
+            "Parental: Directed"
+        );
     }
 }
