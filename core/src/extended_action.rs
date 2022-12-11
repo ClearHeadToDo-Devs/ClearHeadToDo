@@ -1,11 +1,13 @@
 use crate::action::Action;
 use im::Vector;
+use serde::{Serialize, Deserialize};
 
 
 pub struct ExtendedAction{
     pub action: Action,
-    pub children: Vector<Action>,
+
     pub parent: Option<Action>,
+    pub children: Vector<Action>,
     pub predecessors: Vector<Action>,
     pub successors: Vector<Action>,
     pub related_actions: Vector<Action>,
