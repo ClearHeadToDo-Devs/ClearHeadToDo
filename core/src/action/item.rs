@@ -13,7 +13,6 @@ use tabled::Tabled;
 pub struct Action {
     #[tabled(rename = "Name")]
     name: String,
-
     #[tabled(rename = "Priority")]
     priority: Priority,
 
@@ -95,6 +94,10 @@ impl ActionManipulation for Action {
     }
 }
 
+#[derive(Default, PartialEq, Debug)]
+pub struct ActionBuilder{
+
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -267,5 +270,12 @@ mod tests {
                 Token::StructEnd,
             ],
         )
+    }
+
+    #[test]
+    fn create_default_builder(){
+        let test_builder = ActionBuilder::default();
+
+        assert_eq!(test_builder, ActionBuilder {});
     }
 }
