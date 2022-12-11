@@ -1,8 +1,8 @@
 pub use crate::priority::*;
 
 use std::error::Error;
-use std::fmt::{Display, Formatter};
 use std::fmt;
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use uuid::Uuid;
 
@@ -37,49 +37,66 @@ impl Default for Action {
 
 impl Display for Action {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{},{},{},{}", self.name, self.priority, self.completed, self.id)
+        write!(
+            f,
+            "{},{},{},{}",
+            self.name, self.priority, self.completed, self.id
+        )
     }
 }
 
-impl Action {
-    pub fn rename(&self, new_action_name: &str) -> Action {
+pub trait ActionManipulation {
+    fn rename(&self, new_action_name: &str) -> Action;
+    fn toggle_completion_status(&self) -> Action;
+    fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>>;
+
+    fn get_id(&self) -> Uuid;
+    fn get_name(&self) -> String;
+    fn get_priority(&self) -> String;
+    fn get_completion_status(&self) -> bool;
+}
+
+impl ActionManipulation for Action {
+    fn rename(&self, new_action_name: &str) -> Action {
         return Action {
             name: new_action_name.to_owned(),
             ..self.to_owned()
         };
     }
-    pub fn toggle_completion_status(&self) -> Action {
+
+    fn toggle_completion_status(&self) -> Action {
         Action {
             completed: !self.completed,
             ..self.to_owned()
         }
     }
-    pub fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
+
+    fn change_priority(&self, new_priority: &str) -> Result<Action, Box<dyn Error>> {
         return Ok(Action {
             priority: Priority::from_str(new_priority)?,
             ..self.to_owned()
         });
     }
 
-    pub fn get_id(&self) -> Uuid {
+    fn get_id(&self) -> Uuid {
         self.id.clone()
     }
 
-    pub fn get_name(&self) -> String {
+    fn get_name(&self) -> String {
         self.name.clone()
     }
 
-    pub fn get_priority(&self) -> String {
+    fn get_priority(&self) -> String {
         self.priority.to_string()
     }
 
-    pub fn get_completion_status(&self) -> bool {
+    fn get_completion_status(&self) -> bool {
         self.completed.clone()
     }
 }
 
 #[cfg(test)]
-pub mod tests{
+mod tests {
     use super::*;
     use serde_test::{assert_de_tokens, assert_ser_tokens, Configure, Token};
     use uuid::Uuid;
@@ -113,28 +130,28 @@ pub mod tests{
     }
 
     #[test]
-    fn get_name(){
+    fn get_name() {
         let test_action = Action::default();
 
         assert_eq!(test_action.get_name(), "Default Action".to_string());
     }
 
     #[test]
-    fn get_priority(){
+    fn get_priority() {
         let test_action = Action::default();
 
         assert_eq!(test_action.get_priority(), Priority::Optional.to_string());
     }
 
     #[test]
-    fn get_completion_status(){
+    fn get_completion_status() {
         let test_action = Action::default();
 
         assert_eq!(test_action.get_completion_status(), false);
     }
 
     #[test]
-    fn get_id(){
+    fn get_id() {
         let test_action = create_nil_action();
 
         assert_eq!(test_action.get_id(), Uuid::nil());
@@ -173,21 +190,24 @@ pub mod tests{
     fn reprioritize_action() {
         let test_action = Action::default();
 
-        let reprioritized_action = test_action
-            .change_priority("High")
-            .unwrap();
+        let reprioritized_action = test_action.change_priority("High").unwrap();
 
-        assert_eq!(reprioritized_action.get_priority(), Priority::High.to_string());
+        assert_eq!(
+            reprioritized_action.get_priority(),
+            Priority::High.to_string()
+        );
     }
 
     #[test]
-    fn failed_reprioritize_action(){
+    fn failed_reprioritize_action() {
         let test_action = Action::default();
 
-        let reprioritization_error = test_action
-            .change_priority("Not a priority").unwrap_err();
+        let reprioritization_error = test_action.change_priority("Not a priority").unwrap_err();
 
-        assert_eq!(reprioritization_error.to_string() , "Not a priority is an Invalid Priority Option");
+        assert_eq!(
+            reprioritization_error.to_string(),
+            "Not a priority is an Invalid Priority Option"
+        );
     }
 
     #[test]
@@ -222,24 +242,30 @@ pub mod tests{
 
     #[test]
     fn successfully_deserializing_action() {
-        let test_action =  Action {
+        let test_action = Action {
             id: Uuid::nil(),
             ..Default::default()
         };
-    assert_de_tokens(&test_action.readable(), &[
-        Token::Struct {name: "Action", len:5},
-        Token::Str("name"),
-        Token::Str("Default Action"),
-        Token::Str("priority"),
-        Token::UnitVariant {
-            name: "Priority",
-            variant: "Optional",
-        },
-        Token::Str("completed"),
-        Token::Bool(false),
-        Token::Str("id"),
-        Token::Str("00000000-0000-0000-0000-000000000000"),
-        Token::StructEnd,
-    ])
+        assert_de_tokens(
+            &test_action.readable(),
+            &[
+                Token::Struct {
+                    name: "Action",
+                    len: 5,
+                },
+                Token::Str("name"),
+                Token::Str("Default Action"),
+                Token::Str("priority"),
+                Token::UnitVariant {
+                    name: "Priority",
+                    variant: "Optional",
+                },
+                Token::Str("completed"),
+                Token::Bool(false),
+                Token::Str("id"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::StructEnd,
+            ],
+        )
     }
 }

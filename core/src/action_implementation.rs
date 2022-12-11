@@ -115,7 +115,7 @@ impl ClearHeadApp {
 
 #[cfg(test)]
 mod tests{
-    use crate::{ClearHeadApp, functionality::tests::{create_app_with_single_action, failed_action_index_error, get_first_action}};
+    use crate::{ActionManipulation, ClearHeadApp, functionality::tests::{create_app_with_single_action, failed_action_index_error, get_first_action}};
 
     use super::*;
 

@@ -3,6 +3,7 @@ use im::Vector;
 use serde::{Serialize, Deserialize};
 
 
+
 pub struct ExtendedAction{
     pub action: Action,
 
@@ -29,6 +30,8 @@ impl Default for ExtendedAction{
 #[cfg(test)]
 mod tests{
     use super::*;
+
+    use crate::ActionManipulation;
 
 
     #[test]
