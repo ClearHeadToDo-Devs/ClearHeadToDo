@@ -105,6 +105,7 @@ impl ActionListManipulation for Vector<Action> {
     fn get_action_priority(&self, index: usize) -> Result<String, Box<dyn Error>> {
         Ok(self.select_action_by_index(index)?.get_priority())
     }
+
     fn get_action_completion_status(&self, index: usize) -> Result<bool, Box<dyn Error>> {
         Ok(self.select_action_by_index(index)?.get_completion_status())
     }
