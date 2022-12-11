@@ -16,7 +16,7 @@ pub trait ActionBuilding {
     fn set_priority(&mut self, priority: &str) -> Result<(), Box<dyn Error>>;
     fn toggle_completed(&mut self);
 
-    fn build(self) -> Action;
+    fn build(&self) -> Action;
 }
 
 #[derive(PartialEq, Debug)]
@@ -63,7 +63,7 @@ impl ActionBuilding for ActionBuilder {
         self.completed = !self.completed;
     }
 
-    fn build(self) -> Action {
+    fn build(&self) -> Action {
         let default_action = Action::default();
         
         let new_name = default_action.rename(&self.get_name());
@@ -105,6 +105,7 @@ mod tests {
        
         assert_eq!(builder_priority, Priority::Optional.to_string());
     }
+
     #[test]
     fn get_completion_status_from_builder() {
         let test_builder = ActionBuilder::default();
