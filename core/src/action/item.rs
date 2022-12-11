@@ -64,6 +64,8 @@ pub trait ActionBuilding {
     fn set_name(&mut self, name: &str);
     fn set_priority(&mut self, priority: &str) -> Result<(), Box<dyn Error>>;
     fn toggle_completed(&mut self);
+
+    fn build(self) -> Action;
 }
 
 impl ActionManipulation for Action {
@@ -105,12 +107,23 @@ impl ActionManipulation for Action {
     }
 }
 
-#[derive(Default, PartialEq, Debug)]
+#[derive(PartialEq, Debug)]
 pub struct ActionBuilder {
     name: String,
     priority: Priority,
     completed: bool,
     id: Uuid,
+}
+
+impl Default for ActionBuilder {
+    fn default() -> ActionBuilder {
+        ActionBuilder {
+            id: Uuid::new_v4(),
+            name: "Default Action".to_string(),
+            completed: false,
+            priority: Default::default(),
+        }
+    }
 }
 
 impl ActionBuilding for ActionBuilder {
@@ -136,6 +149,15 @@ impl ActionBuilding for ActionBuilder {
     }
     fn toggle_completed(&mut self) {
         self.completed = !self.completed;
+    }
+
+    fn build(self) -> Action {
+        Action {
+            name: self.name,
+            priority: self.priority,
+            completed: self.completed,
+            id: self.id,
+        }
     }
 }
 
@@ -317,17 +339,17 @@ mod tests {
     fn create_default_builder() {
         let test_builder = ActionBuilder::default();
 
-        assert_eq!(test_builder.name, "");
+        assert_eq!(test_builder.name, "Default Action");
         assert_eq!(test_builder.priority, Priority::Optional);
         assert_eq!(test_builder.completed, false);
-        assert_eq!(test_builder.id.is_nil(), true);
+        assert_eq!(test_builder.id.is_nil(), false);
     }
 
     #[test]
     fn get_name_from_builder() {
         let test_builder = ActionBuilder::default();
 
-        assert_eq!(test_builder.get_name(), "");
+        assert_eq!(test_builder.get_name(), "Default Action");
     }
 
     #[test]
@@ -349,7 +371,7 @@ mod tests {
     fn get_id_from_builder() {
         let test_builder = ActionBuilder::default();
 
-        assert_eq!(test_builder.get_id().is_nil(), true);
+        assert_eq!(test_builder.get_id().is_nil(), false);
     }
 
     #[test]
@@ -389,5 +411,17 @@ mod tests {
         test_builder.toggle_completed();
 
         assert_eq!(test_builder.completed, true);
+    }
+
+    #[test]
+    fn build_default_task() {
+        let test_builder = ActionBuilder::default();
+
+        let test_action = test_builder.build();
+
+        assert_eq!(test_action.get_name(), "Default Action".to_string());
+        assert_eq!(test_action.get_priority(), Priority::Optional.to_string());
+        assert_eq!(test_action.get_completion_status(), false);
+        assert_eq!(test_action.get_id().is_nil(), false);
     }
 }
