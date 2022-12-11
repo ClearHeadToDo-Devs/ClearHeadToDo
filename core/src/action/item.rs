@@ -95,9 +95,13 @@ impl ActionManipulation for Action {
 }
 
 #[derive(Default, PartialEq, Debug)]
-pub struct ActionBuilder{
-
+pub struct ActionBuilder {
+    name: String,
+    priority: Priority,
+    completed: bool,
+    id: Uuid,
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -273,9 +277,12 @@ mod tests {
     }
 
     #[test]
-    fn create_default_builder(){
+    fn create_default_builder() {
         let test_builder = ActionBuilder::default();
 
-        assert_eq!(test_builder, ActionBuilder {});
+        assert_eq!(test_builder.name, "");
+        assert_eq!(test_builder.priority, Priority::Optional);
+        assert_eq!(test_builder.completed, false);
+        assert_eq!(test_builder.id.is_nil(), false);
     }
 }
