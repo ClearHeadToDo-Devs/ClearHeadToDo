@@ -191,4 +191,9 @@ pub mod tests {
 
         assert_eq!(all_actions, expected_string);
     }
+
+    #[test]
+    fn create_child_action() {
+        let test_app = create_app_with_single_action();
+    }
 }
