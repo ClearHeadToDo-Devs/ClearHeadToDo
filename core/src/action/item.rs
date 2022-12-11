@@ -56,6 +56,11 @@ pub trait ActionManipulation {
 }
 
 pub trait ActionBuilding {
+    fn get_name(&self) -> String;
+    fn get_priority(&self) -> String;
+    fn get_completion_status(&self) -> bool;
+    fn get_id(&self) -> Uuid;
+
     fn set_name(&mut self, name: &str);
     fn set_priority(&mut self, priority: &str) -> Result<(), Box<dyn Error>>;
     fn toggle_completed(&mut self);
@@ -109,15 +114,26 @@ pub struct ActionBuilder {
 }
 
 impl ActionBuilding for ActionBuilder {
+    fn get_name(&self) -> String {
+        self.name.clone()
+    }
+    fn get_priority(&self) -> String {
+        self.priority.to_string()
+    }
+    fn get_completion_status(&self) -> bool {
+        self.completed.clone()
+    }
+    fn get_id(&self) -> Uuid {
+        self.id.clone()
+    }
+
     fn set_name(&mut self, name: &str) {
         self.name = name.to_owned();
     }
-
     fn set_priority(&mut self, priority: &str) -> Result<(), Box<dyn Error>> {
         self.priority = Priority::from_str(priority)?;
         Ok(())
     }
-
     fn toggle_completed(&mut self) {
         self.completed = !self.completed;
     }
@@ -305,6 +321,35 @@ mod tests {
         assert_eq!(test_builder.priority, Priority::Optional);
         assert_eq!(test_builder.completed, false);
         assert_eq!(test_builder.id.is_nil(), true);
+    }
+
+    #[test]
+    fn get_name_from_builder() {
+        let test_builder = ActionBuilder::default();
+
+        assert_eq!(test_builder.get_name(), "");
+    }
+
+    #[test]
+    fn get_priority_from_builder() {
+        let test_builder = ActionBuilder::default();
+        
+        let builder_priority = test_builder.get_priority();
+       
+        assert_eq!(builder_priority, Priority::Optional.to_string());
+    }
+    #[test]
+    fn get_completion_status_from_builder() {
+        let test_builder = ActionBuilder::default();
+
+        assert_eq!(test_builder.get_completion_status(), false);
+    }
+
+    #[test]
+    fn get_id_from_builder() {
+        let test_builder = ActionBuilder::default();
+
+        assert_eq!(test_builder.get_id().is_nil(), true);
     }
 
     #[test]
