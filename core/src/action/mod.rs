@@ -7,6 +7,9 @@ pub use priority::*;
 pub mod item;
 pub use item::*;
 
+pub mod builder;
+pub use builder::*;
+
 use std::error::Error;
 use uuid::Uuid;
 use im::Vector;
