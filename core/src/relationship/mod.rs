@@ -72,7 +72,6 @@ impl RelationshipListManagement for Vector<Relationship> {
         cloned_list.push_back(new_relationship);
         return Ok(cloned_list);
     }
-
     fn append_related_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let mut cloned_list = self.clone();
         let new_relationship = Relationship::create_new_related(
@@ -82,7 +81,6 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         return cloned_list;
     }
-
     fn append_sequential_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let mut cloned_list = self.clone();
         let new_relationship = Relationship::create_new_sequential(participant_1, participant_2);
@@ -91,7 +89,6 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         return cloned_list;
     }
-
     fn append_parental_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let mut cloned_list = self.clone();
         let new_relationship = Relationship::create_new_parental(participant_1, participant_2);
@@ -109,7 +106,6 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         return Ok(relationship_clone);
     }
-
     fn select_relationship_by_index(&self, index: usize) -> Result<Relationship, Box<dyn Error>> {
         match self.get(index){
             Some(relationship) => {
@@ -129,13 +125,11 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         Ok(cloned_relationship.get_id())
     }
-
     fn get_relationship_variant(&self, index: usize) -> Result<RelationshipVariant, Box<dyn Error>> {
         let cloned_relationship = self.select_relationship_by_index(index)?;
 
         Ok(cloned_relationship.get_variant())
     }
-
     fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         let relationship_clone = self.select_relationship_by_index(index)?;
 
@@ -159,7 +153,6 @@ impl RelationshipListManagement for Vector<Relationship> {
             Err(e) => return Err(e)
         }
     }
-
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         let cloned_list = self.clone();
         let target_index = cloned_list.index_of(&cloned_list.select_relationship_by_id(id)?)
@@ -177,7 +170,6 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         return Ok(updated_list);
     }
-
     fn update_relationship_participant_1(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         let mut cloned_list = self.clone();
         let cloned_relationship = self.select_relationship_by_index(index)?;
@@ -188,7 +180,6 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         return Ok(cloned_list);
     }
-
     fn update_relationship_participant_2(&self, index: usize, new_id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         let mut cloned_list = self.clone();
         let cloned_relationship = self.select_relationship_by_index(index)?;
@@ -207,7 +198,6 @@ impl RelationshipListManagement for Vector<Relationship> {
             None => false
         }
     }
-
     fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool {
         let query_result = self.iter().find(|relationship| relationship.get_participant_2() == id);
 
@@ -216,12 +206,10 @@ impl RelationshipListManagement for Vector<Relationship> {
             None => false
         }
     }
-
     fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool {
         self.id_is_present_in_participant_1_list(id) 
         || self.id_is_present_in_participant_2_list(id)
     }
-
     fn filter_by_participants(&self,participant_list: String, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         match participant_list.as_str(){
             "participant_1" | "p1" | "1" | "list1" => {
@@ -264,7 +252,6 @@ impl RelationshipListManagement for Vector<Relationship> {
             }
         }
     }
-
     fn get_participant_2_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         match self.id_is_present_in_participant_2_list(id){
             true => {
@@ -286,7 +273,6 @@ impl RelationshipListManagement for Vector<Relationship> {
             }
         }
     }
-
     fn get_either_participant_list_for_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         match self.id_is_present_in_either_participant_list(id){
             true => {
@@ -319,7 +305,6 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         return Ok(filtered_list);
     }
-
     fn get_children_for_id(&self, id: Uuid) -> Result<Vector<Uuid>, Box<dyn Error>> {
         let mut child_id_list: Vector<Uuid> = Vector::new();
 
@@ -334,7 +319,6 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         return Ok(child_id_list);
     }
-
     fn get_relationship_list_as_table(&self) -> String {
         Table::new(self).to_string()
         

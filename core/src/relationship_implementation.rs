@@ -27,7 +27,6 @@ impl RelationshipListManagement for ClearHeadApp {
         updated_app.relationship_list = updated_relationship_list;
         Ok(updated_app)
     }
-
     fn append_related_relationship(
         &self,
         participant_1: Uuid,
@@ -42,7 +41,6 @@ impl RelationshipListManagement for ClearHeadApp {
         cloned_app.relationship_list = updated_relationship_list;
         return cloned_app;
     }
-
     fn append_sequential_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
         let mut cloned_app = self.clone();
 
@@ -53,7 +51,6 @@ impl RelationshipListManagement for ClearHeadApp {
         cloned_app.relationship_list = updated_relationship_list;
         return cloned_app;
     }
-
     fn append_parental_relationship(
         &self,
         participant_1: Uuid,
@@ -72,7 +69,6 @@ impl RelationshipListManagement for ClearHeadApp {
     fn select_relationship_by_id(&self, id: Uuid) -> Result<Relationship, String> {
         Ok(self.relationship_list.select_relationship_by_id(id)?)
     }
-
     fn select_relationship_by_index(&self, index: usize) -> Result<Relationship, Box<dyn Error>> {
         Ok(self.relationship_list.select_relationship_by_index(index)?)
     }
@@ -80,20 +76,17 @@ impl RelationshipListManagement for ClearHeadApp {
     fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         Ok(self.relationship_list.get_relationship_id(index)?)
     }
-
     fn get_relationship_variant(
         &self,
         index: usize,
     ) -> Result<RelationshipVariant, Box<dyn Error>> {
         Ok(self.relationship_list.get_relationship_variant(index)?)
     }
-
     fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         Ok(self
             .relationship_list
             .get_relationship_participant_1(index)?)
     }
-
     fn get_relationship_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
         Ok(self
             .relationship_list
@@ -108,7 +101,6 @@ impl RelationshipListManagement for ClearHeadApp {
         cloned_app.relationship_list = updated_relationship_list;
         Ok(cloned_app)
     }
-
     fn remove_with_id(&self, id: Uuid) -> Result<Self::L, Box<dyn Error>> {
         let mut cloned_app = self.clone();
 
@@ -131,7 +123,6 @@ impl RelationshipListManagement for ClearHeadApp {
         cloned_app.relationship_list = updated_relationship_list;
         Ok(cloned_app)
     }
-
     fn update_relationship_participant_1(
         &self,
         index: usize,
@@ -145,7 +136,6 @@ impl RelationshipListManagement for ClearHeadApp {
         cloned_app.relationship_list = updated_relationship_list;
         Ok(cloned_app)
     }
-
     fn update_relationship_participant_2(
         &self,
         index: usize,
@@ -164,12 +154,10 @@ impl RelationshipListManagement for ClearHeadApp {
         self.relationship_list
             .id_is_present_in_participant_1_list(id)
     }
-
     fn id_is_present_in_participant_2_list(&self, id: Uuid) -> bool {
         self.relationship_list
             .id_is_present_in_participant_2_list(id)
     }
-
     fn id_is_present_in_either_participant_list(&self, id: Uuid) -> bool {
         self.relationship_list
             .id_is_present_in_either_participant_list(id)
@@ -178,21 +166,18 @@ impl RelationshipListManagement for ClearHeadApp {
     fn get_children_for_id(&self, id: Uuid) -> Result<Vector<Uuid>, Box<dyn Error>> {
         todo!()
     }
-
     fn get_participant_1_list_for_id(
         &self,
         id: Uuid,
     ) -> Result<Vector<Relationship>, Box<dyn Error>> {
         Ok(self.relationship_list.get_participant_1_list_for_id(id)?)
     }
-
     fn get_participant_2_list_for_id(
         &self,
         id: Uuid,
     ) -> Result<Vector<Relationship>, Box<dyn Error>> {
         Ok(self.relationship_list.get_participant_2_list_for_id(id)?)
     }
-
     fn get_either_participant_list_for_id(
         &self,
         id: Uuid,
@@ -216,7 +201,6 @@ impl RelationshipListManagement for ClearHeadApp {
 
         Ok(cloned_app)
     }
-
     fn filter_by_variant(&self, variant: &str) -> Result<Vector<Relationship>, Box<dyn Error>> {
         todo!()
     }
