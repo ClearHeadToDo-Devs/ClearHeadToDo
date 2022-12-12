@@ -1,4 +1,5 @@
 use crate::action::Action;
+use crate::Relationship;
 
 use im::Vector;
 use serde::{Deserialize, Serialize};
@@ -17,6 +18,17 @@ impl ExtendedAction {
     pub fn set_action(&self, action: &Action) -> Self {
         ExtendedAction {
             action: action.clone(),
+            parent: self.parent.clone(),
+            children: self.children.clone(),
+            predecessors: self.predecessors.clone(),
+            successors: self.successors.clone(),
+            related_actions: self.related_actions.clone(),
+        }
+    }
+
+    pub fn set_parent(&self, relationship_list: Vector<Relationship>) -> Self {
+        ExtendedAction {
+            action: self.action.clone(),
             parent: self.parent.clone(),
             children: self.children.clone(),
             predecessors: self.predecessors.clone(),
@@ -67,5 +79,13 @@ mod tests {
         let test_extended_action = ExtendedAction::default().set_action(&test_action);
 
         assert_eq!(test_extended_action.action.get_id(), test_action.get_id());
+    }
+
+    #[test]
+    fn populate_parent() {
+        let test_action = ExtendedAction::default();
+
+        //let test_parent = test_action.populate_parent();
+
     }
 }
