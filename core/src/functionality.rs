@@ -2,7 +2,7 @@ use crate::relationship::Relationship;
 use crate::relationship::RelationshipListManagement;
 
 use crate::action::Action;
-use crate::action_implementation::ActionListManipulation;
+use crate::action_interface::ActionListManipulation;
 use crate::ActionManipulation;
 
 use tabled::object::Rows;

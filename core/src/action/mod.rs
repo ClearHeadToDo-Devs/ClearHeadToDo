@@ -14,7 +14,7 @@ use std::error::Error;
 use uuid::Uuid;
 use im::Vector;
 
-use crate::action_implementation::ActionListManipulation;
+use crate::action_interface::ActionListManipulation;
 
 
 impl ActionListManipulation for Vector<Action> {
