@@ -12,7 +12,9 @@ pub use storage::*;
 
 pub mod action_interface;
 pub use action_interface::*;
+
 pub mod relationship_interface;
+pub mod relationship_app_implementation;
 
 pub mod extended_action;
 
