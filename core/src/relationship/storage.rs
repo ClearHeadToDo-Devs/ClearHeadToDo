@@ -1,5 +1,5 @@
 use crate::relationship::Relationship;
-use crate::RelationshipListManagement;
+use crate::relationship_interface::RelationshipListManagement;
 
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Write};

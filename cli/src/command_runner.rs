@@ -1,5 +1,6 @@
 use crate::ClearHeadApp;
 use clear_head_todo_core::ActionManipulation;
+use clear_head_todo_core::relationship_interface::RelationshipListManagement;
 
 use std::error::Error;
 
@@ -134,7 +135,8 @@ impl Command {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use clear_head_todo_core::{Priority, RelationshipListManagement};
+    use clear_head_todo_core::Priority;
+    use clear_head_todo_core::relationship_interface::RelationshipListManagement;
     
 
 
