@@ -573,7 +573,7 @@ fn failed_filter_relationship_list_test() {
 
 #[test]
 fn filter_by_participant_1_list() {
-    let single_relationship_list = create_relationship_list_with_single_relationship("realated");
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
     let double_relationship_list =
         single_relationship_list.append_new_relationship("related", Uuid::new_v4(), Uuid::nil()).unwrap();
 
@@ -586,7 +586,7 @@ fn filter_by_participant_1_list() {
 
 #[test]
 fn filter_by_participant_2_list() {
-    let single_relationship_list = create_relationship_list_with_single_relationship("realated");
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
     let double_relationship_list =
         single_relationship_list.append_new_relationship("related", Uuid::nil(), Uuid::new_v4()).unwrap();
 
@@ -599,7 +599,7 @@ fn filter_by_participant_2_list() {
 
 #[test]
 fn filter_by_either_participant_list() {
-    let single_relationship_list = create_relationship_list_with_single_relationship("realated");
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
     let double_relationship_list =
         single_relationship_list.append_new_relationship("related", Uuid::nil(), Uuid::new_v4()).unwrap();
 
