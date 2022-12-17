@@ -13,9 +13,6 @@ pub trait RelationshipListManagement {
         participant_1: Uuid,
         participant_2: Uuid,
     ) -> Result<Self::L, Box<dyn Error>>;
-    fn append_related_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
-    fn append_sequential_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
-    fn append_parental_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L;
 
     fn select_relationship_by_id(&self, id: Uuid) -> Result<Relationship, String>;
     fn select_relationship_by_index(&self, index: usize) -> Result<Relationship, Box<dyn Error>>;

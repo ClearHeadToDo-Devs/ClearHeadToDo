@@ -56,11 +56,11 @@ impl FromStr for RelationshipVariant {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "parent" | "child" | "Parent/Child" | "PC" | "P/C" | "parental" => {
+        match s.to_lowercase().as_str() {
+            "parent" | "child" | "parent/child" | "pc" | "p/c" | "parental" => {
                 return Ok(RelationshipVariant::create_parental())
             }
-            "previous" | "subsequent" | "Previous/Subsequent" | "PS" | "P/S" | "sequential" => {
+            "previous" | "subsequent" | "previous/subsequent" | "ps" | "p/s" | "sequential" => {
                 return Ok(RelationshipVariant::create_sequential())
             }
             "related" | "relational" | "generic" => {

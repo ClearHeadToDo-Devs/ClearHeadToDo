@@ -29,30 +29,6 @@ impl RelationshipListManagement for Vector<Relationship> {
         cloned_list.push_back(new_relationship);
         return Ok(cloned_list);
     }
-    fn append_related_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
-        let mut cloned_list = self.clone();
-        let new_relationship = Relationship::create_new_related(participant_1, participant_2);
-
-        cloned_list.push_back(new_relationship);
-
-        return cloned_list;
-    }
-    fn append_sequential_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
-        let mut cloned_list = self.clone();
-        let new_relationship = Relationship::create_new_sequential(participant_1, participant_2);
-
-        cloned_list.push_back(new_relationship);
-
-        return cloned_list;
-    }
-    fn append_parental_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
-        let mut cloned_list = self.clone();
-        let new_relationship = Relationship::create_new_parental(participant_1, participant_2);
-
-        cloned_list.push_back(new_relationship);
-
-        return cloned_list;
-    }
 
     fn select_relationship_by_id(&self, id: Uuid) -> Result<Relationship, String> {
         let query_result = self
@@ -77,7 +53,6 @@ impl RelationshipListManagement for Vector<Relationship> {
             }
         }
     }
-
 
     fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
         match self.select_relationship_by_index(index) {
@@ -142,7 +117,6 @@ impl RelationshipListManagement for Vector<Relationship> {
 
         Ok(cloned_list)
     }
-
 }
 
 impl RelationshipListViewer for Vector<Relationship> {

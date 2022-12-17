@@ -36,41 +36,6 @@ impl Relationship {
             participant_2,
         })
     }
-    pub fn create_new_related(participant_1: Uuid, participant_2: Uuid) -> Self {
-        let id = Uuid::new_v4();
-        let variant = RelationshipVariant::create_related();
-
-        Relationship {
-            id,
-            variant,
-            participant_1,
-            participant_2,
-        }
-    }
-
-    pub fn create_new_sequential(participant_1: Uuid, participant_2: Uuid) -> Self {
-        let id = Uuid::new_v4();
-        let variant = RelationshipVariant::create_sequential();
-
-        Relationship {
-            id,
-            variant,
-            participant_1,
-            participant_2,
-        }
-    }
-
-    pub fn create_new_parental(participant_1: Uuid, participant_2: Uuid) -> Self {
-        let id = Uuid::new_v4();
-        let variant = RelationshipVariant::create_parental();
-
-        Relationship {
-            id,
-            variant,
-            participant_1,
-            participant_2,
-        }
-    }
 
     pub fn get_id(&self) -> Uuid {
         return self.id;
@@ -146,7 +111,7 @@ pub mod tests {
     }
 
     fn create_related_with_double_nil() -> Relationship {
-        Relationship::create_new_related(Uuid::nil(), Uuid::nil())
+        Relationship::create_new("related", Uuid::nil(), Uuid::nil()).unwrap()
     }
     
 

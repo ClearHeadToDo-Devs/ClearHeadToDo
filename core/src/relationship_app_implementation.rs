@@ -27,44 +27,6 @@ impl RelationshipListManagement for ClearHeadApp {
         updated_app.relationship_list = updated_relationship_list;
         Ok(updated_app)
     }
-    fn append_related_relationship(
-        &self,
-        participant_1: Uuid,
-        participant_2: Uuid,
-    ) -> ClearHeadApp {
-        let mut cloned_app = self.clone();
-
-        let updated_relationship_list = self
-            .relationship_list
-            .append_related_relationship(participant_1, participant_2);
-
-        cloned_app.relationship_list = updated_relationship_list;
-        return cloned_app;
-    }
-    fn append_sequential_relationship(&self, participant_1: Uuid, participant_2: Uuid) -> Self::L {
-        let mut cloned_app = self.clone();
-
-        let updated_relationship_list = self
-            .relationship_list
-            .append_sequential_relationship(participant_1, participant_2);
-
-        cloned_app.relationship_list = updated_relationship_list;
-        return cloned_app;
-    }
-    fn append_parental_relationship(
-        &self,
-        participant_1: Uuid,
-        participant_2: Uuid,
-    ) -> ClearHeadApp {
-        let mut cloned_app = self.clone();
-
-        let updated_relationship_list = self
-            .relationship_list
-            .append_parental_relationship(participant_1, participant_2);
-
-        cloned_app.relationship_list = updated_relationship_list;
-        return cloned_app;
-    }
 
     fn select_relationship_by_id(&self, id: Uuid) -> Result<Relationship, String> {
         Ok(self.relationship_list.select_relationship_by_id(id)?)
@@ -72,7 +34,6 @@ impl RelationshipListManagement for ClearHeadApp {
     fn select_relationship_by_index(&self, index: usize) -> Result<Relationship, Box<dyn Error>> {
         Ok(self.relationship_list.select_relationship_by_index(index)?)
     }
-
 
     fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
         let mut cloned_app = self.clone();
@@ -130,7 +91,6 @@ impl RelationshipListManagement for ClearHeadApp {
         cloned_app.relationship_list = updated_relationship_list;
         Ok(cloned_app)
     }
-
 }
 
 impl RelationshipListViewer for ClearHeadApp {
@@ -212,7 +172,6 @@ impl RelationshipListViewer for ClearHeadApp {
     fn get_relationship_list_as_table(&self) -> String {
         todo!()
     }
-
 }
 
 #[cfg(test)]
@@ -288,42 +247,6 @@ mod tests {
         let updated_app = test_app
             .append_new_relationship("parental", Uuid::nil(), Uuid::nil())
             .unwrap();
-
-        assert_eq!(
-            updated_app.get_relationship_variant(0).unwrap(),
-            RelationshipVariant::create_parental()
-        );
-    }
-
-    #[test]
-    fn create_related_direct() {
-        let test_app = ClearHeadApp::default();
-
-        let updated_app = test_app.append_related_relationship(Uuid::nil(), Uuid::nil());
-
-        assert_eq!(
-            updated_app.get_relationship_variant(0).unwrap(),
-            RelationshipVariant::create_related()
-        );
-    }
-
-    #[test]
-    fn create_sequential_direct() {
-        let test_app = ClearHeadApp::default();
-
-        let updated_app = test_app.append_sequential_relationship(Uuid::nil(), Uuid::nil());
-
-        assert_eq!(
-            updated_app.get_relationship_variant(0).unwrap(),
-            RelationshipVariant::create_sequential()
-        );
-    }
-
-    #[test]
-    fn create_parental_direct() {
-        let test_app = ClearHeadApp::default();
-
-        let updated_app = test_app.append_parental_relationship(Uuid::nil(), Uuid::nil());
 
         assert_eq!(
             updated_app.get_relationship_variant(0).unwrap(),
@@ -655,7 +578,7 @@ mod tests {
     #[test]
     fn get_participant_1_list_for_id() {
         let test_app =
-            ClearHeadApp::default().append_related_relationship(Uuid::nil(), Uuid::new_v4());
+            ClearHeadApp::default().append_new_relationship("related", Uuid::nil(), Uuid::new_v4()).unwrap();
 
         let result = test_app.get_participant_1_list_for_id(Uuid::nil()).unwrap();
 
@@ -682,7 +605,7 @@ mod tests {
     #[test]
     fn get_participant_2_list_for_id() {
         let test_app =
-            ClearHeadApp::default().append_related_relationship(Uuid::new_v4(), Uuid::nil());
+            ClearHeadApp::default().append_new_relationship("related", Uuid::new_v4(), Uuid::nil()).unwrap();
 
         let result = test_app.get_participant_2_list_for_id(Uuid::nil()).unwrap();
 
@@ -709,8 +632,8 @@ mod tests {
     #[test]
     fn get_either_participant_list_for_id() {
         let test_app = ClearHeadApp::default()
-            .append_related_relationship(Uuid::new_v4(), Uuid::nil())
-            .append_related_relationship(Uuid::nil(), Uuid::new_v4());
+            .append_new_relationship("related", Uuid::new_v4(), Uuid::nil()).unwrap()
+            .append_new_relationship("related", Uuid::nil(), Uuid::new_v4()).unwrap();
 
         let result = test_app
             .get_either_participant_list_for_id(Uuid::nil())
