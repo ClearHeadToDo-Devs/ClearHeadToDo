@@ -4,7 +4,7 @@ use uuid::Uuid;
 use im::Vector;
 use clear_head_todo_core::relationship::item::Relationship;
 use clear_head_todo_core::relationship::item::RelationshipVariant;
-use clear_head_todo_core::relationship_interface::RelationshipListManagement;
+use clear_head_todo_core::relationship_interface::*;
 use indoc::indoc;
 
 

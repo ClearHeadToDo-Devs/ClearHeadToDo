@@ -4,7 +4,7 @@ pub mod storage;
 
 pub use item::Relationship;
 
-use crate::relationship_interface::RelationshipListManagement;
+use crate::relationship_interface::*;
 
 pub use item::RelationshipVariant;
 
@@ -16,7 +16,6 @@ use im::Vector;
 
 impl RelationshipListManagement for Vector<Relationship> {
     type L = Vector<Relationship>;
-
     fn append_new_relationship(
         &self,
         target_variant: &str,
@@ -79,29 +78,6 @@ impl RelationshipListManagement for Vector<Relationship> {
         }
     }
 
-    fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        let cloned_relationship = self.select_relationship_by_index(index)?;
-
-        Ok(cloned_relationship.get_id())
-    }
-    fn get_relationship_variant(
-        &self,
-        index: usize,
-    ) -> Result<RelationshipVariant, Box<dyn Error>> {
-        let cloned_relationship = self.select_relationship_by_index(index)?;
-
-        Ok(cloned_relationship.get_variant())
-    }
-    fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        let relationship_clone = self.select_relationship_by_index(index)?;
-
-        Ok(relationship_clone.get_participant_1())
-    }
-    fn get_relationship_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        let cloned_relationship = self.select_relationship_by_index(index)?;
-
-        Ok(cloned_relationship.get_participant_2())
-    }
 
     fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
         match self.select_relationship_by_index(index) {
@@ -165,6 +141,35 @@ impl RelationshipListManagement for Vector<Relationship> {
         cloned_list.set(index, updated_relationship);
 
         Ok(cloned_list)
+    }
+
+}
+
+impl RelationshipListViewer for Vector<Relationship> {
+    type L = Vector<Relationship>;
+
+    fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        let cloned_relationship = self.select_relationship_by_index(index)?;
+
+        Ok(cloned_relationship.get_id())
+    }
+    fn get_relationship_variant(
+        &self,
+        index: usize,
+    ) -> Result<RelationshipVariant, Box<dyn Error>> {
+        let cloned_relationship = self.select_relationship_by_index(index)?;
+
+        Ok(cloned_relationship.get_variant())
+    }
+    fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        let relationship_clone = self.select_relationship_by_index(index)?;
+
+        Ok(relationship_clone.get_participant_1())
+    }
+    fn get_relationship_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        let cloned_relationship = self.select_relationship_by_index(index)?;
+
+        Ok(cloned_relationship.get_participant_2())
     }
 
     fn id_is_present_in_participant_1_list(&self, id: Uuid) -> bool {

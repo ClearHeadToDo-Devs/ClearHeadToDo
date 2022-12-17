@@ -1,6 +1,6 @@
 use crate::ClearHeadApp;
 use clear_head_todo_core::ActionManipulation;
-use clear_head_todo_core::relationship_interface::RelationshipListManagement;
+use clear_head_todo_core::relationship_interface::*;
 
 use std::error::Error;
 

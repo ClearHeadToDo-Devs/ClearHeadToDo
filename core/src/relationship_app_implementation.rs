@@ -2,7 +2,7 @@ use crate::ClearHeadApp;
 
 use crate::relationship::item::RelationshipVariant;
 use crate::relationship::Relationship;
-use crate::relationship_interface::RelationshipListManagement;
+use crate::relationship_interface::*;
 use im::Vector;
 
 use std::error::Error;
@@ -73,25 +73,6 @@ impl RelationshipListManagement for ClearHeadApp {
         Ok(self.relationship_list.select_relationship_by_index(index)?)
     }
 
-    fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        Ok(self.relationship_list.get_relationship_id(index)?)
-    }
-    fn get_relationship_variant(
-        &self,
-        index: usize,
-    ) -> Result<RelationshipVariant, Box<dyn Error>> {
-        Ok(self.relationship_list.get_relationship_variant(index)?)
-    }
-    fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        Ok(self
-            .relationship_list
-            .get_relationship_participant_1(index)?)
-    }
-    fn get_relationship_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
-        Ok(self
-            .relationship_list
-            .get_relationship_participant_2(index)?)
-    }
 
     fn remove_at_index(&self, index: usize) -> Result<Self::L, Box<dyn Error>> {
         let mut cloned_app = self.clone();
@@ -150,6 +131,29 @@ impl RelationshipListManagement for ClearHeadApp {
         Ok(cloned_app)
     }
 
+}
+
+impl RelationshipListViewer for ClearHeadApp {
+    type L = ClearHeadApp;
+    fn get_relationship_id(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        Ok(self.relationship_list.get_relationship_id(index)?)
+    }
+    fn get_relationship_variant(
+        &self,
+        index: usize,
+    ) -> Result<RelationshipVariant, Box<dyn Error>> {
+        Ok(self.relationship_list.get_relationship_variant(index)?)
+    }
+    fn get_relationship_participant_1(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        Ok(self
+            .relationship_list
+            .get_relationship_participant_1(index)?)
+    }
+    fn get_relationship_participant_2(&self, index: usize) -> Result<Uuid, Box<dyn Error>> {
+        Ok(self
+            .relationship_list
+            .get_relationship_participant_2(index)?)
+    }
     fn id_is_present_in_participant_1_list(&self, id: Uuid) -> bool {
         self.relationship_list
             .id_is_present_in_participant_1_list(id)
@@ -208,6 +212,7 @@ impl RelationshipListManagement for ClearHeadApp {
     fn get_relationship_list_as_table(&self) -> String {
         todo!()
     }
+
 }
 
 #[cfg(test)]

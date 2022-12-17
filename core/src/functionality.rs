@@ -1,5 +1,5 @@
 use crate::relationship::Relationship;
-use crate::relationship_interface::RelationshipListManagement;
+use crate::relationship_interface::*;
 
 use crate::action::Action;
 use crate::action_interface::ActionListManipulation;
