@@ -11,15 +11,6 @@ pub fn invalid_index_error_string() -> String {
     return String::from("Unable to find Relationship at given Index");
 }
 
-pub fn create_relationship_list_with_single_related_relationship() -> Vector<Relationship> {
-    let mut list = Vector::new();
-    let relationship = Relationship::create_new("Related", Uuid::nil(), Uuid::nil()).unwrap();
-
-    list.push_back(relationship);
-
-    return list;
-}
-
 pub fn create_relationship_list_with_single_relationship(variant: &str) -> Vector<Relationship> {
     let mut list: Vector<Relationship> = Vector::new();
 
@@ -89,7 +80,7 @@ fn failed_create_from_string() {
 
 #[test]
 fn remove_relationship() {
-    let relationship_list = create_relationship_list_with_single_related_relationship();
+    let relationship_list = create_relationship_list_with_single_relationship("related");
 
     let pruned_list = relationship_list.remove_at_index(0).unwrap();
 
@@ -108,7 +99,7 @@ fn empty_vector_removal_error() {
 #[test]
 fn return_relationship_from_id() {
     let relationship_list: Vector<Relationship> =
-        create_relationship_list_with_single_related_relationship();
+        create_relationship_list_with_single_relationship("related");
 
     let relationship_id = relationship_list
         .select_relationship_by_id(relationship_list[0].get_id())
@@ -130,7 +121,7 @@ fn fail_to_find_id() {
 
 #[test]
 fn successfully_get_id() {
-    let relationship_list = create_relationship_list_with_single_related_relationship();
+    let relationship_list = create_relationship_list_with_single_relationship("related");
 
     let relationship = relationship_list.select_relationship_by_index(0).unwrap();
 
@@ -148,7 +139,7 @@ fn failed_get_id() {
 
 #[test]
 fn successfully_get_variant() {
-    let relationship_list = create_relationship_list_with_single_related_relationship();
+    let relationship_list = create_relationship_list_with_single_relationship("related");
 
     let variant = relationship_list.get_relationship_variant(0).unwrap();
 
@@ -167,7 +158,7 @@ fn failed_get_variant() {
 #[test]
 fn successfully_get_participant_1() {
     let test_list: Vector<Relationship> =
-        create_relationship_list_with_single_related_relationship();
+        create_relationship_list_with_single_relationship("related");
 
     let participant_1 = test_list.get_relationship_participant_1(0).unwrap();
 
@@ -327,7 +318,7 @@ fn failed_id_update_participant_2() {
 
 #[test]
 fn check_id_against_participant_1_list() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
 
     let query_result = single_relationship_list.id_is_present_in_participant_1_list(Uuid::nil());
 
@@ -345,7 +336,7 @@ fn false_check_id_against_participant_1_list() {
 
 #[test]
 fn check_id_against_participant_2_list() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
 
     let query_result = single_relationship_list.id_is_present_in_participant_2_list(Uuid::nil());
 
@@ -363,7 +354,7 @@ fn false_check_id_against_participant_2_list() {
 
 #[test]
 fn check_id_against_either_participant_lists() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
 
     let query_result =
         single_relationship_list.id_is_present_in_either_participant_list(Uuid::nil());
@@ -383,7 +374,7 @@ fn false_check_id_against_either_participant_lists() {
 
 #[test]
 fn get_participant_1_list_for_id() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
 
     let query_result = single_relationship_list
         .get_participant_1_list_for_id(Uuid::nil())
@@ -413,7 +404,7 @@ fn failed_get_participant_1_list_for_id() {
 
 #[test]
 fn get_participant_2_list_for_id() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
 
     let query_result = single_relationship_list
         .get_participant_2_list_for_id(Uuid::nil())
@@ -443,7 +434,7 @@ fn failed_get_participant_2_list_for_id() {
 
 #[test]
 fn get_either_participant_list_for_id() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
     let single_p2_relationship_list = single_relationship_list
         .update_relationship_participant_2(0, Uuid::new_v4())
         .unwrap();
@@ -462,7 +453,7 @@ fn get_either_participant_list_for_id() {
 
 #[test]
 fn get_either_participant_list_only_2_for_id() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
     let single_p1_relationship_list = single_relationship_list
         .update_relationship_participant_1(0, Uuid::new_v4())
         .unwrap();
@@ -582,7 +573,7 @@ fn failed_filter_relationship_list_test() {
 
 #[test]
 fn filter_by_participant_1_list() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("realated");
     let double_relationship_list =
         single_relationship_list.append_new_relationship("related", Uuid::new_v4(), Uuid::nil()).unwrap();
 
@@ -595,7 +586,7 @@ fn filter_by_participant_1_list() {
 
 #[test]
 fn filter_by_participant_2_list() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("realated");
     let double_relationship_list =
         single_relationship_list.append_new_relationship("related", Uuid::nil(), Uuid::new_v4()).unwrap();
 
@@ -608,7 +599,7 @@ fn filter_by_participant_2_list() {
 
 #[test]
 fn filter_by_either_participant_list() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("realated");
     let double_relationship_list =
         single_relationship_list.append_new_relationship("related", Uuid::nil(), Uuid::new_v4()).unwrap();
 
@@ -621,7 +612,7 @@ fn filter_by_either_participant_list() {
 
 #[test]
 fn failed_filter_by_participant_list_bad_list() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
     let double_relationship_list =
         single_relationship_list.append_new_relationship("related", Uuid::nil(), Uuid::new_v4()).unwrap();
 
@@ -634,7 +625,7 @@ fn failed_filter_by_participant_list_bad_list() {
 
 #[test]
 fn empty_filter_by_participant_list_no_ip() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
 
     let query_result = single_relationship_list
         .filter_by_participants("3".to_string(), Uuid::new_v4())
@@ -648,7 +639,7 @@ fn empty_filter_by_participant_list_no_ip() {
 
 #[test]
 fn print_relationship_table() {
-    let single_relationship_list = create_relationship_list_with_single_related_relationship();
+    let single_relationship_list = create_relationship_list_with_single_relationship("related");
 
     let query_result = single_relationship_list.get_relationship_list_as_table();
 
