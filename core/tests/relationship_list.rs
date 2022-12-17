@@ -86,47 +86,6 @@ fn failed_create_from_string() {
     assert!(updated_list.is_err());
 }
 
-#[test]
-fn add_related_to_list() {
-    let relationship_list: Vector<Relationship> = Vector::new();
-
-    let modified_list = relationship_list
-        .append_new_relationship("related", Uuid::nil(), Uuid::nil())
-        .unwrap();
-
-    assert_eq!(
-        modified_list[0].get_variant(),
-        RelationshipVariant::create_related()
-    );
-}
-
-#[test]
-fn add_sequential_to_list() {
-    let relationship_list: Vector<Relationship> = Vector::new();
-
-    let modified_list = relationship_list
-        .append_new_relationship("sequential", Uuid::nil(), Uuid::nil())
-        .unwrap();
-
-    assert_eq!(
-        modified_list[0].get_variant(),
-        RelationshipVariant::create_sequential()
-    );
-}
-
-#[test]
-fn add_parental_to_list() {
-    let relationship_list: Vector<Relationship> = Vector::new();
-
-    let modified_list = relationship_list
-        .append_new_relationship("parental", Uuid::nil(), Uuid::nil())
-        .unwrap();
-
-    assert_eq!(
-        modified_list[0].get_variant(),
-        RelationshipVariant::create_parental()
-    );
-}
 
 #[test]
 fn remove_relationship() {
