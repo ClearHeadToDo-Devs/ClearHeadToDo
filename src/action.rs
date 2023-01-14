@@ -1,6 +1,14 @@
 use std::str::FromStr;
 use strum::*;
 use strum_macros::*;
+use uuid::Uuid;
+
+struct Action {
+    name: String,
+    completed: bool,
+    priority: Priority,
+    id: Uuid,
+}
 
 struct ActionBuilder {
     name: String,
@@ -22,6 +30,17 @@ impl ActionBuilder {
     fn set_completion_status(self: &mut Self, desired_status: bool) {
         self.completed = desired_status;
     }
+
+    fn build(self: &Self) -> Action {
+        let builder_clone = self.clone();
+
+        Action {
+            name: builder_clone.name.to_string(),
+            completed: builder_clone.completed,
+            priority: builder_clone.priority,
+            id: Uuid::new_v4(),
+        }
+    }
 }
 
 impl Default for ActionBuilder {
@@ -34,7 +53,7 @@ impl Default for ActionBuilder {
     }
 }
 
-#[derive(PartialEq, EnumString, FromRepr, Debug)]
+#[derive(PartialEq, EnumString, FromRepr, Debug, Clone, Copy)]
 enum Priority {
     Critical = 1,
     High = 2,
@@ -123,5 +142,12 @@ mod test {
         test_builder.set_completion_status(true);
 
         assert!(test_builder.completed == true);
+    }
+
+    #[test]
+    fn build_default_action() {
+        let test_builder = ActionBuilder::default();
+
+        let test_action = test_builder.build();
     }
 }
