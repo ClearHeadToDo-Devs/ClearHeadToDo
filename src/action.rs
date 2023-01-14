@@ -18,6 +18,10 @@ impl ActionBuilder {
 
         Ok(())
     }
+
+    fn set_completion_status(self: &mut Self, desired_status: bool) {
+        self.completed = desired_status;
+    }
 }
 
 impl Default for ActionBuilder {
@@ -110,5 +114,14 @@ mod test {
         let failure_message = test_builder.set_priority("Bad Priority").unwrap_err();
 
         assert!(failure_message == ParseError::VariantNotFound);
+    }
+
+    #[test]
+    fn update_builder_completion_status() {
+        let mut test_builder = ActionBuilder::default();
+
+        test_builder.set_completion_status(true);
+
+        assert!(test_builder.completed == true);
     }
 }
