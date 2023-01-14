@@ -4,7 +4,18 @@ struct ActionBuilder {
     name: String,
     completed: bool,
     priority: Priority,
-    id: Uuid
+    id: Uuid,
+}
+
+impl Default for ActionBuilder {
+    fn default() -> Self {
+        ActionBuilder {
+            name: "Default Action".to_string(),
+            completed: false,
+            priority: Priority::Optional,
+            id: Uuid::new_v4(),
+        }
+    }
 }
 
 #[derive(PartialEq)]
@@ -21,17 +32,13 @@ mod test {
     use super::*;
     #[test]
     fn create_action() {
-        let test_builder = ActionBuilder {
-            name: "Default Builder".to_string(),
-            completed: false,
-            priority: Priority::Optional,
-            id: Uuid::new_v4(),
-        };
+        let test_builder = ActionBuilder::default();
 
         assert!(
-            test_builder.name == "Default Builder"
+            test_builder.name == "Default Action"
                 && test_builder.completed == false
                 && test_builder.priority == Priority::Optional
+                && test_builder.id != Uuid::nil()
         )
     }
 }
