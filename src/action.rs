@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use strum::*;
 use strum_macros::*;
 
 struct ActionBuilder {
@@ -10,6 +11,12 @@ struct ActionBuilder {
 impl ActionBuilder {
     fn set_name(self: &mut Self, new_name: &str) {
         self.name = new_name.to_string()
+    }
+
+    fn set_priority(self: &mut Self, priority_str: &str) -> Result<(), ParseError> {
+        self.priority = Priority::from_str(priority_str)?;
+
+        Ok(())
     }
 }
 
@@ -85,5 +92,23 @@ mod test {
             .unwrap_err();
 
         assert!(priority_conversion_error == "Invalid Priority Selection");
+    }
+
+    #[test]
+    fn update_builder_priority() {
+        let mut test_builder = ActionBuilder::default();
+
+        test_builder.set_priority("Optional").unwrap();
+
+        assert!(test_builder.priority == Priority::Optional);
+    }
+
+    #[test]
+    fn failed_update_builder_priority() {
+        let mut test_builder = ActionBuilder::default();
+
+        let failure_message = test_builder.set_priority("Bad Priority").unwrap_err();
+
+        assert!(failure_message == ParseError::VariantNotFound);
     }
 }
