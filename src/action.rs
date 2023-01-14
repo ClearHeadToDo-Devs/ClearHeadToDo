@@ -23,7 +23,7 @@ impl Default for ActionBuilder {
     }
 }
 
-#[derive(PartialEq, EnumString, FromRepr)]
+#[derive(PartialEq, EnumString, FromRepr, Debug)]
 enum Priority {
     Critical = 1,
     High = 2,
@@ -34,6 +34,8 @@ enum Priority {
 
 #[cfg(test)]
 mod test {
+    use strum::ParseError;
+
     use super::*;
     #[test]
     fn create_default_builder() {
@@ -63,9 +65,25 @@ mod test {
     }
 
     #[test]
+    fn failed_created_priority_from_string() {
+        let priority_conversion_error = Priority::from_str("Bad Priority").unwrap_err();
+
+        assert!(priority_conversion_error == ParseError::VariantNotFound)
+    }
+
+    #[test]
     fn create_priority_from_integer() {
         let test_priority = Priority::from_repr(1).unwrap();
 
         assert!(test_priority == Priority::Critical);
+    }
+
+    #[test]
+    fn failed_create_priority_from_integer() {
+        let priority_conversion_error = Priority::from_repr(6)
+            .ok_or("Invalid Priority Selection")
+            .unwrap_err();
+
+        assert!(priority_conversion_error == "Invalid Priority Selection");
     }
 }
