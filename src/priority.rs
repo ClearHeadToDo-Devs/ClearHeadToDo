@@ -3,7 +3,7 @@ use strum::*;
 
 use std::str::FromStr;
 
-#[derive(PartialEq, EnumString, FromRepr, Debug, Clone, Copy)]
+#[derive(PartialEq, EnumString, FromRepr, Debug, Clone, Copy, Display)]
 pub enum Priority {
     Critical = 1,
     High = 2,

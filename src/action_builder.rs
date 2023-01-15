@@ -13,6 +13,7 @@ pub struct ActionBuilder {
     completed: bool,
     priority: Priority,
 }
+
 impl ActionEditing for ActionBuilder {
     fn set_name(self: &mut Self, new_name: &str) -> &mut Self {
         self.name = new_name.to_string();
@@ -33,14 +34,24 @@ impl ActionEditing for ActionBuilder {
     }
 }
 
+impl ActionViewing for ActionBuilder {
+    fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    fn get_priority(&self) -> &Priority {
+        &self.priority
+    }
+
+    fn get_completion_status(&self) -> bool {
+        self.completed
+    }
+}
+
+
 impl ActionBuilder {
     pub fn build(self: &Self) -> Action {
-        Action {
-            name: self.name.to_string(),
-            completed: self.completed,
-            priority: self.priority,
-            id: Uuid::new_v4(),
-        }
+        return Action::default().set_name(&self.name).set_priority(&self.priority.to_string()).unwrap().set_completion_status(self.completed).to_owned()
     }
 }
 
@@ -141,10 +152,10 @@ mod builder {
             .build();
 
         assert!(
-            custom_action.name == "Custom Action"
-                && custom_action.priority == Priority::Critical
-                && custom_action.completed == true
-                && custom_action.id.is_nil() == false
+            custom_action.get_name() == "Custom Action"
+                && custom_action.get_priority() == &Priority::Critical
+                && custom_action.get_completion_status() == true
+                && custom_action.get_id().is_nil() == false
         )
     }
 }
