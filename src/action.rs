@@ -141,6 +141,76 @@ mod stuff {
 
             assert!(test_builder.name == "New Name")
         }
+
+        #[test]
+        fn update_builder_priority() {
+            let mut test_builder = ActionBuilder::default();
+
+            test_builder.set_priority("Optional").unwrap();
+
+            assert!(test_builder.priority == Priority::Optional);
+        }
+
+        #[test]
+        fn failed_update_builder_priority() {
+            let mut test_builder = ActionBuilder::default();
+
+            let failure_message = test_builder.set_priority("Bad Priority").unwrap_err();
+
+            assert!(failure_message == ParseError::VariantNotFound);
+        }
+
+        #[test]
+        fn update_builder_completion_status() {
+            let mut test_builder = ActionBuilder::default();
+
+            test_builder.set_completion_status(true);
+
+            assert!(test_builder.completed == true);
+        }
+
+        #[test]
+        fn build_default_action() {
+            let test_builder = ActionBuilder::default();
+
+            let test_action = test_builder.build();
+
+            assert!(
+                test_action.get_name() == "Default Action"
+                    && test_action.get_priority() == &Priority::Optional
+                    && test_action.get_completion_status() == false
+                    && test_action.id.is_nil() == false
+            )
+        }
+
+        #[test]
+        fn create_multiple_actions_from_builder() {
+            let test_builder = ActionBuilder::default();
+
+            let action_1 = test_builder.build();
+            let action_2 = test_builder.build();
+
+            assert!(action_1.id != action_2.id)
+        }
+
+        #[test]
+        fn create_custom_action() {
+            let mut test_builder = ActionBuilder::default();
+
+            let custom_action = test_builder
+                .set_completion_status(true)
+                .set_name("Custom Action")
+                .set_priority("Critical")
+                .unwrap()
+                .build();
+
+            assert!(
+                custom_action.name == "Custom Action"
+                    && custom_action.priority == Priority::Critical
+                    && custom_action.completed == true
+                    && custom_action.id.is_nil() == false
+            )
+        }
     }
     mod priority {
         use super::*;
@@ -176,100 +246,34 @@ mod stuff {
         }
     }
 
-    #[test]
-    fn update_builder_priority() {
-        let mut test_builder = ActionBuilder::default();
+    mod action {
+        use super::*;
 
-        test_builder.set_priority("Optional").unwrap();
+        #[test]
+        fn update_action_name() {
+            let mut test_action = ActionBuilder::default().build();
 
-        assert!(test_builder.priority == Priority::Optional);
-    }
+            test_action.set_name("New Name");
 
-    #[test]
-    fn failed_update_builder_priority() {
-        let mut test_builder = ActionBuilder::default();
+            assert!(test_action.name == "New Name")
+        }
 
-        let failure_message = test_builder.set_priority("Bad Priority").unwrap_err();
+        #[test]
+        fn update_action_priority() {
+            let mut test_action = ActionBuilder::default().build();
 
-        assert!(failure_message == ParseError::VariantNotFound);
-    }
+            test_action.set_priority("Critical").unwrap();
 
-    #[test]
-    fn update_builder_completion_status() {
-        let mut test_builder = ActionBuilder::default();
+            assert!(test_action.priority == Priority::Critical)
+        }
 
-        test_builder.set_completion_status(true);
+        #[test]
+        fn update_action_completion_status() {
+            let mut test_action = ActionBuilder::default().build();
 
-        assert!(test_builder.completed == true);
-    }
+            test_action.set_completion_status(true);
 
-    #[test]
-    fn build_default_action() {
-        let test_builder = ActionBuilder::default();
-
-        let test_action = test_builder.build();
-
-        assert!(
-            test_action.get_name() == "Default Action"
-                && test_action.get_priority() == &Priority::Optional
-                && test_action.get_completion_status() == false
-                && test_action.id.is_nil() == false
-        )
-    }
-
-    #[test]
-    fn create_multiple_actions_from_builder() {
-        let test_builder = ActionBuilder::default();
-
-        let action_1 = test_builder.build();
-        let action_2 = test_builder.build();
-
-        assert!(action_1.id != action_2.id)
-    }
-
-    #[test]
-    fn create_custom_action() {
-        let mut test_builder = ActionBuilder::default();
-
-        let custom_action = test_builder
-            .set_completion_status(true)
-            .set_name("Custom Action")
-            .set_priority("Critical")
-            .unwrap()
-            .build();
-
-        assert!(
-            custom_action.name == "Custom Action"
-                && custom_action.priority == Priority::Critical
-                && custom_action.completed == true
-                && custom_action.id.is_nil() == false
-        )
-    }
-
-    #[test]
-    fn update_action_name() {
-        let mut test_action = ActionBuilder::default().build();
-
-        test_action.set_name("New Name");
-
-        assert!(test_action.name == "New Name")
-    }
-
-    #[test]
-    fn update_action_priority() {
-        let mut test_action = ActionBuilder::default().build();
-
-        test_action.set_priority("Critical").unwrap();
-
-        assert!(test_action.priority == Priority::Critical)
-    }
-
-    #[test]
-    fn update_action_completion_status() {
-        let mut test_action = ActionBuilder::default().build();
-
-        test_action.set_completion_status(true);
-
-        assert!(test_action.completed == true);
+            assert!(test_action.completed == true);
+        }
     }
 }
