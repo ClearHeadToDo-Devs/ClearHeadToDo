@@ -1,17 +1,15 @@
-use crate::priority::Priority;
 use crate::action_interface::*;
+use crate::priority::Priority;
 use crate::Action;
 
-use strum::ParseError;
-use uuid::Uuid;
 use std::str::FromStr;
-
+use strum::ParseError;
 
 #[derive(Debug)]
 pub struct ActionBuilder {
-    name: String,
-    completed: bool,
-    priority: Priority,
+    pub name: String,
+    pub completed: bool,
+    pub priority: Priority,
 }
 
 impl ActionEditing for ActionBuilder {
@@ -48,10 +46,14 @@ impl ActionViewing for ActionBuilder {
     }
 }
 
-
 impl ActionBuilder {
     pub fn build(self: &Self) -> Action {
-        return Action::default().set_name(&self.name).set_priority(&self.priority.to_string()).unwrap().set_completion_status(self.completed).to_owned()
+        return Action::default()
+            .set_name(&self.name)
+            .set_priority(&self.priority.to_string())
+            .unwrap()
+            .set_completion_status(self.completed)
+            .to_owned();
     }
 }
 
