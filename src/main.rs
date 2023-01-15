@@ -21,16 +21,25 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Add { name: Option<String> },
+    List,
 }
 
 fn main() {
     let cli = Cli::parse();
 
+    let mut action_list: Vec<Action> = vec![];
+
     match &cli.command {
         Commands::Add { name } => {
             let new_name = name.clone().unwrap();
             let new_action = ActionBuilder::default().set_name(&new_name).build();
-            println!("Created {:?}", new_action)
+
+            println!("Created {:?}", &new_action);
+
+            action_list.push(new_action);
+        }
+        Commands::List => {
+            println!("List")
         }
     }
 }
