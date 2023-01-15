@@ -104,6 +104,17 @@ impl ActionViewing for Action {
     }
 }
 
+impl Default for Action {
+    fn default() -> Self {
+        Action {
+            name: "Default Action".to_string(),
+            completed: false,
+            priority: Priority::Optional,
+            id: Uuid::new_v4(),
+        }
+    }
+}
+
 #[derive(PartialEq, EnumString, FromRepr, Debug, Clone, Copy)]
 enum Priority {
     Critical = 1,
@@ -207,6 +218,7 @@ mod builder {
         )
     }
 }
+
 #[cfg(test)]
 mod priority {
     use super::*;
@@ -246,6 +258,17 @@ mod priority {
 mod object {
     use super::*;
 
+    #[test]
+    fn create_default_action() {
+        let test_action = Action::default();
+
+        assert!(
+            test_action.name == "Default Action"
+                && test_action.priority == Priority::Optional
+                && test_action.completed == false
+                && test_action.id.is_nil() == false
+        );
+    }
     #[test]
     fn update_action_name() {
         let mut test_action = ActionBuilder::default().build();
