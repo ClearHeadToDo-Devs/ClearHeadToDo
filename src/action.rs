@@ -3,6 +3,12 @@ use strum::*;
 use strum_macros::*;
 use uuid::Uuid;
 
+trait ActionEditing {
+    fn set_name(&mut self, name: &str) -> &mut Self;
+    fn set_priority(&mut self, priority_str: &str) -> Result<&mut Self, ParseError>;
+    fn set_completion_status(&mut self, desired_completion_status: bool) -> &mut Self;
+}
+
 struct Action {
     name: String,
     completed: bool,
@@ -17,7 +23,7 @@ struct ActionBuilder {
     priority: Priority,
 }
 
-impl ActionBuilder {
+impl ActionEditing for ActionBuilder {
     fn set_name(self: &mut Self, new_name: &str) -> &mut Self {
         self.name = new_name.to_string();
 
@@ -35,7 +41,9 @@ impl ActionBuilder {
 
         return self;
     }
+}
 
+impl ActionBuilder {
     fn build(self: &Self) -> Action {
         let builder_clone = self.clone();
 
@@ -55,6 +63,25 @@ impl Default for ActionBuilder {
             completed: false,
             priority: Priority::Optional,
         }
+    }
+}
+impl ActionEditing for Action {
+    fn set_name(self: &mut Self, new_name: &str) -> &mut Self {
+        self.name = new_name.to_string();
+
+        return self;
+    }
+
+    fn set_priority(self: &mut Self, priority_str: &str) -> Result<&mut Self, ParseError> {
+        self.priority = Priority::from_str(priority_str)?;
+
+        Ok(self)
+    }
+
+    fn set_completion_status(self: &mut Self, desired_status: bool) -> &mut Self {
+        self.completed = desired_status;
+
+        return self;
     }
 }
 
@@ -190,5 +217,32 @@ mod test {
                 && custom_action.completed == true
                 && custom_action.id.is_nil() == false
         )
+    }
+
+    #[test]
+    fn update_action_name() {
+        let mut test_action = ActionBuilder::default().build();
+
+        test_action.set_name("New Name");
+
+        assert!(test_action.name == "New Name")
+    }
+
+    #[test]
+    fn update_action_priority() {
+        let mut test_action = ActionBuilder::default().build();
+
+        test_action.set_priority("Critical").unwrap();
+
+        assert!(test_action.priority == Priority::Critical)
+    }
+
+    #[test]
+    fn update_action_completion_status() {
+        let mut test_action = ActionBuilder::default().build();
+
+        test_action.set_completion_status(true);
+
+        assert!(test_action.completed == true);
     }
 }
