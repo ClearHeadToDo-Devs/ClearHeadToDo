@@ -2,11 +2,8 @@ use std::str::FromStr;
 use strum::*;
 use uuid::Uuid;
 
-use crate::priority::Priority;
 use crate::action_interface::*;
-
-use crate::ActionBuilder;
-
+use crate::priority::Priority;
 
 pub struct Action {
     pub name: String,
@@ -49,6 +46,12 @@ impl ActionViewing for Action {
     }
 }
 
+impl Action {
+    pub fn get_id(self: &Self) -> Uuid {
+        self.id
+    }
+}
+
 impl Default for Action {
     fn default() -> Self {
         Action {
@@ -61,8 +64,45 @@ impl Default for Action {
 }
 
 #[cfg(test)]
-mod object {
+mod test {
     use super::*;
+    use crate::ActionBuilder;
+
+    #[test]
+    fn view_name() {
+        let action = Action::default();
+
+        let name = action.get_name();
+
+        assert!(name == "Default Action");
+    }
+
+    #[test]
+    fn view_priority() {
+        let action = Action::default();
+
+        let priority = action.get_priority();
+
+        assert!(priority == &Priority::Optional);
+    }
+
+    #[test]
+    fn view_completion_status() {
+        let action = Action::default();
+
+        let completion_status = action.get_completion_status();
+
+        assert!(completion_status == false);
+    }
+
+    #[test]
+    fn view_id() {
+        let action = Action::default();
+
+        let id = action.get_id();
+
+        assert!(id != Uuid::nil());
+    }
 
     #[test]
     fn create_default_action() {
