@@ -9,6 +9,12 @@ trait ActionEditing {
     fn set_completion_status(&mut self, desired_completion_status: bool) -> &mut Self;
 }
 
+trait ActionViewing {
+    fn get_name(&self) -> &str;
+    fn get_priority(&self) -> &Priority;
+    fn get_completion_status(&self) -> bool;
+}
+
 struct Action {
     name: String,
     completed: bool,
@@ -45,12 +51,10 @@ impl ActionEditing for ActionBuilder {
 
 impl ActionBuilder {
     fn build(self: &Self) -> Action {
-        let builder_clone = self.clone();
-
         Action {
-            name: builder_clone.name.to_string(),
-            completed: builder_clone.completed,
-            priority: builder_clone.priority,
+            name: self.name.to_string(),
+            completed: self.completed,
+            priority: self.priority,
             id: Uuid::new_v4(),
         }
     }
@@ -65,6 +69,7 @@ impl Default for ActionBuilder {
         }
     }
 }
+
 impl ActionEditing for Action {
     fn set_name(self: &mut Self, new_name: &str) -> &mut Self {
         self.name = new_name.to_string();
@@ -82,6 +87,20 @@ impl ActionEditing for Action {
         self.completed = desired_status;
 
         return self;
+    }
+}
+
+impl ActionViewing for Action {
+    fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    fn get_priority(&self) -> &Priority {
+        &self.priority
+    }
+
+    fn get_completion_status(&self) -> bool {
+        self.completed
     }
 }
 
@@ -183,9 +202,9 @@ mod test {
         let test_action = test_builder.build();
 
         assert!(
-            test_action.name == "Default Action"
-                && test_action.priority == Priority::Optional
-                && test_action.completed == false
+            test_action.get_name() == "Default Action"
+                && test_action.get_priority() == &Priority::Optional
+                && test_action.get_completion_status() == false
                 && test_action.id.is_nil() == false
         )
     }
