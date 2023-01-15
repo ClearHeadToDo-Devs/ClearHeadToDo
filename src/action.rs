@@ -10,6 +10,7 @@ struct Action {
     id: Uuid,
 }
 
+#[derive(Debug)]
 struct ActionBuilder {
     name: String,
     completed: bool,
@@ -17,18 +18,22 @@ struct ActionBuilder {
 }
 
 impl ActionBuilder {
-    fn set_name(self: &mut Self, new_name: &str) {
-        self.name = new_name.to_string()
+    fn set_name(self: &mut Self, new_name: &str) -> &mut Self {
+        self.name = new_name.to_string();
+
+        return self;
     }
 
-    fn set_priority(self: &mut Self, priority_str: &str) -> Result<(), ParseError> {
+    fn set_priority(self: &mut Self, priority_str: &str) -> Result<&mut Self, ParseError> {
         self.priority = Priority::from_str(priority_str)?;
 
-        Ok(())
+        Ok(self)
     }
 
-    fn set_completion_status(self: &mut Self, desired_status: bool) {
+    fn set_completion_status(self: &mut Self, desired_status: bool) -> &mut Self {
         self.completed = desired_status;
+
+        return self;
     }
 
     fn build(self: &Self) -> Action {
@@ -155,6 +160,35 @@ mod test {
                 && test_action.priority == Priority::Optional
                 && test_action.completed == false
                 && test_action.id.is_nil() == false
+        )
+    }
+
+    #[test]
+    fn create_multiple_actions_from_builder() {
+        let test_builder = ActionBuilder::default();
+
+        let action_1 = test_builder.build();
+        let action_2 = test_builder.build();
+
+        assert!(action_1.id != action_2.id)
+    }
+
+    #[test]
+    fn create_custom_action() {
+        let mut test_builder = ActionBuilder::default();
+
+        let custom_action = test_builder
+            .set_completion_status(true)
+            .set_name("Custom Action")
+            .set_priority("Critical")
+            .unwrap()
+            .build();
+
+        assert!(
+            custom_action.name == "Custom Action"
+                && custom_action.priority == Priority::Critical
+                && custom_action.completed == true
+                && custom_action.id.is_nil() == false
         )
     }
 }
