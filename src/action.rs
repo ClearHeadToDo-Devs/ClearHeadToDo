@@ -5,7 +5,8 @@ use uuid::Uuid;
 use crate::action_interface::*;
 use crate::priority::Priority;
 
-#[derive(Clone)]
+
+#[derive(Clone, Debug)]
 pub struct Action {
     name: String,
     pub completed: bool,
