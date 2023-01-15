@@ -149,5 +149,12 @@ mod test {
         let test_builder = ActionBuilder::default();
 
         let test_action = test_builder.build();
+
+        assert!(
+            test_action.name == "Default Action"
+                && test_action.priority == Priority::Optional
+                && test_action.completed == false
+                && test_action.id.is_nil() == false
+        )
     }
 }
