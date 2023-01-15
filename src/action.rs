@@ -114,58 +114,66 @@ enum Priority {
 }
 
 #[cfg(test)]
-mod test {
+mod stuff {
     use strum::ParseError;
 
     use super::*;
-    #[test]
-    fn create_default_builder() {
-        let test_builder = ActionBuilder::default();
 
-        assert!(
-            test_builder.name == "Default Action"
-                && test_builder.completed == false
-                && test_builder.priority == Priority::Optional
-        )
+    mod builder {
+        use super::*;
+
+        #[test]
+        fn create_default_builder() {
+            let test_builder = ActionBuilder::default();
+
+            assert!(
+                test_builder.name == "Default Action"
+                    && test_builder.completed == false
+                    && test_builder.priority == Priority::Optional
+            )
+        }
+
+        #[test]
+        fn update_builder_name() {
+            let mut test_builder = ActionBuilder::default();
+
+            test_builder.set_name("New Name");
+
+            assert!(test_builder.name == "New Name")
+        }
     }
+    mod priority {
+        use super::*;
 
-    #[test]
-    fn update_builder_name() {
-        let mut test_builder = ActionBuilder::default();
+        #[test]
+        fn create_priority_from_string() {
+            let test_priority = Priority::from_str("Critical").unwrap();
 
-        test_builder.set_name("New Name");
+            assert!(test_priority == Priority::Critical);
+        }
 
-        assert!(test_builder.name == "New Name")
-    }
+        #[test]
+        fn failed_created_priority_from_string() {
+            let priority_conversion_error = Priority::from_str("Bad Priority").unwrap_err();
 
-    #[test]
-    fn create_priority_from_string() {
-        let test_priority = Priority::from_str("Critical").unwrap();
+            assert!(priority_conversion_error == ParseError::VariantNotFound)
+        }
 
-        assert!(test_priority == Priority::Critical);
-    }
+        #[test]
+        fn create_priority_from_integer() {
+            let test_priority = Priority::from_repr(1).unwrap();
 
-    #[test]
-    fn failed_created_priority_from_string() {
-        let priority_conversion_error = Priority::from_str("Bad Priority").unwrap_err();
+            assert!(test_priority == Priority::Critical);
+        }
 
-        assert!(priority_conversion_error == ParseError::VariantNotFound)
-    }
+        #[test]
+        fn failed_create_priority_from_integer() {
+            let priority_conversion_error = Priority::from_repr(6)
+                .ok_or("Invalid Priority Selection")
+                .unwrap_err();
 
-    #[test]
-    fn create_priority_from_integer() {
-        let test_priority = Priority::from_repr(1).unwrap();
-
-        assert!(test_priority == Priority::Critical);
-    }
-
-    #[test]
-    fn failed_create_priority_from_integer() {
-        let priority_conversion_error = Priority::from_repr(6)
-            .ok_or("Invalid Priority Selection")
-            .unwrap_err();
-
-        assert!(priority_conversion_error == "Invalid Priority Selection");
+            assert!(priority_conversion_error == "Invalid Priority Selection");
+        }
     }
 
     #[test]
