@@ -1,14 +1,10 @@
 mod action;
 use action::*;
-
 mod action_builder;
 use action_builder::*;
-
 mod action_interface;
 use action_interface::*;
-
 pub mod priority;
-use action_interface::*;
 
 use std::path::PathBuf;
 
@@ -30,8 +26,6 @@ enum Commands {
 fn main() {
     let cli = Cli::parse();
 
-    // You can check for the existence of subcommands, and if found use their
-    // matches just as you would the top level cmd
     match &cli.command {
         Commands::Add { name } => {
             let new_name = name.clone().unwrap();
