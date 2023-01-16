@@ -8,7 +8,7 @@ use std::str::FromStr;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Action {
-    name: String,
+    pub name: String,
     pub completed: bool,
     pub priority: Priority,
     pub id: Uuid,

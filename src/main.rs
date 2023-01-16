@@ -5,6 +5,7 @@ use action_builder::*;
 mod action_interface;
 use action_interface::*;
 pub mod priority;
+mod file_management;
 
 use clap::{Parser, Subcommand};
 
