@@ -178,4 +178,38 @@ mod test {
             ],
         )
     }
+
+    #[test]
+    fn list_serialize_and_deserialize() {
+        let action_list = vec![Action {
+            name: "Default Action".to_string(),
+            completed: false,
+            priority: Priority::Optional,
+            id: Uuid::nil(),
+        }];
+
+        assert_tokens(
+            &action_list.readable(),
+            &[
+                Token::Seq { len: Some(1) },
+                Token::Struct {
+                    name: "Action",
+                    len: 4,
+                },
+                Token::Str("name"),
+                Token::Str("Default Action"),
+                Token::Str("completed"),
+                Token::Bool(false),
+                Token::Str("priority"),
+                Token::UnitVariant {
+                    name: "Priority",
+                    variant: "Optional",
+                },
+                Token::Str("id"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::StructEnd,
+                Token::SeqEnd,
+            ],
+        )
+    }
 }
