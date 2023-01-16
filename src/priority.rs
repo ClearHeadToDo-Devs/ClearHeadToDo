@@ -1,9 +1,11 @@
-use strum_macros::*;
 use strum::*;
+use strum_macros::*;
 
 use std::str::FromStr;
 
-#[derive(PartialEq, EnumString, FromRepr, Debug, Clone, Copy, Display)]
+use serde::{Deserialize, Serialize};
+
+#[derive(PartialEq, EnumString, FromRepr, Debug, Clone, Copy, Display, Serialize, Deserialize)]
 pub enum Priority {
     Critical = 1,
     High = 2,
@@ -15,6 +17,7 @@ pub enum Priority {
 #[cfg(test)]
 mod priority {
     use super::*;
+    use serde_test::*;
 
     #[test]
     fn create_priority_from_string() {
@@ -44,5 +47,18 @@ mod priority {
             .unwrap_err();
 
         assert!(priority_conversion_error == "Invalid Priority Selection");
+    }
+
+    #[test]
+    fn serialize_and_deserialize() {
+        let test_priority = Priority::Optional;
+
+        assert_tokens(
+            &test_priority,
+            &[Token::UnitVariant {
+                name: "Priority",
+                variant: "Optional",
+            }],
+        )
     }
 }
