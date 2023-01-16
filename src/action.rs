@@ -6,8 +6,7 @@ use crate::priority::Priority;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Action {
     name: String,
     pub completed: bool,
@@ -68,8 +67,11 @@ impl Default for Action {
 
 #[cfg(test)]
 mod test {
+    use serde_test::assert_tokens;
+
     use super::*;
     use crate::ActionBuilder;
+    use serde_test::*;
 
     #[test]
     fn view_name() {
@@ -143,5 +145,37 @@ mod test {
         test_action.set_completion_status(true);
 
         assert!(test_action.completed == true);
+    }
+
+    #[test]
+    fn serialize_deserialize() {
+        let nil_action = Action {
+            name: "Default Action".to_string(),
+            completed: false,
+            priority: Priority::Optional,
+            id: Uuid::nil(),
+        };
+
+        assert_tokens(
+            &nil_action.readable(),
+            &[
+                Token::Struct {
+                    name: "Action",
+                    len: 4,
+                },
+                Token::Str("name"),
+                Token::Str("Default Action"),
+                Token::Str("completed"),
+                Token::Bool(false),
+                Token::Str("priority"),
+                Token::UnitVariant {
+                    name: "Priority",
+                    variant: "Optional",
+                },
+                Token::Str("id"),
+                Token::Str("00000000-0000-0000-0000-000000000000"),
+                Token::StructEnd,
+            ],
+        )
     }
 }
