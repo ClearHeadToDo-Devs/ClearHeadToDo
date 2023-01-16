@@ -6,9 +6,7 @@ mod action_interface;
 use action_interface::*;
 pub mod priority;
 
-use std::path::PathBuf;
-
-use clap::{Args, Parser, Subcommand};
+use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
