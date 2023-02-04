@@ -8,7 +8,6 @@ pub mod priority;
 mod file_management;
 mod relationship;
 
-
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
