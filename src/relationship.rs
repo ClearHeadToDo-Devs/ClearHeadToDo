@@ -2,6 +2,7 @@ use uuid::Uuid;
 
 use indradb;
 
+#[derive(Clone)]
 pub struct Relationship {
     id: Uuid,
     variant: RelationshipVariant,
@@ -49,7 +50,7 @@ impl From<indradb::EdgeKey> for Relationship {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 enum RelationshipVariant {
     Parental = 1,
     Sequential = 2,
@@ -86,9 +87,33 @@ impl Into<indradb::Identifier> for RelationshipVariant {
 #[cfg(test)]
 mod test {
     use chrono::DateTime;
-    use indradb::{EdgeKey, Edge};
+    use indradb::{
+        Datastore, Edge, EdgeKey, EdgeQuery, Identifier, MemoryDatastore, SpecificEdgeQuery,
+    };
 
     use super::*;
+
+    pub fn create_datastore_with_two_vertices() -> (MemoryDatastore, Uuid, Uuid) {
+        let datastore = MemoryDatastore::default();
+
+        let vertex_one = datastore.create_vertex_from_type(Identifier::new("test_1").unwrap()).unwrap();
+        let vertex_two = datastore.create_vertex_from_type(Identifier::new("test_2").unwrap()).unwrap();
+
+        (datastore, vertex_one, vertex_two)
+    }
+
+    #[test]
+    fn create_edge_in_datastore_from_relationship() {
+        let (datastore, vector_1, vector_2) = create_datastore_with_two_vertices();
+
+        let test_relationship = Relationship::new(Uuid::nil(), None, vector_1, vector_2);
+        let relationship_clone = test_relationship.clone();
+        let edge_query: EdgeQuery = SpecificEdgeQuery::single(relationship_clone.into()).into();
+
+        datastore.create_edge(&test_relationship.into()).unwrap();
+
+        assert!(datastore.get_edges(edge_query).unwrap().len() == 1)
+    }
 
     #[test]
     fn create_minimal_relationship() {
