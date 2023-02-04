@@ -1,5 +1,7 @@
 use uuid::Uuid;
 
+use indradb;
+
 pub struct Relationship {
     id: Uuid,
     variant: RelationshipVariant,
@@ -31,6 +33,12 @@ enum RelationshipVariant {
     Parental = 1,
     Sequential = 2,
     Related = 3,
+}
+
+impl Default for RelationshipVariant {
+    fn default() -> Self {
+        Self::Related
+    }
 }
 
 #[cfg(test)]
@@ -84,23 +92,34 @@ mod test {
     }
 
     #[test]
-    fn create_parental_type() {
+    fn create_parental_variant() {
         let relationship_type = RelationshipVariant::Parental;
 
         assert!(relationship_type as usize == 1)
     }
 
     #[test]
-    fn create_sequential_type() {
+    fn create_sequential_variant() {
         let sequential = RelationshipVariant::Sequential;
 
         assert!(sequential as usize == 2)
     }
 
     #[test]
-    fn related() {
+    fn create_related_variant() {
         let related_type = RelationshipVariant::Related;
 
         assert!(related_type as usize == 3)
+    }
+
+    #[test]
+    fn create_default_variant() {
+        let default_type = RelationshipVariant::default();
+
+        assert!(default_type as usize == 3)
+    }
+
+    #[test]
+    fn create_parental_variant_from_identifier() {
     }
 }
