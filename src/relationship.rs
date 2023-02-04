@@ -28,6 +28,27 @@ impl Relationship {
     }
 }
 
+impl From<Relationship> for indradb::EdgeKey {
+    fn from(relationship: Relationship) -> Self {
+        Self::new(
+            relationship.source,
+            relationship.variant.into(),
+            relationship.target,
+        )
+    }
+}
+
+impl From<indradb::EdgeKey> for Relationship {
+    fn from(edge: indradb::EdgeKey) -> Self {
+        Self {
+            id: Uuid::nil(),
+            variant: RelationshipVariant::from(edge.t),
+            target: edge.inbound_id,
+            source: edge.outbound_id,
+        }
+    }
+}
+
 #[derive(PartialEq)]
 enum RelationshipVariant {
     Parental = 1,
@@ -110,6 +131,33 @@ mod test {
         );
 
         assert!(relationship.variant as usize == 3)
+    }
+
+    #[test]
+    fn create_edgekey_from_relationship() {
+        let test_relationship = Relationship::new(Uuid::nil(), None, Uuid::nil(), Uuid::nil());
+
+        let converted_edge = indradb::EdgeKey::from(test_relationship);
+
+        assert!(converted_edge.outbound_id.is_nil());
+        assert!(converted_edge.inbound_id.is_nil());
+        assert!(converted_edge.t == indradb::Identifier::new("Related").unwrap())
+    }
+
+    #[test]
+    fn create_relationship_from_edge() {
+        let test_edge = indradb::EdgeKey::new(
+            Uuid::nil(),
+            indradb::Identifier::new("Related").unwrap(),
+            Uuid::nil(),
+        );
+
+        let converted_relationship = Relationship::from(test_edge);
+
+        assert!(converted_relationship.id.is_nil());
+        assert!(converted_relationship.target.is_nil());
+        assert!(converted_relationship.source.is_nil());
+        assert!(converted_relationship.variant as usize == 3)
     }
 
     #[test]
