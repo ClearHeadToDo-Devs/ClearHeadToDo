@@ -85,6 +85,9 @@ impl Into<indradb::Identifier> for RelationshipVariant {
 
 #[cfg(test)]
 mod test {
+    use chrono::DateTime;
+    use indradb::{EdgeKey, Edge};
+
     use super::*;
 
     #[test]
@@ -142,6 +145,18 @@ mod test {
         assert!(converted_edge.outbound_id.is_nil());
         assert!(converted_edge.inbound_id.is_nil());
         assert!(converted_edge.t == indradb::Identifier::new("Related").unwrap())
+    }
+
+    #[test]
+    fn create_edge_from_relationship() {
+        let test_key: EdgeKey =
+            Relationship::new(Uuid::nil(), None, Uuid::nil(), Uuid::nil()).into();
+
+        let cloned_key = test_key.clone();
+
+        let converted_edge = Edge::new(test_key, DateTime::default());
+
+        assert!(converted_edge.key == cloned_key);
     }
 
     #[test]
