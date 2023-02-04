@@ -212,4 +212,10 @@ mod test {
             ],
         )
     }
+
+    #[test]
+    fn make_json() {
+        let action = Action::default();
+
+    }
 }
