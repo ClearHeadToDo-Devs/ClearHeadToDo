@@ -52,6 +52,16 @@ impl From<indradb::Identifier> for RelationshipVariant {
     }
 }
 
+impl Into<indradb::Identifier> for RelationshipVariant {
+    fn into(self) -> indradb::Identifier {
+        match self {
+            Self::Parental => indradb::Identifier::new("Parental").unwrap(),
+            Self::Sequential => indradb::Identifier::new("Sequential").unwrap(),
+            Self::Related => indradb::Identifier::new("Related").unwrap(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -164,5 +174,32 @@ mod test {
         let converted_relationship_variant = RelationshipVariant::from(test_identifier);
 
         assert!(converted_relationship_variant as usize == 3)
+    }
+
+    #[test]
+    fn create_identifer_from_sequential_variant() {
+        let sequential = RelationshipVariant::Sequential;
+
+        let converted_identifier: indradb::Identifier = RelationshipVariant::into(sequential);
+
+        assert!(converted_identifier.as_str() == "Sequential")
+    }
+
+    #[test]
+    fn create_identifier_from_parental_variant() {
+        let parental = RelationshipVariant::Parental;
+
+        let converted_identifier: indradb::Identifier = RelationshipVariant::into(parental);
+
+        assert!(converted_identifier.as_str() == "Parental")
+    }
+
+    #[test]
+    fn create_identifier_from_default_variant() {
+        let default = RelationshipVariant::default();
+
+        let converted_identifier: indradb::Identifier = RelationshipVariant::into(default);
+
+        assert!(converted_identifier.as_str() == "Related")
     }
 }
