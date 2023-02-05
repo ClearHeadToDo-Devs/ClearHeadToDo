@@ -1,3 +1,4 @@
+use core::str::FromStr;
 use indradb::{Identifier, Vertex, VertexProperty};
 use serde_json::Value;
 use uuid::Uuid;
@@ -14,6 +15,11 @@ pub fn create_string_json_value(str: &str) -> Value {
     Value::String(str.to_string())
 }
 
+pub fn create_identifier(str: &str)->Identifier{
+    Identifier::from_str(str).unwrap()
+
+}
+
 #[cfg(test)]
 mod test {
 
@@ -25,6 +31,8 @@ mod test {
 
         let name_property =
             create_string_property(test_vertex.id, create_string_json_value("test name"));
+
+        assert!(name_property.value == create_string_json_value("test name"))
     }
 
     #[test]
@@ -39,5 +47,12 @@ mod test {
         let test_value = create_string_json_value("example");
 
         assert!(test_value == Value::String("example".to_string()))
+    }
+
+    #[test]
+    fn create_example_identifier() {
+        let example_identifier = create_identifier("example");
+
+        assert!(example_identifier.as_str()=="example")
     }
 }
