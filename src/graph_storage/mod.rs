@@ -12,7 +12,7 @@ impl From<Action> for VertexProperties {
 
         let name_property = create_name_property(value.get_name());
         let completed_property = create_completed_property(value.get_completion_status());
-        let priority_property = create_numeric_property(value.get_priority().to_owned().into());
+        let priority_property = create_priority_property(value.get_priority().to_owned().into());
 
         VertexProperties::new(
             vertex,
@@ -32,7 +32,7 @@ pub fn create_completed_property(value: bool) -> NamedProperty {
     NamedProperty::new(create_identifier("completed"), Value::Bool(value))
 }
 
-pub fn create_numeric_property(value: Number) -> NamedProperty {
+pub fn create_priority_property(value: Number) -> NamedProperty {
     NamedProperty::new(create_identifier("Priority"), Value::Number(value))
 }
 
@@ -99,8 +99,8 @@ mod test {
     }
 
     #[test]
-    fn create_priority_property() {
-        let priority_property = create_numeric_property(Priority::Critical.into());
+    fn create_example_priority_property() {
+        let priority_property = create_priority_property(Priority::Critical.into());
 
         assert!(priority_property.value.as_u64().unwrap() == 1)
     }
