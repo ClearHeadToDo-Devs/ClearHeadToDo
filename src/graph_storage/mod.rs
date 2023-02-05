@@ -1,8 +1,11 @@
-use uuid::Uuid;
 use crate::priority::Priority;
 use core::str::FromStr;
-use indradb::{Datastore, Identifier, NamedProperty, Vertex, VertexProperties, VertexProperty, VertexQuery, SpecificVertexQuery};
+use indradb::{
+    Datastore, Identifier, NamedProperty, SpecificVertexQuery, Vertex, VertexProperties,
+    VertexProperty, VertexQuery,
+};
 use serde_json::{Number, Value};
+use uuid::Uuid;
 
 use crate::action::Action;
 use crate::action_interface::ActionViewing;
@@ -37,7 +40,7 @@ pub fn create_priority_property(value: Number) -> NamedProperty {
     NamedProperty::new(create_identifier("Priority"), Value::Number(value))
 }
 
-pub fn create_single_action_query(action_id: Uuid)->VertexQuery{
+pub fn create_single_action_query(action_id: Uuid) -> VertexQuery {
     SpecificVertexQuery::single(action_id).into()
 }
 
@@ -110,7 +113,6 @@ mod test {
         let vertex_creation_result = test_datastore.create_vertex(&action_vertex.vertex).unwrap();
 
         assert!(vertex_creation_result == true)
-
     }
 
     #[test]
@@ -145,6 +147,13 @@ mod test {
     }
 
     #[test]
+    fn create_example_vertex_query() {
+        let test_query = create_single_action_query(Uuid::nil());
+
+        assert!(test_query == SpecificVertexQuery::single(Uuid::nil()).into())
+    }
+
+    #[test]
     fn create_example_priority_property() {
         let priority_property = create_priority_property(Priority::Critical.into());
 
@@ -170,12 +179,5 @@ mod test {
         let example_identifier = create_identifier("example");
 
         assert!(example_identifier.as_str() == "example")
-    }
-
-    #[test]
-    fn create_example_vertex_query() {
-        let test_query = create_single_action_query(Uuid::nil());
-
-        assert!(test_query == SpecificVertexQuery::single(Uuid::nil()).into())
     }
 }
