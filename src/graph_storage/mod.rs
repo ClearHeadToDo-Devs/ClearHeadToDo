@@ -69,14 +69,21 @@ mod test {
 
     use super::*;
 
-    #[test]
-    fn create_action_in_datastore() {
+    fn create_datastore_and_action_vertex() -> (MemoryDatastore, VertexProperties) {
         let datatore = MemoryDatastore::default();
 
         let propertied_vertex: VertexProperties = Action::default().into();
 
         datatore.create_vertex(&propertied_vertex.vertex).unwrap();
-        let update_result = datatore
+
+        (datatore, propertied_vertex)
+    }
+
+    #[test]
+    fn add_name_property() {
+        let (test_datastore, propertied_vertex) = create_datastore_and_action_vertex();
+
+        let update_result = test_datastore
             .set_vertex_properties(
                 VertexPropertyQuery::new(
                     SpecificVertexQuery::single(propertied_vertex.vertex.id).into(),
@@ -86,7 +93,19 @@ mod test {
             )
             .unwrap();
 
-        assert!(update_result==())
+        assert!(update_result == ())
+    }
+
+    #[test]
+    fn create_action_vertex_in_datastore() {
+        let test_datastore = MemoryDatastore::default();
+
+        let action_vertex: VertexProperties = Action::default().into();
+
+        let vertex_creation_result = test_datastore.create_vertex(&action_vertex.vertex).unwrap();
+
+        assert!(vertex_creation_result == true)
+
     }
 
     #[test]
