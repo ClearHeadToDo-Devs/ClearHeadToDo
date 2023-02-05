@@ -1,7 +1,9 @@
 use core::str::FromStr;
 use indradb::{Identifier, Vertex, VertexProperty};
-use serde_json::Value;
+use serde_json::{Value, Number};
 use uuid::Uuid;
+use crate::priority::Priority;
+
 
 pub fn create_string_property(vertex_id: Uuid, value: Value) -> VertexProperty {
     VertexProperty::new(vertex_id, value)
@@ -9,6 +11,10 @@ pub fn create_string_property(vertex_id: Uuid, value: Value) -> VertexProperty {
 
 pub fn create_boolean_property(vertex_id: Uuid, value: bool) -> VertexProperty {
     VertexProperty::new(vertex_id, Value::Bool(value))
+}
+
+pub fn create_numeric_property(vertex_id: Uuid, value: Number)->VertexProperty{
+    VertexProperty::new(vertex_id, Value::Number(value))
 }
 
 pub fn create_action_vertex() -> Vertex {
@@ -23,8 +29,23 @@ pub fn create_identifier(str: &str) -> Identifier {
     Identifier::from_str(str).unwrap()
 }
 
+impl From<Priority> for Number {
+    fn from(priority: Priority) -> Self {
+        match priority {
+            Priority::Critical => Number::from(1),
+            Priority::High => Number::from(2),
+            Priority::Medium => Number::from(3),
+            Priority::Low => Number::from(4),
+            Priority::Optional => Number::from(5)
+        }
+    }
+}
+
+
 #[cfg(test)]
 mod test {
+
+    use crate::priority::Priority;
 
     use super::*;
 
@@ -45,6 +66,17 @@ mod test {
         let completed_property = create_boolean_property(test_vertex.id, false);
 
         assert!(completed_property.value.as_bool().unwrap() == false)
+    }
+
+    #[test]
+    fn create_priority_property() {
+        let test_vertex = create_action_vertex();
+
+let priority_property =
+        create_numeric_property(test_vertex.id, Priority::Critical.into());
+
+        assert!(priority_property.value.as_u64().unwrap() == 1)
+
     }
 
     #[test]
