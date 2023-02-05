@@ -1,6 +1,6 @@
 use crate::priority::Priority;
 use core::str::FromStr;
-use indradb::{Identifier, NamedProperty, Vertex, VertexProperties, VertexProperty};
+use indradb::{Datastore, Identifier, NamedProperty, Vertex, VertexProperties, VertexProperty};
 use serde_json::{Number, Value};
 
 use crate::action::Action;
@@ -63,9 +63,31 @@ impl From<Priority> for Number {
 #[cfg(test)]
 mod test {
 
+    use indradb::{MemoryDatastore, SpecificVertexQuery, VertexPropertyQuery};
+
     use crate::{action::Action, priority::Priority};
 
     use super::*;
+
+    #[test]
+    fn create_action_in_datastore() {
+        let datatore = MemoryDatastore::default();
+
+        let propertied_vertex: VertexProperties = Action::default().into();
+
+        datatore.create_vertex(&propertied_vertex.vertex).unwrap();
+        let update_result = datatore
+            .set_vertex_properties(
+                VertexPropertyQuery::new(
+                    SpecificVertexQuery::single(propertied_vertex.vertex.id).into(),
+                    propertied_vertex.props[0].name.clone(),
+                ),
+                propertied_vertex.props[0].value.clone(),
+            )
+            .unwrap();
+
+        assert!(update_result==())
+    }
 
     #[test]
     fn create_full_action_vertex_example() {
