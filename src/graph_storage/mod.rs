@@ -1,20 +1,19 @@
-use core::str::FromStr;
-use indradb::{Identifier, Vertex, VertexProperty};
-use serde_json::{Value, Number};
-use uuid::Uuid;
 use crate::priority::Priority;
+use core::str::FromStr;
 use indradb::VertexProperties;
+use indradb::{Identifier, NamedProperty, Vertex, VertexProperty};
+use serde_json::{Number, Value};
+use uuid::Uuid;
 
-
-pub fn create_string_property(vertex_id: Uuid, value: Value) -> VertexProperty {
-    VertexProperty::new(vertex_id, value)
+pub fn create_name_property(value: Value) -> NamedProperty {
+    NamedProperty::new(create_identifier("Name"), value)
 }
 
 pub fn create_boolean_property(vertex_id: Uuid, value: bool) -> VertexProperty {
     VertexProperty::new(vertex_id, Value::Bool(value))
 }
 
-pub fn create_numeric_property(vertex_id: Uuid, value: Number)->VertexProperty{
+pub fn create_numeric_property(vertex_id: Uuid, value: Number) -> VertexProperty {
     VertexProperty::new(vertex_id, Value::Number(value))
 }
 
@@ -37,42 +36,26 @@ impl From<Priority> for Number {
             Priority::High => Number::from(2),
             Priority::Medium => Number::from(3),
             Priority::Low => Number::from(4),
-            Priority::Optional => Number::from(5)
+            Priority::Optional => Number::from(5),
         }
     }
 }
 
-
 #[cfg(test)]
 mod test {
-
 
     use crate::priority::Priority;
 
     use super::*;
 
     #[test]
-    fn create_action_property() {
-        let test_vertex = create_action_vertex();
+    fn create_example_name_property() {
+        let name_value = create_string_json_value("test name");
 
-        let name_property = create_string_property(test_vertex.id, create_string_json_value("test name"));
-        let completed_property = create_boolean_property(test_vertex.id, false);
-        let priority_property = create_numeric_property(test_vertex.id, Priority::Critical.into());
+        let name_property = create_name_property(name_value);
 
-        let property_vector = vec![name_property, completed_property, priority_property];
-
-
-
-    }
-
-    #[test]
-    fn create_name_property() {
-        let test_vertex = create_action_vertex();
-
-        let name_property =
-            create_string_property(test_vertex.id, create_string_json_value("test name"));
-
-        assert!(name_property.value == create_string_json_value("test name"))
+        assert!(name_property.name.as_str() == "Name");
+        assert!(name_property.value.as_str().unwrap() == "test name")
     }
 
     #[test]
@@ -88,11 +71,9 @@ mod test {
     fn create_priority_property() {
         let test_vertex = create_action_vertex();
 
-let priority_property =
-        create_numeric_property(test_vertex.id, Priority::Critical.into());
+        let priority_property = create_numeric_property(test_vertex.id, Priority::Critical.into());
 
         assert!(priority_property.value.as_u64().unwrap() == 1)
-
     }
 
     #[test]
