@@ -3,11 +3,22 @@ use core::str::FromStr;
 use indradb::{Identifier, NamedProperty, Vertex, VertexProperties, VertexProperty};
 use serde_json::{Number, Value};
 
-pub fn create_full_action_vertex(
-    vertex: Vertex,
-    properties: Vec<NamedProperty>,
-) -> VertexProperties {
-    VertexProperties::new(vertex, properties)
+use crate::action::Action;
+use crate::action_interface::ActionViewing;
+
+impl From<Action> for VertexProperties {
+    fn from(value: Action) -> Self {
+        let vertex = create_action_vertex();
+
+        let name_property = create_name_property(value.get_name());
+        let completed_property = create_completed_property(value.get_completion_status());
+        let priority_property = create_numeric_property(value.get_priority().to_owned().into());
+
+        VertexProperties::new(
+            vertex,
+            vec![name_property, completed_property, priority_property],
+        )
+    }
 }
 
 pub fn create_name_property(value: &str) -> NamedProperty {
@@ -52,30 +63,23 @@ impl From<Priority> for Number {
 #[cfg(test)]
 mod test {
 
-    use crate::priority::Priority;
+    use crate::{action::Action, priority::Priority};
 
     use super::*;
 
     #[test]
     fn create_full_action_vertex_example() {
-        let test_vertex = create_action_vertex();
+        let action = Action::default();
 
-        let name_property = create_name_property("test name");
-        let completed_property = create_completed_property(false);
-        let priority_property = create_numeric_property(Priority::Critical.into());
-
-        let test_propertied_vertex = create_full_action_vertex(
-            test_vertex,
-            vec![name_property, completed_property, priority_property],
-        );
+        let test_propertied_vertex: VertexProperties = action.into();
 
         assert!(test_propertied_vertex.vertex.t == create_identifier("Action"));
         assert!(test_propertied_vertex.props[0].name.as_str() == "Name");
-        assert!(test_propertied_vertex.props[0].value.as_str().unwrap() == "test name");
+        assert!(test_propertied_vertex.props[0].value.as_str().unwrap() == "Default Action");
         assert!(test_propertied_vertex.props[1].name.as_str() == "completed");
         assert!(test_propertied_vertex.props[1].value.as_bool().unwrap() == false);
         assert!(test_propertied_vertex.props[2].name.as_str() == "Priority");
-        assert!(test_propertied_vertex.props[2].value.as_u64().unwrap() == 1)
+        assert!(test_propertied_vertex.props[2].value.as_u64().unwrap() == 5)
     }
 
     #[test]
@@ -96,8 +100,6 @@ mod test {
 
     #[test]
     fn create_priority_property() {
-        let test_vertex = create_action_vertex();
-
         let priority_property = create_numeric_property(Priority::Critical.into());
 
         assert!(priority_property.value.as_u64().unwrap() == 1)
