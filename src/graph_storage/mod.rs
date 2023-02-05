@@ -7,17 +7,20 @@ pub fn create_string_property(vertex_id: Uuid, value: Value) -> VertexProperty {
     VertexProperty::new(vertex_id, value)
 }
 
+pub fn create_boolean_property(vertex_id: Uuid, value: bool) -> VertexProperty {
+    VertexProperty::new(vertex_id, Value::Bool(value))
+}
+
 pub fn create_action_vertex() -> Vertex {
-    Vertex::new(Identifier::new("Action").unwrap())
+    Vertex::new(create_identifier("Action"))
 }
 
 pub fn create_string_json_value(str: &str) -> Value {
     Value::String(str.to_string())
 }
 
-pub fn create_identifier(str: &str)->Identifier{
+pub fn create_identifier(str: &str) -> Identifier {
     Identifier::from_str(str).unwrap()
-
 }
 
 #[cfg(test)]
@@ -33,6 +36,15 @@ mod test {
             create_string_property(test_vertex.id, create_string_json_value("test name"));
 
         assert!(name_property.value == create_string_json_value("test name"))
+    }
+
+    #[test]
+    fn create_completed_property() {
+        let test_vertex = create_action_vertex();
+
+        let completed_property = create_boolean_property(test_vertex.id, false);
+
+        assert!(completed_property.value.as_bool().unwrap() == false)
     }
 
     #[test]
@@ -53,6 +65,6 @@ mod test {
     fn create_example_identifier() {
         let example_identifier = create_identifier("example");
 
-        assert!(example_identifier.as_str()=="example")
+        assert!(example_identifier.as_str() == "example")
     }
 }
