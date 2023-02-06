@@ -2,7 +2,7 @@ use crate::priority::Priority;
 use core::str::FromStr;
 use indradb::{
     Datastore, Identifier, NamedProperty, SpecificVertexQuery, Vertex, VertexProperties,
-    VertexProperty, VertexQuery,
+    VertexProperty, VertexPropertyQuery, VertexQuery,
 };
 use serde_json::{Number, Value};
 use uuid::Uuid;
@@ -38,6 +38,15 @@ pub fn create_completed_property(value: bool) -> NamedProperty {
 
 pub fn create_priority_property(value: Number) -> NamedProperty {
     NamedProperty::new(create_identifier("Priority"), Value::Number(value))
+}
+
+pub fn create_property_query_for_vertex(
+    action_id: Uuid,
+    property_name: &str,
+) -> VertexPropertyQuery {
+    let vertex_query = create_single_action_query(action_id);
+
+    VertexPropertyQuery::new(vertex_query, create_identifier(property_name))
 }
 
 pub fn create_single_action_query(action_id: Uuid) -> VertexQuery {
@@ -184,6 +193,14 @@ mod test {
 
     mod db_queries {
         use super::*;
+
+        #[test]
+        fn create_example_property_query() {
+            let property_query = create_property_query_for_vertex(Uuid::nil(), "test_property");
+
+            assert!(property_query.name.as_str() == "test_property");
+            assert!(property_query.inner == create_single_action_query(Uuid::nil()))
+        }
 
         #[test]
         fn create_example_vertex_query() {
