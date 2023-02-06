@@ -1,8 +1,9 @@
+use std::error::Error;
 use crate::priority::Priority;
 use core::str::FromStr;
 use indradb::{
     Datastore, Identifier, NamedProperty, SpecificVertexQuery, Vertex, VertexProperties,
-    VertexProperty, VertexPropertyQuery, VertexQuery,
+    VertexProperty, VertexPropertyQuery, VertexQuery, MemoryDatastore,
 };
 use serde_json::{Number, Value};
 use uuid::Uuid;
@@ -23,6 +24,18 @@ impl From<Action> for VertexProperties {
             vec![name_property, completed_property, priority_property],
         )
     }
+}
+
+pub fn add_action_to_datastore(action: Action, datastore: MemoryDatastore)->Result<(),Box<dyn Error>>{
+    let action_vertex: VertexProperties = action.into();
+
+    datastore.create_vertex(&action_vertex.vertex)?;
+    datastore.set_vertex_properties(create_property_query_for_vertex(action_vertex.vertex.id,"Name"),action_vertex.props[0].value.clone())?;
+datastore.set_vertex_properties(create_property_query_for_vertex(action_vertex.vertex.id,"Completed"),action_vertex.props[1].value.clone())?;
+datastore.set_vertex_properties(create_property_query_for_vertex(action_vertex.vertex.id,"Priority"),action_vertex.props[2].value.clone())?;
+
+    Ok(())
+
 }
 
 pub fn create_name_property(value: &str) -> NamedProperty {
@@ -86,6 +99,18 @@ mod test {
 
     use super::*;
 
+
+    #[test]
+    fn add_default_action_to_datastore() {
+        let test_datastore = MemoryDatastore::default();
+
+        let action = Action::default();
+
+        let addition_result = add_action_to_datastore(action, test_datastore).unwrap();
+
+        assert!(addition_result == ())
+
+    }
     fn create_datastore_and_action_vertex() -> (MemoryDatastore, VertexProperties) {
         let datatore = MemoryDatastore::default();
 
@@ -106,7 +131,7 @@ mod test {
             let update_result = test_datastore
                 .set_vertex_properties(
                     create_property_query_for_vertex(propertied_vertex.vertex.id, "Priority"),
-                    Value::Number(Number::from(1)),
+                    Value::Number(Priority::Critical.into()),
                 )
                 .unwrap();
 
