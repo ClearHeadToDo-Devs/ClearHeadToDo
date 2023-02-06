@@ -104,10 +104,7 @@ mod test {
 
             let update_result = test_datastore
                 .set_vertex_properties(
-                    VertexPropertyQuery::new(
-                        SpecificVertexQuery::single(propertied_vertex.vertex.id).into(),
-                        propertied_vertex.props[0].name.clone(),
-                    ),
+                    create_property_query_for_vertex(propertied_vertex.vertex.id, "Name"),
                     propertied_vertex.props[0].value.clone(),
                 )
                 .unwrap();
