@@ -87,97 +87,109 @@ mod test {
         (datatore, propertied_vertex)
     }
 
-    #[test]
-    fn add_name_property() {
-        let (test_datastore, propertied_vertex) = create_datastore_and_action_vertex();
+    mod db_ops {
+        use super::*;
+        #[test]
+        fn add_name_property() {
+            let (test_datastore, propertied_vertex) = create_datastore_and_action_vertex();
 
-        let update_result = test_datastore
-            .set_vertex_properties(
-                VertexPropertyQuery::new(
-                    SpecificVertexQuery::single(propertied_vertex.vertex.id).into(),
-                    propertied_vertex.props[0].name.clone(),
-                ),
-                propertied_vertex.props[0].value.clone(),
-            )
-            .unwrap();
+            let update_result = test_datastore
+                .set_vertex_properties(
+                    VertexPropertyQuery::new(
+                        SpecificVertexQuery::single(propertied_vertex.vertex.id).into(),
+                        propertied_vertex.props[0].name.clone(),
+                    ),
+                    propertied_vertex.props[0].value.clone(),
+                )
+                .unwrap();
 
-        assert!(update_result == ())
+            assert!(update_result == ())
+        }
+
+        #[test]
+        fn create_action_vertex_in_datastore() {
+            let test_datastore = MemoryDatastore::default();
+
+            let action_vertex: VertexProperties = Action::default().into();
+
+            let vertex_creation_result =
+                test_datastore.create_vertex(&action_vertex.vertex).unwrap();
+
+            assert!(vertex_creation_result == true)
+        }
+
+        #[test]
+        fn create_full_action_vertex_example() {
+            let action = Action::default();
+
+            let test_propertied_vertex: VertexProperties = action.into();
+
+            assert!(test_propertied_vertex.vertex.t == create_identifier("Action"));
+            assert!(test_propertied_vertex.props[0].name.as_str() == "Name");
+            assert!(test_propertied_vertex.props[0].value.as_str().unwrap() == "Default Action");
+            assert!(test_propertied_vertex.props[1].name.as_str() == "completed");
+            assert!(test_propertied_vertex.props[1].value.as_bool().unwrap() == false);
+            assert!(test_propertied_vertex.props[2].name.as_str() == "Priority");
+            assert!(test_propertied_vertex.props[2].value.as_u64().unwrap() == 5)
+        }
     }
 
-    #[test]
-    fn create_action_vertex_in_datastore() {
-        let test_datastore = MemoryDatastore::default();
+    mod db_structs {
+        use super::*;
 
-        let action_vertex: VertexProperties = Action::default().into();
+        #[test]
+        fn create_example_name_property() {
+            let name_property = create_name_property("test name");
 
-        let vertex_creation_result = test_datastore.create_vertex(&action_vertex.vertex).unwrap();
+            assert!(name_property.name.as_str() == "Name");
+            assert!(name_property.value.as_str().unwrap() == "test name")
+        }
 
-        assert!(vertex_creation_result == true)
+        #[test]
+        fn create_example_completed_property() {
+            let completed_property = create_completed_property(false);
+
+            assert!(completed_property.name.as_str() == "completed");
+            assert!(completed_property.value.as_bool().unwrap() == false)
+        }
+
+        #[test]
+        fn create_example_priority_property() {
+            let priority_property = create_priority_property(Priority::Critical.into());
+
+            assert!(priority_property.value.as_u64().unwrap() == 1)
+        }
+
+        #[test]
+        fn create_bare_action_vertex() {
+            let action_vertex = create_action_vertex();
+
+            assert!(action_vertex.t == Identifier::new("Action").unwrap());
+        }
+
+        #[test]
+        fn create_example_string_value() {
+            let test_value = create_string_json_value("example");
+
+            assert!(test_value == Value::String("example".to_string()))
+        }
+
+        #[test]
+        fn create_example_identifier() {
+            let example_identifier = create_identifier("example");
+
+            assert!(example_identifier.as_str() == "example")
+        }
     }
 
-    #[test]
-    fn create_full_action_vertex_example() {
-        let action = Action::default();
+    mod db_queries {
+        use super::*;
 
-        let test_propertied_vertex: VertexProperties = action.into();
+        #[test]
+        fn create_example_vertex_query() {
+            let test_query = create_single_action_query(Uuid::nil());
 
-        assert!(test_propertied_vertex.vertex.t == create_identifier("Action"));
-        assert!(test_propertied_vertex.props[0].name.as_str() == "Name");
-        assert!(test_propertied_vertex.props[0].value.as_str().unwrap() == "Default Action");
-        assert!(test_propertied_vertex.props[1].name.as_str() == "completed");
-        assert!(test_propertied_vertex.props[1].value.as_bool().unwrap() == false);
-        assert!(test_propertied_vertex.props[2].name.as_str() == "Priority");
-        assert!(test_propertied_vertex.props[2].value.as_u64().unwrap() == 5)
-    }
-
-    #[test]
-    fn create_example_name_property() {
-        let name_property = create_name_property("test name");
-
-        assert!(name_property.name.as_str() == "Name");
-        assert!(name_property.value.as_str().unwrap() == "test name")
-    }
-
-    #[test]
-    fn create_example_completed_property() {
-        let completed_property = create_completed_property(false);
-
-        assert!(completed_property.name.as_str() == "completed");
-        assert!(completed_property.value.as_bool().unwrap() == false)
-    }
-
-    #[test]
-    fn create_example_vertex_query() {
-        let test_query = create_single_action_query(Uuid::nil());
-
-        assert!(test_query == SpecificVertexQuery::single(Uuid::nil()).into())
-    }
-
-    #[test]
-    fn create_example_priority_property() {
-        let priority_property = create_priority_property(Priority::Critical.into());
-
-        assert!(priority_property.value.as_u64().unwrap() == 1)
-    }
-
-    #[test]
-    fn create_bare_action_vertex() {
-        let action_vertex = create_action_vertex();
-
-        assert!(action_vertex.t == Identifier::new("Action").unwrap());
-    }
-
-    #[test]
-    fn create_example_string_value() {
-        let test_value = create_string_json_value("example");
-
-        assert!(test_value == Value::String("example".to_string()))
-    }
-
-    #[test]
-    fn create_example_identifier() {
-        let example_identifier = create_identifier("example");
-
-        assert!(example_identifier.as_str() == "example")
+            assert!(test_query == SpecificVertexQuery::single(Uuid::nil()).into())
+        }
     }
 }
