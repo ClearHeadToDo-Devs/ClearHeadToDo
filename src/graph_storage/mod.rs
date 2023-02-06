@@ -98,6 +98,33 @@ mod test {
 
     mod db_ops {
         use super::*;
+
+        #[test]
+        fn add_priority_property() {
+            let (test_datastore, propertied_vertex) = create_datastore_and_action_vertex();
+
+            let update_result = test_datastore
+                .set_vertex_properties(
+                    create_property_query_for_vertex(propertied_vertex.vertex.id, "Priority"),
+                    Value::Number(Number::from(1)),
+                )
+                .unwrap();
+
+            assert!(update_result == ())
+        }
+
+        #[test]
+        fn add_completed_property() {
+            let (test_datastore, propertied_vertex) = create_datastore_and_action_vertex();
+
+            let update_result = test_datastore
+                .set_vertex_properties(
+                    create_property_query_for_vertex(propertied_vertex.vertex.id, "Completed"),
+                    Value::Bool(true),
+                )
+                .unwrap();
+        }
+
         #[test]
         fn add_name_property() {
             let (test_datastore, propertied_vertex) = create_datastore_and_action_vertex();
