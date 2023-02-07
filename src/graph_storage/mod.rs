@@ -120,6 +120,7 @@ mod test {
 
         assert!(addition_result == ())
     }
+
     fn create_datastore_and_action_vertex() -> (MemoryDatastore, VertexProperties) {
         let datatore = MemoryDatastore::default();
 
@@ -132,6 +133,21 @@ mod test {
 
     mod db_ops {
         use super::*;
+
+        #[test]
+        fn create_full_action_vertex_example() {
+            let action = Action::default();
+
+            let test_propertied_vertex: VertexProperties = action.into();
+
+            assert!(test_propertied_vertex.vertex.t == create_identifier("Action"));
+            assert!(test_propertied_vertex.props[0].name.as_str() == "Name");
+            assert!(test_propertied_vertex.props[0].value.as_str().unwrap() == "Default Action");
+            assert!(test_propertied_vertex.props[1].name.as_str() == "completed");
+            assert!(test_propertied_vertex.props[1].value.as_bool().unwrap() == false);
+            assert!(test_propertied_vertex.props[2].name.as_str() == "Priority");
+            assert!(test_propertied_vertex.props[2].value.as_u64().unwrap() == 5)
+        }
 
         #[test]
         fn add_priority_property() {
@@ -185,20 +201,6 @@ mod test {
             assert!(vertex_creation_result == true)
         }
 
-        #[test]
-        fn create_full_action_vertex_example() {
-            let action = Action::default();
-
-            let test_propertied_vertex: VertexProperties = action.into();
-
-            assert!(test_propertied_vertex.vertex.t == create_identifier("Action"));
-            assert!(test_propertied_vertex.props[0].name.as_str() == "Name");
-            assert!(test_propertied_vertex.props[0].value.as_str().unwrap() == "Default Action");
-            assert!(test_propertied_vertex.props[1].name.as_str() == "completed");
-            assert!(test_propertied_vertex.props[1].value.as_bool().unwrap() == false);
-            assert!(test_propertied_vertex.props[2].name.as_str() == "Priority");
-            assert!(test_propertied_vertex.props[2].value.as_u64().unwrap() == 5)
-        }
     }
 
     mod db_structs {
