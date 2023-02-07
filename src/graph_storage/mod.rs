@@ -26,10 +26,15 @@ impl From<Action> for VertexProperties {
     }
 }
 
+pub fn get_action_by_id(datastore: MemoryDatastore, action_id: Uuid) -> Action {
+    let extracted_action =
+        datastore.get_vertex_properties(create_property_query_for_vertex(action_id, "Name"));
+}
+
 pub fn add_action_to_datastore(
     action: Action,
     datastore: MemoryDatastore,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<MemoryDatastore, Box<dyn Error>> {
     let action_vertex: VertexProperties = action.into();
 
     datastore.create_vertex(&action_vertex.vertex)?;
@@ -46,7 +51,7 @@ pub fn add_action_to_datastore(
         action_vertex.props[2].value.clone(),
     )?;
 
-    Ok(())
+    Ok(datastore)
 }
 
 pub fn create_name_property(value: &str) -> NamedProperty {
@@ -110,15 +115,16 @@ mod test {
 
     use super::*;
 
-    #[test]
-    fn add_default_action_to_datastore() {
-        let test_datastore = MemoryDatastore::default();
+    fn create_datastore_with_default_action() -> (MemoryDatastore, Uuid) {
+        let datastore = MemoryDatastore::default();
 
         let action = Action::default();
 
-        let addition_result = add_action_to_datastore(action, test_datastore).unwrap();
+        let action_id = action.get_id().clone();
 
-        assert!(addition_result == ())
+        let updated_datastore = add_action_to_datastore(action, datastore).unwrap();
+
+        (updated_datastore, action_id)
     }
 
     fn create_datastore_and_action_vertex() -> (MemoryDatastore, VertexProperties) {
@@ -133,6 +139,24 @@ mod test {
 
     mod db_ops {
         use super::*;
+
+        #[test]
+        fn add_default_action_to_datastore() {
+            let test_datastore = MemoryDatastore::default();
+
+            let action = Action::default();
+
+            let addition_result = add_action_to_datastore(action, test_datastore).unwrap();
+
+            assert!(addition_result.get_vertex_count().unwrap() == 1)
+        }
+
+        #[test]
+        fn create_action_from_vertex() {
+            let (datastore, action_id) = create_datastore_with_default_action();
+
+            let extracted_action: Action = get_action_by_id(datastore, action_id).unwrap();
+        }
 
         #[test]
         fn create_full_action_vertex_example() {
@@ -200,7 +224,6 @@ mod test {
 
             assert!(vertex_creation_result == true)
         }
-
     }
 
     mod db_structs {
