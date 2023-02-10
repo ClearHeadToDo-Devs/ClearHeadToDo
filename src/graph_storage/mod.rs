@@ -2,7 +2,7 @@ use crate::action_builder::ActionBuilder;
 use crate::priority::Priority;
 use core::str::FromStr;
 use indradb::{
-    Datastore, Identifier, MemoryDatastore, NamedProperty, SpecificVertexQuery, Vertex,
+    util, Datastore, Identifier, MemoryDatastore, NamedProperty, SpecificVertexQuery, Vertex,
     VertexProperties, VertexProperty, VertexPropertyQuery, VertexQuery,
 };
 use serde_json::{Number, Value};
@@ -28,17 +28,13 @@ impl From<Action> for VertexProperties {
 }
 
 pub fn get_action_by_id(datastore: MemoryDatastore, action_id: Uuid) -> Action {
-    let extracted_name = datastore
-        .get_vertex_properties(create_property_query_for_vertex(action_id, "Name"))
-        .unwrap();
-
-    let extracted_completion_status = datastore
-        .get_vertex_properties(create_property_query_for_vertex(action_id, "Completed"))
+    let extracted_action = datastore
+        .get_all_vertex_properties(create_single_action_query(action_id))
         .unwrap();
 
     ActionBuilder::default()
-        .set_name(extracted_name[0].value.as_str().unwrap())
-        .set_completion_status(extracted_completion_status[0].value.as_bool().unwrap())
+        .set_name(extracted_action[0].props[0].value.as_str().unwrap())
+        .set_completion_status(extracted_action[0].props[1].value.as_bool().unwrap())
         .build()
 }
 
@@ -199,7 +195,6 @@ mod test {
             let extracted_action: Action = get_action_by_id(datastore, action_id);
 
             assert!(extracted_action.get_priority() == &Priority::Optional)
-
         }
 
         #[test]
