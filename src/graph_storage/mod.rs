@@ -10,7 +10,7 @@ use std::error::Error;
 use uuid::Uuid;
 
 use crate::action::Action;
-use crate::action_interface::{ActionViewing, ActionEditing};
+use crate::action_interface::{ActionEditing, ActionViewing};
 
 impl From<Action> for VertexProperties {
     fn from(value: Action) -> Self {
@@ -28,11 +28,17 @@ impl From<Action> for VertexProperties {
 }
 
 pub fn get_action_by_id(datastore: MemoryDatastore, action_id: Uuid) -> Action {
-    let extracted_action =
-        datastore.get_vertex_properties(create_property_query_for_vertex(action_id, "Name")).unwrap();
+    let extracted_name = datastore
+        .get_vertex_properties(create_property_query_for_vertex(action_id, "Name"))
+        .unwrap();
 
-ActionBuilder::default()
-        .set_name(extracted_action[0].value.as_str().unwrap())
+    let extracted_completion_status = datastore
+        .get_vertex_properties(create_property_query_for_vertex(action_id, "Completed"))
+        .unwrap();
+
+    ActionBuilder::default()
+        .set_name(extracted_name[0].value.as_str().unwrap())
+        .set_completion_status(extracted_completion_status[0].value.as_bool().unwrap())
         .build()
 }
 
@@ -111,9 +117,9 @@ impl From<Priority> for Number {
     }
 }
 
-impl From<u64> for Priority{
+impl From<u64> for Priority {
     fn from(value: u64) -> Self {
-match value {
+        match value {
             1 => Priority::Critical,
             2 => Priority::High,
             3 => Priority::Medium,
@@ -138,7 +144,7 @@ mod test {
 
         let action = Action::default();
 
-        let (updated_datastore,action_id) = add_action_to_datastore(action, datastore).unwrap();
+        let (updated_datastore, action_id) = add_action_to_datastore(action, datastore).unwrap();
 
         (updated_datastore, action_id)
     }
@@ -162,19 +168,37 @@ mod test {
 
             let action = Action::default();
 
-            let (addition_result, actiion_id) = add_action_to_datastore(action, test_datastore).unwrap();
+            let (addition_result, actiion_id) =
+                add_action_to_datastore(action, test_datastore).unwrap();
 
             assert!(addition_result.get_vertex_count().unwrap() == 1)
         }
 
         #[test]
-        fn create_action_from_vertex() {
+        fn get_action_name() {
             let (datastore, action_id) = create_datastore_with_default_action();
 
             let extracted_action: Action = get_action_by_id(datastore, action_id);
 
             assert!(extracted_action.get_name() == "Default Action")
+        }
 
+        #[test]
+        fn get_action_completion_status() {
+            let (datastore, action_id) = create_datastore_with_default_action();
+
+            let extracted_action: Action = get_action_by_id(datastore, action_id);
+
+            assert!(extracted_action.get_completion_status() == false)
+        }
+
+        #[test]
+        fn get_action_priority() {
+            let (datastore, action_id) = create_datastore_with_default_action();
+
+            let extracted_action: Action = get_action_by_id(datastore, action_id);
+
+            assert!(extracted_action.get_priority() == &Priority::Optional)
 
         }
 
