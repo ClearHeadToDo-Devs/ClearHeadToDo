@@ -34,6 +34,7 @@ pub fn get_action_by_id(datastore: MemoryDatastore, action_id: Uuid) -> Action {
 
     ActionBuilder::default()
         .set_name(extracted_action[0].props[1].value.as_str().unwrap())
+        .set_completion_status(extracted_action[0].props[0].value.as_bool().unwrap())
         .build()
 }
 
@@ -178,7 +179,6 @@ mod test {
             assert!(extracted_action.get_name() == "Default Action")
         }
 
-        #[ignore]
         #[test]
         fn get_action_completion_status() {
             let (datastore, action_id) = create_datastore_with_default_action();
@@ -188,7 +188,6 @@ mod test {
             assert!(extracted_action.get_completion_status() == false)
         }
 
-        #[ignore]
         #[test]
         fn get_action_priority() {
             let (datastore, action_id) = create_datastore_with_default_action();
