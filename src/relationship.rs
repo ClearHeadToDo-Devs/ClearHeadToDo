@@ -96,8 +96,12 @@ mod test {
     pub fn create_datastore_with_two_vertices() -> (MemoryDatastore, Uuid, Uuid) {
         let datastore = MemoryDatastore::default();
 
-        let vertex_one = datastore.create_vertex_from_type(Identifier::new("test_1").unwrap()).unwrap();
-        let vertex_two = datastore.create_vertex_from_type(Identifier::new("test_2").unwrap()).unwrap();
+        let vertex_one = datastore
+            .create_vertex_from_type(Identifier::new("test_1").unwrap())
+            .unwrap();
+        let vertex_two = datastore
+            .create_vertex_from_type(Identifier::new("test_2").unwrap())
+            .unwrap();
 
         (datastore, vertex_one, vertex_two)
     }

@@ -1,7 +1,6 @@
 use crate::priority::*;
 use strum::ParseError;
 
-
 pub trait ActionEditing {
     fn set_name(&mut self, name: &str) -> &mut Self;
     fn set_priority(&mut self, priority_str: &str) -> Result<&mut Self, ParseError>;
