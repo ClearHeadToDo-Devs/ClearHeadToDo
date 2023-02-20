@@ -8,7 +8,8 @@ mod file_management;
 pub mod priority;
 mod relationship;
 
-mod graph_storage;
+pub mod graph_storage;
+use graph_storage::*;
 
 use clap::{Parser, Subcommand};
 

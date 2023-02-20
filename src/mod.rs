@@ -162,7 +162,7 @@ impl From<u64> for Priority {
 #[cfg(test)]
 mod test {
 
-    use indradb::{MemoryDatastore, SpecificVertexQuery};
+    use indradb::{MemoryDatastore, SpecificVertexQuery, VertexPropertyQuery};
 
     use crate::{action::Action, priority::Priority};
 
