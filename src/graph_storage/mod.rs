@@ -12,6 +12,22 @@ use uuid::Uuid;
 use crate::action::Action;
 use crate::action_interface::{ActionEditing, ActionViewing};
 
+pub fn update_action_vertex_name(
+    datastore: MemoryDatastore,
+    action_id: Uuid,
+    new_name: &str,
+) -> Result<MemoryDatastore, Box<dyn Error>> {
+    let update_result = datastore.set_vertex_properties(
+        create_property_query_for_vertex(action_id, "Name").into(),
+        new_name.into(),
+    );
+
+    match update_result {
+        Ok(()) => Ok(datastore),
+        Err(_) => Err("Failed to update action name".into()),
+    }
+}
+
 impl From<Action> for VertexProperties {
     fn from(value: Action) -> Self {
         let vertex = create_action_vertex();
@@ -158,6 +174,24 @@ mod test {
 
     mod db_ops {
         use super::*;
+
+        #[test]
+        fn update_action_name() {
+            let (datastore, action_id) = create_datastore_with_default_action();
+            let action_property_query = create_property_query_for_vertex(action_id, "Name");
+
+            let update_result =
+                update_action_vertex_name(datastore, action_id.clone(), "Updated Action Name")
+                    .unwrap();
+
+            assert!(
+                update_result
+                    .get_vertex_properties(action_property_query)
+                    .unwrap()[0]
+                    .value
+                    == "Updated Action Name"
+            )
+        }
 
         #[test]
         fn add_default_action_to_datastore() {
