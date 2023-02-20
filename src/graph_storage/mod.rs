@@ -44,6 +44,22 @@ pub fn update_action_vertex_completion_status(
     }
 }
 
+pub fn update_action_vertex_priority(
+    datastore: MemoryDatastore,
+    action_id: Uuid,
+    new_priority: Priority,
+) -> Result<MemoryDatastore, Box<dyn Error>> {
+    let update_result = datastore.set_vertex_properties(
+        create_property_query_for_vertex(action_id, "Priority").into(),
+        Number::from(new_priority as u64).into(),
+    );
+
+    match update_result {
+        Ok(()) => Ok(datastore),
+        Err(_) => Err("Failed to update action priority".into()),
+    }
+}
+
 impl From<Action> for VertexProperties {
     fn from(value: Action) -> Self {
         let vertex = create_action_vertex();
@@ -224,6 +240,26 @@ mod test {
                     .unwrap()[0]
                     .value
                     == true
+            )
+        }
+
+        #[test]
+        fn update_action_priority() {
+            let (datastore, action_id) = create_datastore_with_default_action();
+
+            let action_property_query =
+                create_property_query_for_vertex(action_id.clone(), "Priority");
+
+            let update_result =
+                update_action_vertex_priority(datastore, action_id.clone(), Priority::High)
+                    .unwrap();
+
+            assert!(
+                update_result
+                    .get_vertex_properties(action_property_query)
+                    .unwrap()[0]
+                    .value
+                    == 2
             )
         }
 
