@@ -21,10 +21,10 @@ impl ActionEditing for Action {
         return self;
     }
 
-    fn set_priority(self: &mut Self, priority_str: &str) -> Result<&mut Self, ParseError> {
-        self.priority = Priority::from_str(priority_str)?;
+    fn set_priority(self: &mut Self, new_priority: Priority) -> &mut Self {
+        self.priority = new_priority;
 
-        Ok(self)
+        return self;
     }
 
     fn set_completion_status(self: &mut Self, desired_status: bool) -> &mut Self {
@@ -133,7 +133,7 @@ mod test {
     fn update_action_priority() {
         let mut test_action = ActionBuilder::default().build();
 
-        test_action.set_priority("Critical").unwrap();
+        test_action.set_priority(Priority::Critical);
 
         assert!(test_action.priority == Priority::Critical)
     }

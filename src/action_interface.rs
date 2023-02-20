@@ -3,7 +3,7 @@ use strum::ParseError;
 
 pub trait ActionEditing {
     fn set_name(&mut self, name: &str) -> &mut Self;
-    fn set_priority(&mut self, priority_str: &str) -> Result<&mut Self, ParseError>;
+    fn set_priority(&mut self, priority_str: Priority) -> &mut Self;
     fn set_completion_status(&mut self, desired_completion_status: bool) -> &mut Self;
 }
 

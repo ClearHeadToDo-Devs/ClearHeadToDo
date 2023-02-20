@@ -19,10 +19,10 @@ impl ActionEditing for ActionBuilder {
         return self;
     }
 
-    fn set_priority(self: &mut Self, priority_str: &str) -> Result<&mut Self, ParseError> {
-        self.priority = Priority::from_str(priority_str)?;
+    fn set_priority(self: &mut Self, priority: Priority) -> &mut Self {
+        self.priority = priority;
 
-        Ok(self)
+        return self;
     }
 
     fn set_completion_status(self: &mut Self, desired_status: bool) -> &mut Self {
@@ -50,8 +50,7 @@ impl ActionBuilder {
     pub fn build(self: &Self) -> Action {
         return Action::default()
             .set_name(&self.name)
-            .set_priority(&self.priority.to_string())
-            .unwrap()
+            .set_priority(self.priority)
             .set_completion_status(self.completed)
             .to_owned();
     }
@@ -95,18 +94,9 @@ mod builder {
     fn update_builder_priority() {
         let mut test_builder = ActionBuilder::default();
 
-        test_builder.set_priority("Optional").unwrap();
+        test_builder.set_priority(Priority::Optional);
 
         assert!(test_builder.priority == Priority::Optional);
-    }
-
-    #[test]
-    fn failed_update_builder_priority() {
-        let mut test_builder = ActionBuilder::default();
-
-        let failure_message = test_builder.set_priority("Bad Priority").unwrap_err();
-
-        assert!(failure_message == ParseError::VariantNotFound);
     }
 
     #[test]
@@ -149,8 +139,7 @@ mod builder {
         let custom_action = test_builder
             .set_completion_status(true)
             .set_name("Custom Action")
-            .set_priority("Critical")
-            .unwrap()
+            .set_priority(Priority::Critical)
             .build();
 
         assert!(
