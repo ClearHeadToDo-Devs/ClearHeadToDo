@@ -35,6 +35,8 @@ pub fn get_action_by_id(datastore: MemoryDatastore, action_id: Uuid) -> Action {
     ActionBuilder::default()
         .set_name(extracted_action[0].props[1].value.as_str().unwrap())
         .set_completion_status(extracted_action[0].props[0].value.as_bool().unwrap())
+        //.set_priority(extracted_action[0].props[2].value.as_str().unwrap())
+        //.unwrap()
         .build()
 }
 
