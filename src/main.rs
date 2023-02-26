@@ -7,9 +7,11 @@ use action_interface::*;
 mod file_management;
 pub mod priority;
 mod relationship;
+use relationship::*;
 
 pub mod graph_storage;
 use graph_storage::*;
+use uuid::Uuid;
 
 use clap::{Parser, Subcommand};
 
@@ -31,6 +33,20 @@ enum Commands {
         completed: Option<bool>,
     },
     List,
+}
+
+#[derive(Subcommand)]
+enum AddCommands {
+    Action {
+        name: Option<String>,
+        priority: Option<Priority>,
+        completed: Option<bool>,
+    },
+    Relationship {
+        source: Uuid,
+        target: Uuid,
+        variant: String,
+    },
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

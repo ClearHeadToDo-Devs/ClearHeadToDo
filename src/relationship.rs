@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use uuid::Uuid;
 
 use indradb;
@@ -50,11 +52,24 @@ impl From<indradb::EdgeKey> for Relationship {
     }
 }
 
-#[derive(PartialEq, Clone)]
-enum RelationshipVariant {
+#[derive(PartialEq, Clone, Debug)]
+pub enum RelationshipVariant {
     Parental = 1,
     Sequential = 2,
     Related = 3,
+}
+
+impl FromStr for RelationshipVariant {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "parental" | "p" | "1" => Ok(Self::Parental),
+            "sequential" | "s" | "2" => Ok(Self::Sequential),
+            "related" => Ok(Self::Related),
+            _ => Err(()),
+        }
+    }
 }
 
 impl Default for RelationshipVariant {
