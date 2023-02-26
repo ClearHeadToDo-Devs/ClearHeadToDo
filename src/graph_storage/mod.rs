@@ -12,6 +12,8 @@ use uuid::Uuid;
 use crate::action::Action;
 use crate::action_interface::{ActionEditing, ActionViewing};
 
+pub mod file_management;
+
 pub fn update_action_vertex_name(
     datastore: MemoryDatastore,
     action_id: Uuid,

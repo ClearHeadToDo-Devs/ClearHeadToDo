@@ -4,9 +4,9 @@ mod action_builder;
 use action_builder::*;
 mod action_interface;
 use action_interface::*;
-mod file_management;
 pub mod priority;
 mod relationship;
+use indradb::MemoryDatastore;
 use relationship::*;
 
 pub mod graph_storage;
@@ -54,6 +54,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut action_list: Vec<Action> = vec![];
 
+    let mut datastore: MemoryDatastore = MemoryDatastore::default();
+
     match &cli.command {
         Commands::Add {
             name,
@@ -70,9 +72,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .set_completion_status(completion_status)
                 .build();
 
-            println!("Created {:?}", &new_action);
+            let add_result = add_action_to_datastore(new_action.clone(), datastore);
 
-            action_list.push(new_action);
+            println!("Created {:?}", &new_action);
 
             Ok(())
         }
