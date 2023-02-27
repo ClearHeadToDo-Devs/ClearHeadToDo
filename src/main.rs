@@ -78,9 +78,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let mut builder = ActionBuilder::default();
 
                 let new_action = builder
+                    .set_completion_status(vertex.props[0].value.as_bool().unwrap())
                     .set_name(vertex.props[1].value.as_str().unwrap())
                     .set_priority(vertex.props[2].value.as_u64().unwrap().into())
-                    .set_completion_status(vertex.props[0].value.as_bool().unwrap())
+                    .set_id(vertex.vertex.id)
                     .build();
 
                 action_list.push(new_action);
