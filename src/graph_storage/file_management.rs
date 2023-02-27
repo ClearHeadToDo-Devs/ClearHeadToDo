@@ -10,10 +10,10 @@ use xdg::*;
 
 use std::io::Error;
 
-fn get_clearhead_database_path() -> PathBuf {
+fn get_clearhead_database_path(file_name: &str) -> PathBuf {
     let clearhead_directories = get_clearhead_base_directories().unwrap();
 
-    return clearhead_directories.get_data_home().join("clearhead.db");
+    return clearhead_directories.get_data_home().join(file_name);
 }
 fn get_clearhead_base_directories() -> Result<BaseDirectories, BaseDirectoriesError> {
     let clearhead_directories = BaseDirectories::with_prefix("clearhead")?;
@@ -28,8 +28,17 @@ mod test {
     use super::*;
 
     #[test]
+    fn read_empty_data_store() {
+        let path = get_clearhead_database_path("test.db");
+
+        let datastore: MemoryDatastore = MemoryDatastore::read_msgpack(path).unwrap();
+
+        assert!(datastore.sync().is_ok())
+    }
+
+    #[test]
     fn create_empty_datastore() {
-        let path = get_clearhead_database_path();
+        let path = get_clearhead_database_path("test.db");
 
         let datastore: MemoryDatastore = MemoryDatastore::create_msgpack(path).unwrap();
 
@@ -38,20 +47,9 @@ mod test {
 
     #[test]
     fn get_datastore_location() {
-        let path = get_clearhead_database_path();
+        let path = get_clearhead_database_path("test.db");
 
-        assert!(path.to_str().unwrap().contains("clearhead.db"));
-    }
-
-    #[test]
-    fn create_test_data_file() {
-        let directory = get_clearhead_base_directories().unwrap().get_data_home();
-
-        let test_file = File::create(directory.join("test.txt"))
-            .unwrap()
-            .write("test content".as_bytes());
-
-        assert!(test_file.is_ok())
+        assert!(path.to_str().unwrap().contains("test.db"));
     }
 
     #[test]
