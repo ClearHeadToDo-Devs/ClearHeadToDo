@@ -1,14 +1,19 @@
-use crate::Action;
-
-use std::io::Write;
 use std::path::PathBuf;
-use std::{fs::File, path::Path};
 
-use serde::{Deserialize, Serialize};
-use serde_json::to_writer_pretty;
+use indradb::MemoryDatastore;
 use xdg::*;
 
-use std::io::Error;
+pub fn get_clearhead_datastore() -> MemoryDatastore {
+    let path = get_clearhead_database_path("clearhead.db");
+
+    match MemoryDatastore::read_msgpack(path.clone()) {
+        Ok(datastore) => datastore,
+        Err(_) => {
+            let datastore = MemoryDatastore::create_msgpack(path).unwrap();
+            datastore
+        }
+    }
+}
 
 fn get_clearhead_database_path(file_name: &str) -> PathBuf {
     let clearhead_directories = get_clearhead_base_directories().unwrap();
