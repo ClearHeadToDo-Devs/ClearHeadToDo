@@ -10,7 +10,8 @@ use indradb::{Datastore, MemoryDatastore, RangeVertexQuery, SpecificVertexQuery}
 use relationship::*;
 
 pub mod graph_storage;
-use graph_storage::{file_management::get_clearhead_datastore, *};
+use graph_storage::file_management::*;
+use graph_storage::*;
 use uuid::Uuid;
 
 use clap::{Parser, Subcommand};
@@ -59,7 +60,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .build();
 
             let (updated_datastore, action_uuid) =
-                add_action_to_datastore(new_action.clone(), datastore).unwrap();
+                add_action_to_datastore(new_action.clone(), datastore)?;
 
             updated_datastore.sync().unwrap();
 
@@ -68,9 +69,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(())
         }
         Commands::List => {
-            datastore
-                .get_vertices(RangeVertexQuery::new().into())
-                .unwrap();
+            let property_list =
+                datastore.get_all_vertex_properties(RangeVertexQuery::new().into())?;
+
+            let mut action_list: Vec<Action> = vec![];
+
+            for vertex in property_list {
+                let mut builder = ActionBuilder::default();
+
+                let new_action = builder
+                    .set_name(vertex.props[1].value.as_str().unwrap())
+                    .set_priority(vertex.props[2].value.as_u64().unwrap().into())
+                    .set_completion_status(vertex.props[0].value.as_bool().unwrap())
+                    .build();
+
+                action_list.push(new_action);
+            }
+
+            for action in action_list {
+                println!("{:?}", action);
+            }
 
             Ok(())
         }

@@ -1,6 +1,7 @@
 use crate::action_interface::*;
 use crate::priority::Priority;
 use crate::Action;
+use uuid::Uuid;
 
 use std::str::FromStr;
 use strum::ParseError;
@@ -10,6 +11,7 @@ pub struct ActionBuilder {
     pub name: String,
     pub completed: bool,
     pub priority: Priority,
+    pub id: Uuid,
 }
 
 impl ActionEditing for ActionBuilder {
@@ -27,6 +29,12 @@ impl ActionEditing for ActionBuilder {
 
     fn set_completion_status(self: &mut Self, desired_status: bool) -> &mut Self {
         self.completed = desired_status;
+
+        return self;
+    }
+
+    fn set_id(&mut self, id: uuid::Uuid) -> &mut Self {
+        self.id = id;
 
         return self;
     }
@@ -52,6 +60,7 @@ impl ActionBuilder {
             .set_name(&self.name)
             .set_priority(self.priority)
             .set_completion_status(self.completed)
+            .set_id(self.id)
             .to_owned();
     }
 }
@@ -62,6 +71,7 @@ impl Default for ActionBuilder {
             name: "Default Action".to_string(),
             completed: false,
             priority: Priority::Optional,
+            id: Uuid::new_v4(),
         }
     }
 }
@@ -124,10 +134,11 @@ mod builder {
 
     #[test]
     fn create_multiple_actions_from_builder() {
-        let test_builder = ActionBuilder::default();
+        let test_builder_1 = ActionBuilder::default();
+        let test_builder_2 = ActionBuilder::default();
 
-        let action_1 = test_builder.build();
-        let action_2 = test_builder.build();
+        let action_1 = test_builder_1.build();
+        let action_2 = test_builder_2.build();
 
         assert!(action_1.id != action_2.id)
     }

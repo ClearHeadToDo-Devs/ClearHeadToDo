@@ -10,6 +10,7 @@ use std::error::Error;
 use uuid::Uuid;
 
 use crate::action::Action;
+use crate::action_builder::ActionBuilder;
 use crate::action_interface::{ActionEditing, ActionViewing};
 
 pub fn update_action_vertex_name(

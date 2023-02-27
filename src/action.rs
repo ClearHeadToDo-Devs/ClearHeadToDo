@@ -32,6 +32,12 @@ impl ActionEditing for Action {
 
         return self;
     }
+
+    fn set_id(&mut self, id: Uuid) -> &mut Self {
+        self.id = id;
+
+        return self;
+    }
 }
 
 impl ActionViewing for Action {
