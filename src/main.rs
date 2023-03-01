@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut action_list: Vec<Action> = vec![];
 
-    let mut datastore: MemoryDatastore = get_clearhead_datastore();
+    let mut datastore: MemoryDatastore = get_clearhead_datastore("clearhead.db");
 
     match &cli.command {
         Commands::Add {

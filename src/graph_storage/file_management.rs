@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use indradb::MemoryDatastore;
 use xdg::*;
 
-pub fn get_clearhead_datastore() -> MemoryDatastore {
-    let path = get_clearhead_database_path("clearhead.db");
+pub fn get_clearhead_datastore(datastore_name: &str) -> MemoryDatastore {
+    let path = get_clearhead_database_path(datastore_name);
 
     match MemoryDatastore::read_msgpack(path.clone()) {
         Ok(datastore) => datastore,
@@ -33,19 +33,15 @@ mod test {
     use super::*;
 
     #[test]
-    fn read_empty_data_store() {
-        let path = get_clearhead_database_path("test.db");
-
-        let datastore: MemoryDatastore = MemoryDatastore::read_msgpack(path).unwrap();
+    fn create_empty_datastore() {
+        let datastore: MemoryDatastore = get_clearhead_datastore("read_write.db");
 
         assert!(datastore.sync().is_ok())
     }
 
     #[test]
-    fn create_empty_datastore() {
-        let path = get_clearhead_database_path("test.db");
-
-        let datastore: MemoryDatastore = MemoryDatastore::create_msgpack(path).unwrap();
+    fn read_empty_data_store() {
+        let datastore: MemoryDatastore = get_clearhead_datastore("test_read.db");
 
         assert!(datastore.sync().is_ok())
     }
