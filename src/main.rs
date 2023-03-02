@@ -5,14 +5,13 @@ use action_builder::*;
 mod action_interface;
 use action_interface::*;
 pub mod priority;
+
 mod relationship;
-use indradb::{Datastore, MemoryDatastore, RangeVertexQuery, SpecificVertexQuery};
-use relationship::*;
+use indradb::{Datastore, MemoryDatastore, RangeVertexQuery};
 
 pub mod graph_storage;
 use graph_storage::file_management::*;
 use graph_storage::*;
-use uuid::Uuid;
 
 use clap::{Parser, Subcommand};
 
@@ -39,9 +38,7 @@ enum Commands {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
-    let mut action_list: Vec<Action> = vec![];
-
-    let mut datastore: MemoryDatastore = get_clearhead_datastore("clearhead.db");
+    let datastore: MemoryDatastore = get_clearhead_datastore("clearhead.db");
 
     match &cli.command {
         Commands::Add {
@@ -59,8 +56,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .set_completion_status(completion_status)
                 .build();
 
-            let (updated_datastore, action_uuid) =
-                add_action_to_datastore(new_action.clone(), datastore)?;
+            let (updated_datastore, _) = add_action_to_datastore(new_action.clone(), datastore)?;
 
             updated_datastore.sync().unwrap();
 
