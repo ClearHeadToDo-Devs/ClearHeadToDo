@@ -40,7 +40,18 @@ enum Commands {
 
 #[derive(Subcommand)]
 enum ActionUpdate {
-    Name { index: usize, new_name: String },
+    Name {
+        index: usize,
+        new_name: String,
+    },
+    Priority {
+        index: usize,
+        new_priority: Priority,
+    },
+    Completed {
+        index: usize,
+        new_completion_status: bool,
+    },
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -80,6 +91,40 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let action_list = get_all_actions_from_datastore(&datastore);
                 let updated_datastore =
                     update_action_vertex_name(datastore, action_list[id - 1].get_id(), new_name)?;
+
+                updated_datastore.sync().unwrap();
+
+                println!("Updated {:?}", action_list[id - 1]);
+
+                Ok(())
+            }
+            &ActionUpdate::Priority {
+                index: id,
+                new_priority,
+            } => {
+                let action_list = get_all_actions_from_datastore(&datastore);
+                let updated_datastore = update_action_vertex_priority(
+                    datastore,
+                    action_list[id - 1].get_id(),
+                    new_priority,
+                )?;
+
+                updated_datastore.sync().unwrap();
+
+                println!("Updated {:?}", action_list[id - 1]);
+
+                Ok(())
+            }
+            &ActionUpdate::Completed {
+                index: id,
+                new_completion_status,
+            } => {
+                let action_list = get_all_actions_from_datastore(&datastore);
+                let updated_datastore = update_action_vertex_completion_status(
+                    datastore,
+                    action_list[id - 1].get_id(),
+                    new_completion_status,
+                )?;
 
                 updated_datastore.sync().unwrap();
 
