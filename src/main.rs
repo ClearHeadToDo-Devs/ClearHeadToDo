@@ -1,6 +1,8 @@
 mod action;
 
 use action::*;
+
+use uuid::Uuid;
 mod action_builder;
 use action_builder::*;
 mod action_interface;
@@ -15,9 +17,12 @@ use file_management::*;
 use graph_storage::*;
 
 use clap::{Parser, Subcommand};
-use indradb::{Datastore, MemoryDatastore};
+use indradb::{Datastore, EdgeKey, MemoryDatastore};
 
 use crate::priority::Priority;
+
+use std::str::FromStr;
+use strum_macros::*;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -42,6 +47,11 @@ enum AddTypes {
         name: Option<String>,
         priority: Option<Priority>,
         completed: Option<bool>,
+    },
+    Relationship {
+        source: usize,
+        target: usize,
+        variant: Option<String>,
     },
 }
 
@@ -90,6 +100,36 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 println!("Created {:?}", &new_action);
 
+                Ok(())
+            }
+            AddTypes::Relationship {
+                variant,
+                source,
+                target,
+            } => {
+                let action_list = get_all_actions_from_datastore(&datastore);
+
+                let variant_string = variant.clone().unwrap_or("".to_string());
+
+                let rel_variant: RelationshipVariant =
+                    RelationshipVariant::from_str(&variant_string)
+                        .unwrap_or(RelationshipVariant::default());
+
+                let new_relationship = Relationship::new(
+                    Uuid::nil(),
+                    Some(rel_variant),
+                    action_list[*target].get_id(),
+                    action_list[*source].get_id(),
+                );
+
+                let edge_key: EdgeKey = new_relationship.clone().into();
+
+                match datastore.create_edge(&edge_key) {
+                    Ok(_) => println!("Created {:?}", &new_relationship),
+                    Err(e) => println!("Error: {:?}", e),
+                }
+
+                datastore.sync().unwrap();
                 Ok(())
             }
         },

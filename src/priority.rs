@@ -1,7 +1,4 @@
-use strum::*;
 use strum_macros::*;
-
-use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
@@ -18,6 +15,8 @@ pub enum Priority {
 mod priority {
     use super::*;
     use serde_test::*;
+    use std::str::FromStr;
+    use strum::*;
 
     #[test]
     fn create_priority_from_string() {

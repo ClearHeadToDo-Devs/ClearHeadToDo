@@ -1,10 +1,9 @@
-use std::str::FromStr;
-
 use uuid::Uuid;
 
 use indradb;
+use strum_macros::*;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Relationship {
     id: Uuid,
     variant: RelationshipVariant,
@@ -13,7 +12,7 @@ pub struct Relationship {
 }
 
 impl Relationship {
-    fn new(id: Uuid, variant: Option<RelationshipVariant>, target: Uuid, source: Uuid) -> Self {
+    pub fn new(id: Uuid, variant: Option<RelationshipVariant>, target: Uuid, source: Uuid) -> Self {
         match variant {
             Some(variant) => Self {
                 id,
@@ -52,24 +51,11 @@ impl From<indradb::EdgeKey> for Relationship {
     }
 }
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Debug, EnumString)]
 pub enum RelationshipVariant {
     Parental = 1,
     Sequential = 2,
     Related = 3,
-}
-
-impl FromStr for RelationshipVariant {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "parental" | "p" | "1" => Ok(Self::Parental),
-            "sequential" | "s" | "2" => Ok(Self::Sequential),
-            "related" => Ok(Self::Related),
-            _ => Err(()),
-        }
-    }
 }
 
 impl Default for RelationshipVariant {
