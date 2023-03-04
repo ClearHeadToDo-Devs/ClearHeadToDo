@@ -214,11 +214,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 )
                                 .unwrap();
 
-                            for edge in edge_list {
-                                println!("{:?}", edge.key)
+                            for edge in edge_list.clone() {
+                                println!(
+                                    "  {}. {}, {:?}",
+                                    edge_list.iter().position(|a| a == &edge).unwrap() + 1,
+                                    edge.key.t.as_str(),
+                                    edge.key
+                                )
                             }
-
-                            println!("a thing")
                         }
                     }
                 }
