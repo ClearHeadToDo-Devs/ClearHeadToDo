@@ -1,6 +1,7 @@
 use crate::action_builder::ActionBuilder;
 use crate::priority::Priority;
 use core::str::FromStr;
+use indradb::RangeVertexQuery;
 use indradb::{
     Datastore, Identifier, MemoryDatastore, NamedProperty, SpecificVertexQuery, Vertex,
     VertexProperties, VertexPropertyQuery, VertexQuery,
@@ -13,6 +14,28 @@ use crate::action::Action;
 use crate::action_interface::{ActionEditing, ActionViewing};
 
 pub mod file_management;
+
+pub fn get_all_actions_from_datastore(datastore: &MemoryDatastore) -> Vec<Action> {
+    let property_list = datastore
+        .get_all_vertex_properties(RangeVertexQuery::new().into())
+        .unwrap();
+
+    let mut action_list: Vec<Action> = vec![];
+
+    for vertex in property_list {
+        let mut builder = ActionBuilder::default();
+
+        let new_action = builder
+            .set_completion_status(vertex.props[0].value.as_bool().unwrap())
+            .set_name(vertex.props[1].value.as_str().unwrap())
+            .set_priority(vertex.props[2].value.as_u64().unwrap().into())
+            .set_id(vertex.vertex.id)
+            .build();
+
+        action_list.push(new_action);
+    }
+    return action_list;
+}
 
 pub fn update_action_vertex_name(
     datastore: MemoryDatastore,

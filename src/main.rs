@@ -1,4 +1,5 @@
 mod action;
+
 use action::*;
 mod action_builder;
 use action_builder::*;
@@ -7,10 +8,10 @@ use action_interface::*;
 pub mod priority;
 
 mod relationship;
-use indradb::{Datastore, MemoryDatastore, RangeVertexQuery};
+use indradb::{Datastore, MemoryDatastore};
 
-pub mod graph_storage;
-use graph_storage::file_management::*;
+mod graph_storage;
+use file_management::*;
 use graph_storage::*;
 
 use clap::{Parser, Subcommand};
@@ -33,6 +34,13 @@ enum Commands {
         completed: Option<bool>,
     },
     List,
+    #[command(subcommand)]
+    Update(ActionUpdate),
+}
+
+#[derive(Subcommand)]
+enum ActionUpdate {
+    Name { index: usize, new_name: String },
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -64,27 +72,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             Ok(())
         }
-        Commands::List => {
-            let property_list =
-                datastore.get_all_vertex_properties(RangeVertexQuery::new().into())?;
+        Commands::Update(update) => match update {
+            ActionUpdate::Name {
+                index: id,
+                new_name,
+            } => {
+                let action_list = get_all_actions_from_datastore(&datastore);
+                let updated_datastore =
+                    update_action_vertex_name(datastore, action_list[id - 1].get_id(), new_name)?;
 
-            let mut action_list: Vec<Action> = vec![];
+                updated_datastore.sync().unwrap();
 
-            for vertex in property_list {
-                let mut builder = ActionBuilder::default();
+                println!("Updated {:?}", action_list[id - 1]);
 
-                let new_action = builder
-                    .set_completion_status(vertex.props[0].value.as_bool().unwrap())
-                    .set_name(vertex.props[1].value.as_str().unwrap())
-                    .set_priority(vertex.props[2].value.as_u64().unwrap().into())
-                    .set_id(vertex.vertex.id)
-                    .build();
-
-                action_list.push(new_action);
+                Ok(())
             }
+        },
 
-            for action in action_list {
-                println!("{:?}", action);
+        Commands::List => {
+            let action_list: Vec<Action> = get_all_actions_from_datastore(&datastore);
+
+            for action in action_list.clone() {
+                println!(
+                    "{}. {}, Priority: {}, Completed: {}",
+                    action_list.iter().position(|a| a == &action).unwrap() + 1,
+                    action.get_name(),
+                    action.get_priority(),
+                    action.get_completion_status()
+                );
             }
 
             Ok(())
