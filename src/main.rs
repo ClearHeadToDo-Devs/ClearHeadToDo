@@ -17,12 +17,11 @@ use file_management::*;
 use graph_storage::*;
 
 use clap::{Parser, Subcommand};
-use indradb::{Datastore, EdgeKey, MemoryDatastore};
+use indradb::{Datastore, EdgeKey, MemoryDatastore, SpecificEdgeQuery};
 
 use crate::priority::Priority;
 
 use std::str::FromStr;
-use strum_macros::*;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -36,7 +35,9 @@ struct Cli {
 enum Commands {
     #[command(subcommand)]
     Add(AddTypes),
-    List,
+    List {
+        full: bool,
+    },
     #[command(subcommand)]
     Update(ActionUpdate),
 }
@@ -184,18 +185,40 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         },
 
-        Commands::List => {
+        Commands::List { full } => {
             let action_list: Vec<Action> = get_all_actions_from_datastore(&datastore);
 
-            for action in action_list.clone() {
-                println!(
-                    "{}. {}, Priority: {}, Completed: {}",
-                    action_list.iter().position(|a| a == &action).unwrap() + 1,
-                    action.get_name(),
-                    action.get_priority(),
-                    action.get_completion_status()
-                );
-            }
+            match full {
+                true => {
+                    for action in action_list.clone() {
+                        println!(
+                            "{}. {}, Priority: {}, Completed: {}",
+                            action_list.iter().position(|a| a == &action).unwrap() + 1,
+                            action.get_name(),
+                            action.get_priority(),
+                            action.get_completion_status()
+                        );
+                        if datastore
+                            .get_edge_count(action.get_id(), None, indradb::EdgeDirection::Outbound)
+                            .unwrap()
+                            > 0
+                        {
+                            println!("a thing")
+                        }
+                    }
+                }
+                false => {
+                    for action in action_list.clone() {
+                        println!(
+                            "{}. {}, Priority: {}, Completed: {}",
+                            action_list.iter().position(|a| a == &action).unwrap() + 1,
+                            action.get_name(),
+                            action.get_priority(),
+                            action.get_completion_status()
+                        );
+                    }
+                }
+            };
 
             Ok(())
         }
