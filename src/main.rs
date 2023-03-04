@@ -215,16 +215,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 .unwrap();
 
                             for edge in edge_list.clone() {
-                                println!(
-                                    "  {}. {}, {:?}",
-                                    edge_list.iter().position(|a| a == &edge).unwrap() + 1,
-                                    edge.key.t.as_str(),
+                                let related_action = Action::from(
                                     datastore
                                         .get_all_vertex_properties(
-                                            SpecificVertexQuery::single(edge.key.outbound_id)
-                                                .into()
+                                            SpecificVertexQuery::single(edge.key.inbound_id).into(),
                                         )
                                         .unwrap()[0]
+                                        .clone(),
+                                );
+                                println!("Relationships:");
+                                println!(
+                                    "  {}. {}, {}, Priority: {}",
+                                    edge_list.iter().position(|a| a == &edge).unwrap() + 1,
+                                    edge.key.t.as_str(),
+                                    related_action.get_name(),
+                                    related_action.get_priority().to_string()
                                 )
                             }
                         }
