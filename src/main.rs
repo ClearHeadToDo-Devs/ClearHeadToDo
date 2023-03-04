@@ -17,7 +17,9 @@ use file_management::*;
 use graph_storage::*;
 
 use clap::{Parser, Subcommand};
-use indradb::{Datastore, EdgeKey, MemoryDatastore, SpecificEdgeQuery};
+use indradb::{
+    Datastore, EdgeKey, MemoryDatastore, SpecificEdgeQuery, SpecificVertexQuery, VertexQueryExt,
+};
 
 use crate::priority::Priority;
 
@@ -36,6 +38,7 @@ enum Commands {
     #[command(subcommand)]
     Add(AddTypes),
     List {
+        #[arg(short, long)]
         full: bool,
     },
     #[command(subcommand)]
@@ -203,6 +206,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             .unwrap()
                             > 0
                         {
+                            let edge_list = datastore
+                                .get_edges(
+                                    SpecificVertexQuery::single(action.get_id())
+                                        .outbound()
+                                        .into(),
+                                )
+                                .unwrap();
+
+                            for edge in edge_list {
+                                println!("{:?}", edge.key)
+                            }
+
                             println!("a thing")
                         }
                     }
