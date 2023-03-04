@@ -8,13 +8,14 @@ use action_interface::*;
 pub mod priority;
 
 mod relationship;
-use indradb::{Datastore, MemoryDatastore};
+use relationship::*;
 
 mod graph_storage;
 use file_management::*;
 use graph_storage::*;
 
 use clap::{Parser, Subcommand};
+use indradb::{Datastore, MemoryDatastore};
 
 use crate::priority::Priority;
 
@@ -28,14 +29,20 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Add {
+    #[command(subcommand)]
+    Add(AddTypes),
+    List,
+    #[command(subcommand)]
+    Update(ActionUpdate),
+}
+
+#[derive(Subcommand)]
+enum AddTypes {
+    Action {
         name: Option<String>,
         priority: Option<Priority>,
         completed: Option<bool>,
     },
-    List,
-    #[command(subcommand)]
-    Update(ActionUpdate),
 }
 
 #[derive(Subcommand)]
@@ -60,29 +67,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let datastore: MemoryDatastore = get_clearhead_datastore("clearhead.db");
 
     match &cli.command {
-        Commands::Add {
-            name,
-            priority,
-            completed,
-        } => {
-            let new_name = name.clone().unwrap();
-            let new_priority = priority.clone().unwrap_or(Priority::Optional);
-            let completion_status = completed.unwrap_or(false);
+        Commands::Add(add) => match add {
+            AddTypes::Action {
+                name,
+                priority,
+                completed,
+            } => {
+                let new_name = name.clone().unwrap();
+                let new_priority = priority.clone().unwrap_or(Priority::Optional);
+                let completion_status = completed.unwrap_or(false);
 
-            let new_action = ActionBuilder::default()
-                .set_name(&new_name)
-                .set_priority(new_priority)
-                .set_completion_status(completion_status)
-                .build();
+                let new_action = ActionBuilder::default()
+                    .set_name(&new_name)
+                    .set_priority(new_priority)
+                    .set_completion_status(completion_status)
+                    .build();
 
-            let (updated_datastore, _) = add_action_to_datastore(new_action.clone(), datastore)?;
+                let (updated_datastore, _) =
+                    add_action_to_datastore(new_action.clone(), datastore)?;
 
-            updated_datastore.sync().unwrap();
+                updated_datastore.sync().unwrap();
 
-            println!("Created {:?}", &new_action);
+                println!("Created {:?}", &new_action);
 
-            Ok(())
-        }
+                Ok(())
+            }
+        },
         Commands::Update(update) => match update {
             ActionUpdate::Name {
                 index: id,
