@@ -219,7 +219,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     "  {}. {}, {:?}",
                                     edge_list.iter().position(|a| a == &edge).unwrap() + 1,
                                     edge.key.t.as_str(),
-                                    edge.key
+                                    datastore
+                                        .get_all_vertex_properties(
+                                            SpecificVertexQuery::single(edge.key.outbound_id)
+                                                .into()
+                                        )
+                                        .unwrap()[0]
                                 )
                             }
                         }

@@ -100,6 +100,19 @@ impl From<Action> for VertexProperties {
     }
 }
 
+impl From<VertexProperties> for Action {
+    fn from(value: VertexProperties) -> Self {
+        let mut builder = ActionBuilder::default();
+
+        builder
+            .set_name(value.props[1].value.as_str().unwrap())
+            .set_completion_status(value.props[0].value.as_bool().unwrap())
+            .set_priority(value.props[2].value.as_u64().unwrap().into())
+            .set_id(value.vertex.id)
+            .build()
+    }
+}
+
 pub fn get_action_by_id(datastore: MemoryDatastore, action_id: Uuid) -> Action {
     let extracted_action = datastore
         .get_all_vertex_properties(SpecificVertexQuery::single(action_id).into())
