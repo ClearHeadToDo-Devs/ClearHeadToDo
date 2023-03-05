@@ -1,5 +1,5 @@
-use crate::action_builder::ActionBuilder;
-use crate::priority::Priority;
+use crate::ActionBuilder;
+use crate::Priority;
 use core::str::FromStr;
 use indradb::RangeVertexQuery;
 use indradb::{
@@ -11,7 +11,7 @@ use std::error::Error;
 use uuid::Uuid;
 
 use crate::action::Action;
-use crate::action_interface::{ActionEditing, ActionViewing};
+use crate::{ActionEditing, ActionViewing};
 
 pub mod file_management;
 
@@ -218,7 +218,7 @@ mod test {
 
     use indradb::{MemoryDatastore, SpecificVertexQuery};
 
-    use crate::{action::Action, priority::Priority};
+    use crate::{action::Action, Priority};
 
     use super::*;
 

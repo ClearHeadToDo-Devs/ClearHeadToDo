@@ -1,13 +1,10 @@
 mod action;
-
-use action::*;
+use action::builder::*;
+use action::interface::*;
+use action::priority::*;
+use action::Action;
 
 use uuid::Uuid;
-mod action_builder;
-use action_builder::*;
-mod action_interface;
-use action_interface::*;
-pub mod priority;
 
 mod relationship;
 use relationship::*;
@@ -20,8 +17,6 @@ use clap::{Parser, Subcommand};
 use indradb::{
     Datastore, EdgeKey, MemoryDatastore, SpecificEdgeQuery, SpecificVertexQuery, VertexQueryExt,
 };
-
-use crate::priority::Priority;
 
 use std::str::FromStr;
 
@@ -71,6 +66,7 @@ enum ActionUpdate {
     },
     Completed {
         index: usize,
+        #[arg(short, long)]
         new_completion_status: bool,
     },
 }
