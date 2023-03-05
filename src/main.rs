@@ -1,3 +1,4 @@
+use clap::Parser;
 mod action;
 use action::builder::*;
 use action::interface::*;
@@ -13,63 +14,11 @@ mod graph_storage;
 use file_management::*;
 use graph_storage::*;
 
-use clap::{Parser, Subcommand};
-use indradb::{
-    Datastore, EdgeKey, MemoryDatastore, SpecificEdgeQuery, SpecificVertexQuery, VertexQueryExt,
-};
+use indradb::{Datastore, EdgeKey, MemoryDatastore, SpecificVertexQuery, VertexQueryExt};
 
+pub mod arg_parse;
+use arg_parse::*;
 use std::str::FromStr;
-
-#[derive(Parser)]
-#[command(author, version, about, long_about = None)]
-#[command(propagate_version = true)]
-struct Cli {
-    #[command(subcommand)]
-    command: Commands,
-}
-
-#[derive(Subcommand)]
-enum Commands {
-    #[command(subcommand)]
-    Add(AddTypes),
-    List {
-        #[arg(short, long)]
-        full: bool,
-    },
-    #[command(subcommand)]
-    Update(ActionUpdate),
-}
-
-#[derive(Subcommand)]
-enum AddTypes {
-    Action {
-        name: Option<String>,
-        priority: Option<Priority>,
-        completed: Option<bool>,
-    },
-    Relationship {
-        source: usize,
-        target: usize,
-        variant: Option<String>,
-    },
-}
-
-#[derive(Subcommand)]
-enum ActionUpdate {
-    Name {
-        index: usize,
-        new_name: String,
-    },
-    Priority {
-        index: usize,
-        new_priority: Priority,
-    },
-    Completed {
-        index: usize,
-        #[arg(short, long)]
-        new_completion_status: bool,
-    },
-}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
