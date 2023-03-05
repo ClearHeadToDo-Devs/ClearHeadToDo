@@ -21,9 +21,8 @@ use arg_parse::*;
 use std::str::FromStr;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let cli = Cli::parse();
-
     let datastore: MemoryDatastore = get_clearhead_datastore("clearhead.db");
+    let cli = Cli::parse();
 
     match &cli.command {
         Commands::Add(add) => match add {
@@ -32,12 +31,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 priority,
                 completed,
             } => {
-                let new_name = name.clone().unwrap();
+                let name = name.clone().unwrap();
                 let new_priority = priority.clone().unwrap_or(Priority::Optional);
                 let completion_status = completed.unwrap_or(false);
 
                 let new_action = ActionBuilder::default()
-                    .set_name(&new_name)
+                    .set_name(&name)
                     .set_priority(new_priority)
                     .set_completion_status(completion_status)
                     .build();
@@ -83,51 +82,51 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         },
         Commands::Update(update) => match update {
-            ActionUpdate::Name {
-                index: id,
-                new_name,
-            } => {
+            ActionUpdate::Name { index, new_name } => {
                 let action_list = get_all_actions_from_datastore(&datastore);
-                let updated_datastore =
-                    update_action_vertex_name(datastore, action_list[id - 1].get_id(), new_name)?;
+                let updated_datastore = update_action_vertex_name(
+                    datastore,
+                    action_list[index - 1].get_id(),
+                    new_name,
+                )?;
 
                 updated_datastore.sync().unwrap();
 
-                println!("Updated {:?}", action_list[id - 1]);
+                println!("Updated {:?}", action_list[index - 1]);
 
                 Ok(())
             }
             &ActionUpdate::Priority {
-                index: id,
+                index,
                 new_priority,
             } => {
                 let action_list = get_all_actions_from_datastore(&datastore);
                 let updated_datastore = update_action_vertex_priority(
                     datastore,
-                    action_list[id - 1].get_id(),
+                    action_list[index - 1].get_id(),
                     new_priority,
                 )?;
 
                 updated_datastore.sync().unwrap();
 
-                println!("Updated {:?}", action_list[id - 1]);
+                println!("Updated {:?}", action_list[index - 1]);
 
                 Ok(())
             }
             &ActionUpdate::Completed {
-                index: id,
+                index,
                 new_completion_status,
             } => {
                 let action_list = get_all_actions_from_datastore(&datastore);
                 let updated_datastore = update_action_vertex_completion_status(
                     datastore,
-                    action_list[id - 1].get_id(),
+                    action_list[index - 1].get_id(),
                     new_completion_status,
                 )?;
 
                 updated_datastore.sync().unwrap();
 
-                println!("Updated {:?}", action_list[id - 1]);
+                println!("Updated {:?}", action_list[index - 1]);
 
                 Ok(())
             }
