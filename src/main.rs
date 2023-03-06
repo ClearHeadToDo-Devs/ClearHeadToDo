@@ -18,6 +18,7 @@ use indradb::{Datastore, EdgeKey, MemoryDatastore, SpecificVertexQuery, VertexQu
 
 pub mod arg_parse;
 use arg_parse::*;
+use std::ops::Index;
 use std::str::FromStr;
 
 use petgraph::dot::Dot;
