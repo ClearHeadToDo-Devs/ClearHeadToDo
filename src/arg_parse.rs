@@ -12,17 +12,19 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Commands {
     #[command(subcommand)]
-    Add(AddTypes),
+    Add(AddCommands),
     List {
         #[arg(short, long)]
         full: bool,
     },
     #[command(subcommand)]
     Update(ActionUpdate),
+    #[command(subcommand)]
+    Delete(DeleteCommands),
 }
 
 #[derive(Subcommand)]
-pub enum AddTypes {
+pub enum AddCommands {
     Action {
         name: Option<String>,
         priority: Option<Priority>,
@@ -50,4 +52,9 @@ pub enum ActionUpdate {
         #[arg(short, long)]
         new_completion_status: bool,
     },
+}
+
+#[derive(Subcommand)]
+pub enum DeleteCommands {
+    Action { index: usize },
 }

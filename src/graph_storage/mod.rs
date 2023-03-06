@@ -148,6 +148,18 @@ pub fn add_action_to_datastore(
     Ok((datastore, action_id))
 }
 
+pub fn delete_action_from_datastore(
+    datastore: MemoryDatastore,
+    target_id: Uuid,
+) -> Result<MemoryDatastore, Box<dyn Error>> {
+    let delete_result = datastore.delete_vertices(SpecificVertexQuery::single(target_id).into());
+
+    match delete_result {
+        Ok(()) => Ok(datastore),
+        Err(_) => Err("Failed to delete action".into()),
+    }
+}
+
 pub fn create_name_property(value: &str) -> NamedProperty {
     let name_identifier = create_identifier("Name");
     let string_value = create_string_json_value(value);

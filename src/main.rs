@@ -20,13 +20,16 @@ pub mod arg_parse;
 use arg_parse::*;
 use std::str::FromStr;
 
+use petgraph::dot::{Config, Dot};
+use petgraph::Graph;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let datastore: MemoryDatastore = get_clearhead_datastore("clearhead.db");
     let cli = Cli::parse();
 
     match &cli.command {
         Commands::Add(add) => match add {
-            AddTypes::Action {
+            AddCommands::Action {
                 name,
                 priority,
                 completed,
@@ -50,7 +53,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 Ok(())
             }
-            AddTypes::Relationship {
+            AddCommands::Relationship {
                 variant,
                 source,
                 target,
@@ -137,7 +140,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             match full {
                 true => {
+                    let mut graph = Graph::<Action, RelationshipVariant>::new();
+
                     for action in action_list.clone() {
+                        let action_node = graph.add_node(action.clone());
                         println!(
                             "{}. {}, Priority: {}, Completed: {}",
                             action_list.iter().position(|a| a == &action).unwrap() + 1,
@@ -167,6 +173,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                         .unwrap()[0]
                                         .clone(),
                                 );
+                                let related_action_node = graph.add_node(related_action.clone());
+
+                                graph.add_edge(
+                                    action_node,
+                                    related_action_node,
+                                    RelationshipVariant::from_str(&edge.key.t.to_string()).unwrap(),
+                                );
+
                                 println!("Relationships:");
                                 println!(
                                     "  {}. {}, {}, Priority: {}",
@@ -178,6 +192,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             }
                         }
                     }
+                    println!("{:?}", Dot::with_config(&graph, &[]));
                 }
                 false => {
                     for action in action_list.clone() {
@@ -194,5 +209,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             Ok(())
         }
+        Commands::Delete(delete) => match delete {
+            DeleteCommands::Action { index } => {
+                let action_list = get_all_actions_from_datastore(&datastore);
+                let updated_datastore =
+                    delete_action_from_datastore(datastore, action_list[index - 1].get_id())?;
+
+                updated_datastore.sync().unwrap();
+
+                println!("Deleted {:?}", action_list[index - 1]);
+
+                Ok(())
+            }
+        },
     }
 }
