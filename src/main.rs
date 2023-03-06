@@ -20,8 +20,8 @@ pub mod arg_parse;
 use arg_parse::*;
 use std::str::FromStr;
 
-use petgraph::dot::{Config, Dot};
-use petgraph::Graph;
+use petgraph::dot::Dot;
+use petgraph::stable_graph::StableGraph;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let datastore: MemoryDatastore = get_clearhead_datastore("clearhead.db");
@@ -140,7 +140,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             match full {
                 true => {
-                    let mut graph = Graph::<Action, RelationshipVariant>::new();
+                    let mut graph = StableGraph::<Action, RelationshipVariant>::new();
 
                     for action in action_list.clone() {
                         let action_node = graph.add_node(action.clone());
@@ -173,6 +173,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                         .unwrap()[0]
                                         .clone(),
                                 );
+
                                 let related_action_node = graph.add_node(related_action.clone());
 
                                 graph.add_edge(
