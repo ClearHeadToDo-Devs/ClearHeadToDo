@@ -57,4 +57,5 @@ pub enum ActionUpdate {
 #[derive(Subcommand)]
 pub enum DeleteCommands {
     Action { index: usize },
+    Relationship { index_1: usize, index_2: usize },
 }

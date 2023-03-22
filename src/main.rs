@@ -5,6 +5,7 @@ use action::interface::*;
 use action::priority::*;
 use action::Action;
 
+use indradb::SpecificEdgeQuery;
 use uuid::Uuid;
 
 mod relationship;
@@ -18,7 +19,6 @@ use indradb::{Datastore, EdgeKey, MemoryDatastore, SpecificVertexQuery, VertexQu
 
 pub mod arg_parse;
 use arg_parse::*;
-use std::ops::Index;
 use std::str::FromStr;
 
 use petgraph::dot::Dot;
@@ -220,6 +220,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 updated_datastore.sync().unwrap();
 
                 println!("Deleted {:?}", action_list[index - 1]);
+
+                Ok(())
+            }
+            DeleteCommands::Relationship { index_1, index_2 } => {
+                let action_list = get_all_actions_from_datastore(&datastore);
+
+                let id_1 = action_list[index_1 - 1].get_id();
+                let id_2 = action_list[index_2 - 1].get_id();
+
+                let id_1_relationship_list = datastore
+                    .get_edges(SpecificVertexQuery::single(id_1).outbound().into())
+                    .unwrap();
+
+                let target_relationship = id_1_relationship_list
+                    .iter()
+                    .find(|relationship| relationship.key.inbound_id == id_2)
+                    .unwrap();
+
+                datastore
+                    .delete_edges(SpecificEdgeQuery::single(target_relationship.key.clone()).into())
+                    .unwrap();
 
                 Ok(())
             }
