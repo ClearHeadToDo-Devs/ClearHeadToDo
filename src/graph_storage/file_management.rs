@@ -1,7 +1,7 @@
-use std::path::PathBuf;
+use std::{io::ErrorKind, path::PathBuf};
 
+use dirs::*;
 use indradb::MemoryDatastore;
-use xdg::*;
 
 pub fn get_clearhead_datastore(datastore_name: &str) -> MemoryDatastore {
     let path = get_clearhead_database_path(datastore_name);
@@ -16,12 +16,16 @@ pub fn get_clearhead_datastore(datastore_name: &str) -> MemoryDatastore {
 }
 
 fn get_clearhead_database_path(file_name: &str) -> PathBuf {
-    let clearhead_directories = get_clearhead_base_directories().unwrap();
+    let clearhead_directories = get_or_create_clearhead_data_directory().unwrap();
 
-    return clearhead_directories.get_data_home().join(file_name);
+    return clearhead_directories.join(file_name);
 }
-fn get_clearhead_base_directories() -> Result<BaseDirectories, BaseDirectoriesError> {
-    let clearhead_directories = BaseDirectories::with_prefix("clearhead")?;
+fn get_or_create_clearhead_data_directory() -> Result<PathBuf, Box<dyn std::error::Error>> {
+    let clearhead_directories: PathBuf = data_dir()
+        .expect("Unable to return your data directory path for some reason")
+        .join("clearhead");
+
+    std::fs::create_dir_all(clearhead_directories.clone())?;
 
     Ok(clearhead_directories)
 }
@@ -55,12 +59,8 @@ mod test {
 
     #[test]
     fn return_clearhead_directory() {
-        let directory = get_clearhead_base_directories().unwrap();
+        let directory = get_or_create_clearhead_data_directory().unwrap();
 
-        assert!(directory
-            .get_data_home()
-            .to_str()
-            .unwrap()
-            .contains("clearhead"));
+        assert!(directory.to_str().unwrap().contains("clearhead"));
     }
 }
