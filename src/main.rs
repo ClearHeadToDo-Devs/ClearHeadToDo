@@ -21,5 +21,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let cli = Cli::parse();
 
-    parse_args(cli, datastore)
+    run_arg_commands(cli, datastore)
 }

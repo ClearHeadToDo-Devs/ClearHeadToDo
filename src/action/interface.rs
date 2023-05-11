@@ -12,4 +12,5 @@ pub trait ActionViewing {
     fn get_name(&self) -> &str;
     fn get_priority(&self) -> &Priority;
     fn get_completion_status(&self) -> bool;
+    fn get_id(&self) -> Uuid;
 }

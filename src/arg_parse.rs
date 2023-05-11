@@ -77,7 +77,10 @@ pub enum DeleteCommands {
     Relationship { index_1: usize, index_2: usize },
 }
 
-pub fn parse_args(cli: Cli, datastore: MemoryDatastore) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run_arg_commands(
+    cli: Cli,
+    datastore: MemoryDatastore,
+) -> Result<(), Box<dyn std::error::Error>> {
     match &cli.command {
         Commands::Add(add) => match add {
             AddCommands::Action {

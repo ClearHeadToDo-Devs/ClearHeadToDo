@@ -54,13 +54,13 @@ impl ActionViewing for Action {
     fn get_completion_status(&self) -> bool {
         self.completed
     }
-}
 
-impl Action {
-    pub fn get_id(self: &Self) -> Uuid {
+    fn get_id(self: &Self) -> Uuid {
         self.id
     }
 }
+
+impl Action {}
 
 impl Default for Action {
     fn default() -> Self {

@@ -50,6 +50,10 @@ impl ActionViewing for ActionBuilder {
     fn get_completion_status(&self) -> bool {
         self.completed
     }
+
+    fn get_id(&self) -> Uuid {
+        self.id
+    }
 }
 
 impl ActionBuilder {
