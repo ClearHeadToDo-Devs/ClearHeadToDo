@@ -14,6 +14,7 @@ use crate::action::Action;
 use crate::{ActionEditing, ActionViewing};
 
 pub mod file_management;
+pub mod graph_db_interface;
 
 pub fn get_all_actions_from_datastore(datastore: &MemoryDatastore) -> Vec<Action> {
     let property_list = datastore
