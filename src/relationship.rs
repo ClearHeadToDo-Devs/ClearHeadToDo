@@ -30,27 +30,6 @@ impl Relationship {
     }
 }
 
-impl From<Relationship> for indradb::EdgeKey {
-    fn from(relationship: Relationship) -> Self {
-        Self::new(
-            relationship.source,
-            relationship.variant.into(),
-            relationship.target,
-        )
-    }
-}
-
-impl From<indradb::EdgeKey> for Relationship {
-    fn from(edge: indradb::EdgeKey) -> Self {
-        Self {
-            id: Uuid::nil(),
-            variant: RelationshipVariant::from(edge.t),
-            target: edge.inbound_id,
-            source: edge.outbound_id,
-        }
-    }
-}
-
 #[derive(PartialEq, Clone, Debug, EnumString)]
 pub enum RelationshipVariant {
     Parental = 1,
@@ -75,50 +54,12 @@ impl From<indradb::Identifier> for RelationshipVariant {
     }
 }
 
-impl Into<indradb::Identifier> for RelationshipVariant {
-    fn into(self) -> indradb::Identifier {
-        match self {
-            Self::Parental => indradb::Identifier::new("Parental").unwrap(),
-            Self::Sequential => indradb::Identifier::new("Sequential").unwrap(),
-            Self::Related => indradb::Identifier::new("Related").unwrap(),
-        }
-    }
-}
 
 #[cfg(test)]
 mod test {
-    use chrono::DateTime;
-    use indradb::{
-        Datastore, Edge, EdgeKey, EdgeQuery, Identifier, MemoryDatastore, SpecificEdgeQuery,
-    };
 
     use super::*;
 
-    pub fn create_datastore_with_two_vertices() -> (MemoryDatastore, Uuid, Uuid) {
-        let datastore = MemoryDatastore::default();
-
-        let vertex_one = datastore
-            .create_vertex_from_type(Identifier::new("test_1").unwrap())
-            .unwrap();
-        let vertex_two = datastore
-            .create_vertex_from_type(Identifier::new("test_2").unwrap())
-            .unwrap();
-
-        (datastore, vertex_one, vertex_two)
-    }
-
-    #[test]
-    fn create_edge_in_datastore_from_relationship() {
-        let (datastore, vector_1, vector_2) = create_datastore_with_two_vertices();
-
-        let test_relationship = Relationship::new(Uuid::nil(), None, vector_1, vector_2);
-        let relationship_clone = test_relationship.clone();
-        let edge_query: EdgeQuery = SpecificEdgeQuery::single(relationship_clone.into()).into();
-
-        datastore.create_edge(&test_relationship.into()).unwrap();
-
-        assert!(datastore.get_edges(edge_query).unwrap().len() == 1)
-    }
 
     #[test]
     fn create_minimal_relationship() {
@@ -166,44 +107,6 @@ mod test {
         assert!(relationship.variant as usize == 3)
     }
 
-    #[test]
-    fn create_edgekey_from_relationship() {
-        let test_relationship = Relationship::new(Uuid::nil(), None, Uuid::nil(), Uuid::nil());
-
-        let converted_edge = indradb::EdgeKey::from(test_relationship);
-
-        assert!(converted_edge.outbound_id.is_nil());
-        assert!(converted_edge.inbound_id.is_nil());
-        assert!(converted_edge.t == indradb::Identifier::new("Related").unwrap())
-    }
-
-    #[test]
-    fn create_edge_from_relationship() {
-        let test_key: EdgeKey =
-            Relationship::new(Uuid::nil(), None, Uuid::nil(), Uuid::nil()).into();
-
-        let cloned_key = test_key.clone();
-
-        let converted_edge = Edge::new(test_key, DateTime::default());
-
-        assert!(converted_edge.key == cloned_key);
-    }
-
-    #[test]
-    fn create_relationship_from_edge() {
-        let test_edge = indradb::EdgeKey::new(
-            Uuid::nil(),
-            indradb::Identifier::new("Related").unwrap(),
-            Uuid::nil(),
-        );
-
-        let converted_relationship = Relationship::from(test_edge);
-
-        assert!(converted_relationship.id.is_nil());
-        assert!(converted_relationship.target.is_nil());
-        assert!(converted_relationship.source.is_nil());
-        assert!(converted_relationship.variant as usize == 3)
-    }
 
     #[test]
     fn create_parental_variant() {
@@ -268,31 +171,5 @@ mod test {
 
         assert!(converted_relationship_variant as usize == 3)
     }
-
-    #[test]
-    fn create_identifer_from_sequential_variant() {
-        let sequential = RelationshipVariant::Sequential;
-
-        let converted_identifier: indradb::Identifier = RelationshipVariant::into(sequential);
-
-        assert!(converted_identifier.as_str() == "Sequential")
-    }
-
-    #[test]
-    fn create_identifier_from_parental_variant() {
-        let parental = RelationshipVariant::Parental;
-
-        let converted_identifier: indradb::Identifier = RelationshipVariant::into(parental);
-
-        assert!(converted_identifier.as_str() == "Parental")
-    }
-
-    #[test]
-    fn create_identifier_from_default_variant() {
-        let default = RelationshipVariant::default();
-
-        let converted_identifier: indradb::Identifier = RelationshipVariant::into(default);
-
-        assert!(converted_identifier.as_str() == "Related")
-    }
 }
+

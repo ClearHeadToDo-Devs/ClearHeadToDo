@@ -1,7 +1,7 @@
 use crate::Action;
-use crate::ActionEditing;
-use crate::ActionViewing;
-use crate::Priority;
+use crate::action::ActionEditing;
+use crate::action::ActionViewing;
+use crate::action::Priority;
 use uuid::Uuid;
 
 #[derive(Debug)]
@@ -13,19 +13,19 @@ pub struct ActionBuilder {
 }
 
 impl ActionEditing for ActionBuilder {
-    fn set_name(self: &mut Self, new_name: &str) -> &mut Self {
+    fn set_name(&mut self, new_name: &str) -> &mut Self {
         self.name = new_name.to_string();
 
         return self;
     }
 
-    fn set_priority(self: &mut Self, priority: Priority) -> &mut Self {
+    fn set_priority(&mut self, priority: Priority) -> &mut Self {
         self.priority = priority;
 
         return self;
     }
 
-    fn set_completion_status(self: &mut Self, desired_status: bool) -> &mut Self {
+    fn set_completion_status(&mut self, desired_status: bool) -> &mut Self {
         self.completed = desired_status;
 
         return self;
@@ -57,7 +57,7 @@ impl ActionViewing for ActionBuilder {
 }
 
 impl ActionBuilder {
-    pub fn build(self: &Self) -> Action {
+    pub fn build(&self) -> Action {
         return Action::default()
             .set_name(&self.name)
             .set_priority(self.priority)

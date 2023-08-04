@@ -1,4 +1,4 @@
-use crate::Priority;
+use crate::action::Priority;
 use uuid::Uuid;
 
 pub trait ActionEditing {
