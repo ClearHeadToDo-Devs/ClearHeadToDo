@@ -59,20 +59,24 @@ impl From<indradb::Identifier> for RelationshipVariant {
 mod test {
 
     use super::*;
+    use rstest::*;
 
+    #[fixture]
+    fn empty_relationship() -> Relationship {
+        Relationship::new(Uuid::nil(), None, Uuid::nil(), Uuid::nil())
+}
 
-    #[test]
-    fn create_minimal_relationship() {
-        let relationship = Relationship::new(Uuid::nil(), None, Uuid::nil(), Uuid::nil());
-
-        assert!(relationship.id.is_nil());
-        assert!(relationship.target.is_nil());
-        assert!(relationship.source.is_nil());
-        assert!(relationship.variant as usize == 3)
+    #[rstest]
+    fn create_minimal_relationship(empty_relationship: Relationship) {
+        assert!(empty_relationship.id.is_nil());
+        assert!(empty_relationship.target.is_nil());
+        assert!(empty_relationship.source.is_nil());
+        assert!(empty_relationship.variant as usize == 3)
     }
 
-    #[test]
-    fn create_parental() {
+
+    #[rstest]
+    fn create_parental(){
         let relationship = Relationship::new(
             Uuid::nil(),
             Some(RelationshipVariant::Parental),
