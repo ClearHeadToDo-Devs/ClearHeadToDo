@@ -51,7 +51,7 @@ mod test {
     use rstest::*;
 
     #[fixture]
-    fn empty_relationship() -> Relationship {
+    fn empty_default_relationship() -> Relationship {
         Relationship::new(Uuid::nil(), None, Uuid::nil(), Uuid::nil())
 }
     fn create_empty_relationship(variant:  RelationshipVariant)-> Relationship {
@@ -59,11 +59,11 @@ mod test {
     }
 
     #[rstest]
-    fn create_minimal_relationship(empty_relationship: Relationship) {
-        assert!(empty_relationship.id.is_nil());
-        assert!(empty_relationship.target.is_nil());
-        assert!(empty_relationship.source.is_nil());
-        assert!(empty_relationship.variant as usize == 3)
+    fn create_minimal_relationship(empty_default_relationship: Relationship) {
+        assert!(empty_default_relationship.id.is_nil());
+        assert!(empty_default_relationship.target.is_nil());
+        assert!(empty_default_relationship.source.is_nil());
+        assert!(empty_default_relationship.variant as usize == 3)
     }
 
 
@@ -77,6 +77,7 @@ mod test {
     #[test]
     fn create_sequential() {
         let relationship = create_empty_relationship(RelationshipVariant::Sequential);
+
         assert!(relationship.variant as usize == 2)
     }
 }

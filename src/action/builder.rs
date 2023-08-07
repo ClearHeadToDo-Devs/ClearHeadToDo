@@ -16,25 +16,25 @@ impl ActionEditing for ActionBuilder {
     fn set_name(&mut self, new_name: &str) -> &mut Self {
         self.name = new_name.to_string();
 
-        return self;
+        self
     }
 
     fn set_priority(&mut self, priority: Priority) -> &mut Self {
         self.priority = priority;
 
-        return self;
+        self
     }
 
     fn set_completion_status(&mut self, desired_status: bool) -> &mut Self {
         self.completed = desired_status;
 
-        return self;
+        self
     }
 
     fn set_id(&mut self, id: uuid::Uuid) -> &mut Self {
         self.id = id;
 
-        return self;
+        self
     }
 }
 
@@ -79,7 +79,7 @@ impl Default for ActionBuilder {
 }
 
 #[cfg(test)]
-mod builder {
+mod tests {
     use super::*;
 
     #[test]
@@ -88,7 +88,7 @@ mod builder {
 
         assert!(
             test_builder.name == "Default Action"
-                && test_builder.completed == false
+                && !test_builder.completed
                 && test_builder.priority == Priority::Optional
         )
     }
@@ -117,7 +117,7 @@ mod builder {
 
         test_builder.set_completion_status(true);
 
-        assert!(test_builder.completed == true);
+        assert!(test_builder.completed);
     }
 
     #[test]
@@ -127,11 +127,10 @@ mod builder {
         let test_action = test_builder.build();
 
         assert!(
-            test_action.get_name() == "Default Action"
-                && test_action.get_priority() == &Priority::Optional
-                && test_action.get_completion_status() == false
-                && test_action.id.is_nil() == false
-        )
+        test_action.get_name() == "Default Action");
+        assert!(test_action.get_priority() == &Priority::Optional);
+        assert!(!test_action.get_completion_status());
+        assert!(!test_action.id.is_nil());
     }
 
     #[test]
@@ -158,8 +157,8 @@ mod builder {
         assert!(
             custom_action.get_name() == "Custom Action"
                 && custom_action.get_priority() == &Priority::Critical
-                && custom_action.get_completion_status() == true
-                && custom_action.get_id().is_nil() == false
+                && custom_action.get_completion_status()
+                && !custom_action.get_id().is_nil()
         )
     }
 }
