@@ -10,6 +10,16 @@ pub struct Vertex {
     pub properties: Vec<Property>,
 }
 
+impl Vertex {
+    fn new(id: Uuid, t: &str, properties: &[Property]) -> Self {
+        Vertex {
+            id,
+            t: t.to_string(),
+            properties: properties.to_vec(),
+        }
+    }
+}
+
 impl Default for Vertex {
     fn default() -> Self {
         Vertex {
@@ -20,7 +30,7 @@ impl Default for Vertex {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Property {
     pub name: String,
     pub value: Value,
@@ -32,7 +42,7 @@ impl Property {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum Value {
     Bool(bool),
     Integer(usize),
@@ -101,64 +111,19 @@ mod tests {
     }
 
     #[test]
-    fn create_bool_value() {
-        let generic_value = Value::Bool(true);
+    fn create_custom_vertex() {
+        let custom_vertex = Vertex::new(Uuid::nil(), "test", &[Property::new("test property".to_string(), Value::Bool(true))]);
 
-        assert!(generic_value == Value::Bool(true));
+        let exported_value: bool = custom_vertex.properties[0].value.clone().try_into().unwrap();
+
+        assert!(custom_vertex.id == Uuid::nil()
+        && custom_vertex.t == "test"
+        && custom_vertex.properties[0].name == "test property"
+        && exported_value)
     }
 
     #[test]
     fn create_string_value() {
-        let generic_value = Value::String("test".to_string());
-
-        assert!(generic_value == Value::String("test".to_string()))
-    }
-
-    #[test]
-    fn create_int_value() {
-        let generic_value = Value::Integer(1);
-
-        assert!(generic_value == Value::Integer(1))
-    }
-
-    #[test]
-    fn successfully_export_int_value() {
-        let generic_value = Value::Integer(1);
-
-        let exported_value: usize = generic_value.try_into().unwrap();
-
-        assert!(exported_value == 1)
-    }
-
-    #[test]
-    fn failed_string_export_to_int() {
-        let generic_value = Value::Bool(true);
-
-        let export_error = usize::try_from(generic_value).unwrap_err();
-
-        assert!(export_error.to_string() == "Wrong input type")
-    }
-
-    #[test]
-    fn successfully_export_bool_value() {
-        let generic_value = Value::Bool(true);
-
-        let exported_value: bool = generic_value.try_into().unwrap();
-
-        assert!(exported_value)
-    }
-
-    #[test]
-    fn failed_value_export_to_bool() {
-        let generic_value = Value::Integer(1);
-
-        let export_error = bool::try_from(generic_value).unwrap_err();
-
-        assert!(export_error.to_string() == "Wrong input type")
-    }
-
-    #[test]
-    fn successfully_export_string_value() {
         let generic_value = Value::String("test".to_string());
 
         let exported_value: String = generic_value.try_into().unwrap();
@@ -167,10 +132,20 @@ mod tests {
     }
 
     #[test]
-    fn create_empty_named_property() {
-        let empty_property = Property::new("test".to_string(), Value::Bool(true));
+    fn create_int_value() {
+        let generic_value = Value::Integer(1);
 
-        assert!(empty_property.name == *"test");
-        assert!(empty_property.value == Value::Bool(true))
+        let exported_value: usize = generic_value.try_into().unwrap();
+
+        assert!(exported_value == 1)
+    }
+
+    #[test]
+    fn failed_export() {
+        let generic_value = Value::Bool(true);
+
+        let export_error = usize::try_from(generic_value).unwrap_err();
+
+        assert!(export_error.to_string() == "Wrong input type")
     }
 }

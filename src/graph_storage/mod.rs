@@ -1,3 +1,4 @@
+pub mod clearhead_conversions;
 pub mod insertion;
 pub mod local_db_create_and_open;
 pub mod querying;

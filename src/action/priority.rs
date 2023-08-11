@@ -12,7 +12,7 @@ pub enum Priority {
 }
 
 #[cfg(test)]
-mod priority {
+mod tests {
     use super::*;
     use serde_test::*;
     use std::str::FromStr;
