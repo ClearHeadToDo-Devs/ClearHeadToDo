@@ -3,7 +3,7 @@ use std::fmt::Display;
 use std::error::Error;
 use uuid::Uuid;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vertex {
     pub id: Uuid,
     pub t: String,
