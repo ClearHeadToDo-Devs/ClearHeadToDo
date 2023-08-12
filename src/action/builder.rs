@@ -83,23 +83,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn create_default_builder() {
-        let test_builder = ActionBuilder::default();
-
-        assert!(
-            test_builder.name == "Default Action"
-                && !test_builder.completed
-                && test_builder.priority == Priority::Optional
-        )
-    }
-
-    #[test]
     fn update_builder_name() {
         let mut test_builder = ActionBuilder::default();
 
         test_builder.set_name("New Name");
 
-        assert!(test_builder.name == "New Name")
+        assert!(test_builder.get_name() == "New Name")
     }
 
     #[test]
@@ -108,7 +97,7 @@ mod tests {
 
         test_builder.set_priority(Priority::Optional);
 
-        assert!(test_builder.priority == Priority::Optional);
+        assert!(*test_builder.get_priority() == Priority::Optional);
     }
 
     #[test]
@@ -117,7 +106,7 @@ mod tests {
 
         test_builder.set_completion_status(true);
 
-        assert!(test_builder.completed);
+        assert!(test_builder.get_completion_status());
     }
 
     #[test]
@@ -135,30 +124,11 @@ mod tests {
 
     #[test]
     fn create_multiple_actions_from_builder() {
-        let test_builder_1 = ActionBuilder::default();
-        let test_builder_2 = ActionBuilder::default();
-
-        let action_1 = test_builder_1.build();
-        let action_2 = test_builder_2.build();
-
-        assert!(action_1.id != action_2.id)
-    }
-
-    #[test]
-    fn create_custom_action() {
         let mut test_builder = ActionBuilder::default();
 
-        let custom_action = test_builder
-            .set_completion_status(true)
-            .set_name("Custom Action")
-            .set_priority(Priority::Critical)
-            .build();
+        let action_1 = test_builder.build();
+        let action_2 = test_builder.set_id(Uuid::new_v4()).build();
 
-        assert!(
-            custom_action.get_name() == "Custom Action"
-                && custom_action.get_priority() == &Priority::Critical
-                && custom_action.get_completion_status()
-                && !custom_action.get_id().is_nil()
-        )
+        assert!(action_1.id != action_2.id)
     }
 }

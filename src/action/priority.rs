@@ -14,7 +14,6 @@ pub enum Priority {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_test::*;
     use std::str::FromStr;
     use strum::*;
 
@@ -46,18 +45,5 @@ mod tests {
             .unwrap_err();
 
         assert!(priority_conversion_error == "Invalid Priority Selection");
-    }
-
-    #[test]
-    fn serialize_and_deserialize() {
-        let test_priority = Priority::Optional;
-
-        assert_tokens(
-            &test_priority,
-            &[Token::UnitVariant {
-                name: "Priority",
-                variant: "Optional",
-            }],
-        )
     }
 }

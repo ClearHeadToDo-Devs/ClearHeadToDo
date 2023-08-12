@@ -78,7 +78,6 @@ mod test {
     use rstest::*;
 
     use super::*;
-    use builder::ActionBuilder;
 
 
     #[test]
