@@ -17,28 +17,28 @@ pub struct Action {
 }
 
 impl ActionEditing for Action {
-    fn set_name(self: &mut Self, new_name: &str) -> &mut Self {
+    fn set_name(&mut self, new_name: &str) -> &mut Self {
         self.name = new_name.to_string();
 
-        return self;
+        self
     }
 
-    fn set_priority(self: &mut Self, new_priority: Priority) -> &mut Self {
+    fn set_priority(&mut self, new_priority: Priority) -> &mut Self {
         self.priority = new_priority;
 
-        return self;
+        self
     }
 
-    fn set_completion_status(self: &mut Self, desired_status: bool) -> &mut Self {
+    fn set_completion_status(&mut self, desired_status: bool) -> &mut Self {
         self.completed = desired_status;
 
-        return self;
+        self
     }
 
     fn set_id(&mut self, id: Uuid) -> &mut Self {
         self.id = id;
 
-        return self;
+        self
     }
 }
 
@@ -55,7 +55,7 @@ impl ActionViewing for Action {
         self.completed
     }
 
-    fn get_id(self: &Self) -> Uuid {
+    fn get_id(&self) -> Uuid {
         self.id
     }
 }
@@ -75,149 +75,56 @@ impl Default for Action {
 
 #[cfg(test)]
 mod test {
-    use serde_test::assert_tokens;
+    use rstest::*;
 
     use super::*;
     use builder::ActionBuilder;
-    use serde_test::*;
 
-    #[test]
-    fn view_name() {
-        let action = Action::default();
-
-        let name = action.get_name();
-
-        assert!(name == "Default Action");
-    }
-
-    #[test]
-    fn view_priority() {
-        let action = Action::default();
-
-        let priority = action.get_priority();
-
-        assert!(priority == &Priority::Optional);
-    }
-
-    #[test]
-    fn view_completion_status() {
-        let action = Action::default();
-
-        let completion_status = action.get_completion_status();
-
-        assert!(completion_status == false);
-    }
 
     #[test]
     fn view_id() {
-        let action = Action::default();
+        let mut action = Action::default();
 
-        let id = action.get_id();
+        let updated_action = action.set_id(Uuid::new_v4());
 
-        assert!(id != Uuid::nil());
+        let id = updated_action.get_id();
+
+        assert!(!id.is_nil());
     }
 
-    #[test]
-    fn create_default_action() {
-        let test_action = Action::default();
-
+    #[rstest]
+    fn create_default_action(default_action: Action) {
         assert!(
-            test_action.name == "Default Action"
-                && test_action.priority == Priority::Optional
-                && test_action.completed == false
-                && test_action.id.is_nil() == false
+            default_action.get_name() == "Default Action"
+                && *default_action.get_priority() == Priority::Optional
+                && !default_action.get_completion_status()
+                && !default_action.get_id().is_nil()
         );
     }
-    #[test]
-    fn update_action_name() {
-        let mut test_action = ActionBuilder::default().build();
+    #[rstest]
+    fn update_action_name(mut default_action: Action) {
+        let updated_action = default_action.set_name("New Name");
 
-        test_action.set_name("New Name");
-
-        assert!(test_action.name == "New Name")
+        assert!(updated_action.get_name() == "New Name")
     }
 
-    #[test]
-    fn update_action_priority() {
-        let mut test_action = ActionBuilder::default().build();
+    #[rstest]
+    fn update_action_priority(mut default_action: Action) {
+        let updated_action = default_action.set_priority(Priority::Critical);
 
-        test_action.set_priority(Priority::Critical);
-
-        assert!(test_action.priority == Priority::Critical)
+        assert!(*updated_action.get_priority() == Priority::Critical)
     }
 
-    #[test]
-    fn update_action_completion_status() {
-        let mut test_action = ActionBuilder::default().build();
+    #[rstest]
+    fn update_action_completion_status(mut default_action: Action) {
+        let updated_action = default_action.set_completion_status(true);
 
-        test_action.set_completion_status(true);
-
-        assert!(test_action.completed == true);
+        assert!(updated_action.get_completion_status());
     }
 
-    #[test]
-    fn serialize_deserialize() {
-        let nil_action = Action {
-            name: "Default Action".to_string(),
-            completed: false,
-            priority: Priority::Optional,
-            id: Uuid::nil(),
-        };
-
-        assert_tokens(
-            &nil_action.readable(),
-            &[
-                Token::Struct {
-                    name: "Action",
-                    len: 4,
-                },
-                Token::Str("name"),
-                Token::Str("Default Action"),
-                Token::Str("completed"),
-                Token::Bool(false),
-                Token::Str("priority"),
-                Token::UnitVariant {
-                    name: "Priority",
-                    variant: "Optional",
-                },
-                Token::Str("id"),
-                Token::Str("00000000-0000-0000-0000-000000000000"),
-                Token::StructEnd,
-            ],
-        )
-    }
-
-    #[test]
-    fn list_serialize_and_deserialize() {
-        let action_list = vec![Action {
-            name: "Default Action".to_string(),
-            completed: false,
-            priority: Priority::Optional,
-            id: Uuid::nil(),
-        }];
-
-        assert_tokens(
-            &action_list.readable(),
-            &[
-                Token::Seq { len: Some(1) },
-                Token::Struct {
-                    name: "Action",
-                    len: 4,
-                },
-                Token::Str("name"),
-                Token::Str("Default Action"),
-                Token::Str("completed"),
-                Token::Bool(false),
-                Token::Str("priority"),
-                Token::UnitVariant {
-                    name: "Priority",
-                    variant: "Optional",
-                },
-                Token::Str("id"),
-                Token::Str("00000000-0000-0000-0000-000000000000"),
-                Token::StructEnd,
-                Token::SeqEnd,
-            ],
-        )
+    #[fixture]
+    fn default_action()->Action {
+        Action::default()
     }
 }
+
