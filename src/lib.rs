@@ -4,3 +4,5 @@ use action::*;
 pub mod graph_storage;
 
 pub mod relationship;
+
+pub mod service;
