@@ -89,6 +89,50 @@ impl From<usize> for Priority {
     }
 }
 
+struct Relationship {
+    variant: RelationshipVariant,
+    outbound: Uuid,
+    inbound: Uuid,
+}
+
+impl Relationship {
+    fn new(variant: &str, outbound: Uuid, inbound: Uuid) -> Self {
+        Relationship {
+            variant: variant.into(),
+            outbound,
+            inbound,
+        }
+    }
+
+    fn get_variant(&self) -> RelationshipVariant {
+        self.variant.clone()
+    }
+    fn get_outbound(&self) -> Uuid {
+        self.outbound.clone()
+    }
+    fn get_inbound(&self) -> Uuid {
+        self.inbound.clone()
+    }
+}
+
+#[derive(PartialEq, Copy, Clone)]
+enum RelationshipVariant {
+    Hierarchical = 1,
+    Sequential = 2,
+    Related = 3,
+}
+
+impl From<&str> for RelationshipVariant {
+    fn from(value: &str) -> Self {
+        match value {
+            "hierarchical" | "parental" => RelationshipVariant::Hierarchical,
+            "sequential" | "sibling" => RelationshipVariant::Sequential,
+            "related" | "connected" => RelationshipVariant::Related,
+            _ => RelationshipVariant::Related,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -116,6 +160,23 @@ mod tests {
                 priority: Priority::Critical,
                 completed: true,
             }
+        }
+    }
+
+    mod relationships {
+        use super::*;
+
+        #[rstest]
+        fn create_default(test_relationship: Relationship) {
+            assert!(
+                test_relationship.get_variant() == RelationshipVariant::Hierarchical
+                    && test_relationship.get_outbound().is_nil()
+                    && test_relationship.get_inbound().is_nil()
+            )
+        }
+        #[fixture]
+        fn test_relationship() -> Relationship {
+            Relationship::new("parental", Uuid::nil(), Uuid::nil())
         }
     }
 }
