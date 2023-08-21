@@ -1,3 +1,4 @@
+pub mod graph_storage;
 use uuid::Uuid;
 
 #[derive(PartialEq, Clone)]
