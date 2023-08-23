@@ -64,6 +64,33 @@ impl LocalIndraInteractor {
         Ok(())
     }
 
+    fn update_action(
+        &self,
+        target_field: ActionField,
+        action_ref: &Action,
+    ) -> Result<(), Box<dyn Error>> {
+        let action_query = SpecificVertexQuery::single(action_ref.get_id());
+        let priority_int: usize = action_ref.get_priority().into();
+        let updated_outcome = match target_field {
+            ActionField::Name => self.db.set_properties(
+                action_query,
+                Identifier::new("name").unwrap(),
+                &Json::new(Value::String(action_ref.get_name())),
+            )?,
+            ActionField::Priority => self.db.set_properties(
+                action_query,
+                Identifier::new("priority").unwrap(),
+                &Json::new(Value::Number(priority_int.into())),
+            )?,
+            ActionField::Completed => self.db.set_properties(
+                action_query,
+                Identifier::new("completed").unwrap(),
+                &Json::new(Value::Bool(action_ref.get_completion_status())),
+            )?,
+        };
+
+        Ok(updated_outcome)
+    }
     fn sync(&self) -> Result<(), Box<dyn Error>> {
         Ok(self.db.sync()?)
     }
@@ -75,17 +102,18 @@ impl From<&Action> for Vertex {
         Vertex::new(identifier)
     }
 }
+
+enum ActionField {
+    Name = 1,
+    Priority = 2,
+    Completed = 3,
+}
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::fs;
 
-    fn create_local_interactor(interactor_path: Option<&str>) -> LocalIndraInteractor {
-        LocalIndraInteractor::new(interactor_path)
-    }
-
     mod updates {
-
         use super::*;
         #[test]
         fn add_default_action() {
@@ -95,6 +123,17 @@ mod tests {
             let updated_interactor = interactor.add_action(&action);
 
             assert!(updated_interactor.is_ok())
+        }
+
+        #[test]
+        fn update_existing_action() {
+            let interactor = create_local_interactor(None);
+            let action = Action::new("test", None);
+            interactor.add_action(&action).unwrap();
+
+            let outcome = interactor.update_action(ActionField::Name, &action);
+
+            assert!(outcome.is_ok())
         }
     }
     mod creation {
@@ -126,5 +165,9 @@ mod tests {
         fn can_sync_db(interactor: LocalIndraInteractor) -> bool {
             interactor.sync().is_ok()
         }
+    }
+
+    fn create_local_interactor(interactor_path: Option<&str>) -> LocalIndraInteractor {
+        LocalIndraInteractor::new(interactor_path)
     }
 }
