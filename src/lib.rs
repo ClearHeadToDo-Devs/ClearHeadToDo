@@ -90,6 +90,18 @@ impl From<usize> for Priority {
     }
 }
 
+impl From<Priority> for usize {
+    fn from(value: Priority) -> Self {
+        match value {
+            Priority::Critical => 1,
+            Priority::High => 2,
+            Priority::Medium => 3,
+            Priority::Low => 4,
+            Priority::Optional => 5,
+        }
+    }
+}
+
 struct Relationship {
     variant: RelationshipVariant,
     outbound: Uuid,
