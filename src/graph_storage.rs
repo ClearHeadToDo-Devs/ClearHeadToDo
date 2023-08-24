@@ -6,6 +6,7 @@ use indradb::{
 use rmp_serde::decode::Error as RmpDecodeError;
 use serde_json::{json, Value};
 use std::error::Error;
+use uuid::Uuid;
 struct LocalIndraInteractor {
     db: Database<MemoryDatastore>,
 }
@@ -91,6 +92,13 @@ impl LocalIndraInteractor {
 
         Ok(updated_outcome)
     }
+
+    fn delete_action(&self, action_id: Uuid) -> Result<(), Box<dyn Error>> {
+        let action_query = SpecificVertexQuery::single(action_id);
+
+        self.db.delete(action_query)?;
+        Ok(())
+    }
     fn sync(&self) -> Result<(), Box<dyn Error>> {
         Ok(self.db.sync()?)
     }
@@ -135,6 +143,17 @@ mod tests {
 
             assert!(outcome.is_ok())
         }
+    }
+
+    #[test]
+    fn remove_action() {
+        let interactor = create_local_interactor(None);
+        let action = Action::new("test", None);
+        interactor.add_action(&action).unwrap();
+
+        let outcome = interactor.delete_action(action.get_id());
+
+        assert!(outcome.is_ok())
     }
     mod creation {
         use super::*;
