@@ -1,7 +1,7 @@
-use crate::Action;
+use crate::{Action, Priority, RelationshipVariant};
 use indradb::{
-    Database, Datastore, Identifier, Json, MemoryDatastore, NamedProperty, Query,
-    SpecificVertexQuery, Vertex, VertexProperties, VertexProperty,
+    BulkInsertItem, Database, Datastore, Edge, EdgeProperties, Identifier, Json, MemoryDatastore,
+    NamedProperty, Query, SpecificVertexQuery, Vertex, VertexProperties, VertexProperty,
 };
 use rmp_serde::decode::Error as RmpDecodeError;
 use serde_json::{json, Value};
@@ -26,43 +26,29 @@ impl LocalIndraInteractor {
         }
     }
 
-    fn add_action(&self, action: &Action) -> Result<(), Box<dyn Error>> {
-        let action_vertex: Vertex = action.into();
-        let action_string: String = action.get_name();
-        let priority_int: usize = action.get_priority().into();
-        let completed: bool = action.get_completion_status();
+    fn add_action(&self, action: &Action) -> Result<Uuid, Box<dyn Error>> {
+        let action_vertex: VertexProperties = action.into();
+        let vertex_query: SpecificVertexQuery =
+            SpecificVertexQuery::single(action_vertex.vertex.id);
 
-        let string_property = NamedProperty::new(
-            Identifier::new("name").unwrap(),
-            Json::new(Value::String(action_string).into()),
-        );
-        let priority_property = NamedProperty::new(
-            Identifier::new("priority").unwrap(),
-            Json::new(Value::Number(priority_int.into())),
-        );
-        let completion_status_property = NamedProperty::new(
-            Identifier::new("completed").unwrap(),
-            Json::new(Value::Bool(completed)),
-        );
+        self.db.create_vertex(&action_vertex.vertex)?;
+        self.db.set_properties(
+            vertex_query.clone(),
+            action_vertex.props[0].name,
+            &action_vertex.props[0].value,
+        )?;
+        self.db.set_properties(
+            vertex_query.clone(),
+            action_vertex.props[1].name,
+            &action_vertex.props[1].value,
+        )?;
+        self.db.set_properties(
+            vertex_query.clone(),
+            action_vertex.props[2].name,
+            &action_vertex.props[2].value,
+        )?;
 
-        self.db.create_vertex(&action_vertex)?;
-        self.db.set_properties(
-            SpecificVertexQuery::single(action_vertex.id),
-            string_property.name,
-            &string_property.value,
-        );
-        self.db.set_properties(
-            SpecificVertexQuery::single(action_vertex.id),
-            priority_property.name,
-            &priority_property.value,
-        );
-        self.db.set_properties(
-            SpecificVertexQuery::single(action_vertex.id),
-            completion_status_property.name,
-            &completion_status_property.value,
-        );
-
-        Ok(())
+        Ok(action_vertex.vertex.id)
     }
 
     fn update_action(
@@ -71,7 +57,6 @@ impl LocalIndraInteractor {
         action_ref: &Action,
     ) -> Result<(), Box<dyn Error>> {
         let action_query = SpecificVertexQuery::single(action_ref.get_id());
-        let priority_int: usize = action_ref.get_priority().into();
         let updated_outcome = match target_field {
             ActionField::Name => self.db.set_properties(
                 action_query,
@@ -81,7 +66,7 @@ impl LocalIndraInteractor {
             ActionField::Priority => self.db.set_properties(
                 action_query,
                 Identifier::new("priority").unwrap(),
-                &Json::new(Value::Number(priority_int.into())),
+                &Json::new(action_ref.get_priority().into()),
             )?,
             ActionField::Completed => self.db.set_properties(
                 action_query,
@@ -99,18 +84,65 @@ impl LocalIndraInteractor {
         self.db.delete(action_query)?;
         Ok(())
     }
+
+    fn create_relationship(
+        &self,
+        outbound_id: Uuid,
+        inbound_id: Uuid,
+        rel_var: RelationshipVariant,
+    ) -> Result<bool, Box<dyn Error>> {
+        let relationship: Edge = Edge::new(
+            outbound_id,
+            Identifier::new(rel_var.to_string()).unwrap(),
+            inbound_id,
+        );
+
+        let result = self.db.create_edge(&relationship)?;
+
+        Ok(result)
+    }
     fn sync(&self) -> Result<(), Box<dyn Error>> {
         Ok(self.db.sync()?)
     }
 }
-
+impl From<&Action> for VertexProperties {
+    fn from(value: &Action) -> Self {
+        VertexProperties::new(
+            Vertex::with_id(value.get_id(), Identifier::new("action").unwrap()),
+            vec![
+                NamedProperty::new(
+                    Identifier::new("name").unwrap(),
+                    Json::new(Value::String(value.get_name())),
+                ),
+                NamedProperty::new(
+                    Identifier::new("priority").unwrap(),
+                    Json::new(value.get_priority().into()),
+                ),
+                NamedProperty::new(
+                    Identifier::new("completed").unwrap(),
+                    Json::new(Value::Bool(value.get_completion_status())),
+                ),
+            ],
+        )
+    }
+}
 impl From<&Action> for Vertex {
     fn from(value: &Action) -> Self {
         let identifier = Identifier::new("action").unwrap();
         Vertex::new(identifier)
     }
 }
-
+impl From<Priority> for Value {
+    fn from(value: Priority) -> Self {
+        match value {
+            Priority::Critical => Value::Number(1.into()),
+            Priority::High => Value::Number(2.into()),
+            Priority::Medium => Value::Number(3.into()),
+            Priority::Low => Value::Number(4.into()),
+            Priority::Optional => Value::Number(5.into()),
+        }
+    }
+}
 enum ActionField {
     Name = 1,
     Priority = 2,
@@ -118,6 +150,8 @@ enum ActionField {
 }
 #[cfg(test)]
 mod tests {
+    use crate::RelationshipVariant;
+
     use super::*;
     use std::fs;
 
@@ -128,9 +162,9 @@ mod tests {
             let interactor = create_local_interactor(None);
             let action = Action::new("test", None);
 
-            let updated_interactor = interactor.add_action(&action);
+            let new_vertex_id = interactor.add_action(&action).unwrap();
 
-            assert!(updated_interactor.is_ok())
+            assert!(!new_vertex_id.is_nil())
         }
 
         #[test]
@@ -146,7 +180,7 @@ mod tests {
     }
 
     #[test]
-    fn remove_action() {
+    fn remove_an_action() {
         let interactor = create_local_interactor(None);
         let action = Action::new("test", None);
         interactor.add_action(&action).unwrap();
@@ -154,6 +188,22 @@ mod tests {
         let outcome = interactor.delete_action(action.get_id());
 
         assert!(outcome.is_ok())
+    }
+
+    #[test]
+    fn create_relationship_between_actions() {
+        let interactor = create_local_interactor(None);
+        let action_1 = Action::new("test", None);
+        let action_2 = Action::new("test_2", None);
+
+        let outbound_id = interactor.add_action(&action_1).unwrap();
+        let inbound_id = interactor.add_action(&action_2).unwrap();
+
+        let relationship_created = interactor
+            .create_relationship(outbound_id, inbound_id, RelationshipVariant::Related)
+            .unwrap();
+
+        assert!(relationship_created)
     }
     mod creation {
         use super::*;

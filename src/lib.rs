@@ -146,6 +146,16 @@ impl From<&str> for RelationshipVariant {
     }
 }
 
+impl ToString for RelationshipVariant {
+    fn to_string(&self) -> String {
+        match self {
+            RelationshipVariant::Related => "related".to_string(),
+            RelationshipVariant::Sequential => "sequential".to_string(),
+            RelationshipVariant::Hierarchical => "hierarchical".to_string(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
